@@ -1,0 +1,401 @@
+import { registerBlockType } from '@wordpress/blocks';
+import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } from '@wordpress/block-editor';
+import { Button } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+
+const blockStyle = `
+    .importance-section {
+        color: #fff;
+        padding: 4rem 0;
+    }
+
+    .importance-section .container {
+        background-color: #f5fcf1;
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 60px;
+        border-radius: 20px;
+    }
+
+    .importance-section__header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .importance-section__subtitle {
+        color: var(--Malina, #2FCA02);
+        text-align: center;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 750;
+        line-height: normal;
+        margin-bottom: 5px;
+    }
+
+    .importance-section__title {
+        color: var(--Dark-Blue, #221A4C);
+        text-align: center;
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        margin: 0;
+    }
+
+    .importance-section__content-wrapper {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    .importance-section__content {
+        flex: 0 0 50%;
+    }
+
+    .accordion-item {
+        margin-bottom: 24px;
+        border: none;
+        background: transparent;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .accordion-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--Malina, #2FCA02);
+        border-radius: 2px;
+    }
+
+    .accordion-header {
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+        display: block;
+    }
+
+    .accordion-title {
+        color: var(--Dark-Blue, #221A4C);
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        transition: color 0.3s ease;
+    }
+
+    .accordion-item.active .accordion-title {
+        color: var(--Malina, #2FCA02);
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+
+    .accordion-content {
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+        opacity: 0;
+        margin-top: 0;
+    }
+
+    .accordion-item.active .accordion-content {
+        max-height: 1000px;
+        opacity: 1;
+        margin-top: 10px;
+    }
+
+    .accordion-content p {
+        color: var(--Grey, #8399AF);
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        margin: 0;
+    }
+
+    .accordion-icon {
+        display: none;
+    }
+    
+    .importance-section__image {
+        flex: 0 0 50%;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .importance-section__image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .importance-section__image .components-button {
+        height: 200px;
+        width: 100%;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-radius: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .importance-section__content-wrapper {
+            flex-direction: column;
+        }
+        
+        .importance-section__content,
+        .importance-section__image {
+            width: 100%;
+            flex: none;
+        }
+    }
+`;
+
+const AccordionItem = ({ title, content, isActive, onClick }) => {
+    return (
+        <div className={`accordion-item ${isActive ? 'active' : ''}`}>
+            <div className="accordion-header" onClick={onClick}>
+                <RichText
+                    tagName="div"
+                    className="accordion-title"
+                    value={title}
+                    onChange={(value) => updateAccordionItem(index, 'title', value)}
+                    placeholder="Enter title"
+                />
+            </div>
+            <div className="accordion-content">
+                <RichText
+                    tagName="p"
+                    value={content}
+                    onChange={(value) => updateAccordionItem(index, 'content', value)}
+                    placeholder="Enter content"
+                />
+            </div>
+        </div>
+    );
+};
+
+registerBlockType('bevision/importance-section', {
+    title: 'Importance Section',
+    icon: 'chart-bar',
+    category: 'bevision',
+    attributes: {
+        imageUrl: {
+            type: 'string',
+            default: ''
+        },
+        imageId: {
+            type: 'number'
+        },
+        subtitle: {
+            type: 'string',
+            default: 'IMPORTANCE'
+        },
+        title: {
+            type: 'string',
+            default: 'Why is it so important?'
+        },
+        accordionItems: {
+            type: 'array',
+            default: [
+                {
+                    title: 'Listen to your business heartbeat',
+                    content: 'Our business intelligence consulting team delves into operational processes, data workflows, and organization structures to identify the BI system\'s goals and use cases.'
+                },
+                {
+                    title: 'Better decisions for your business',
+                    content: 'Make informed decisions based on comprehensive data analysis and insights.'
+                },
+                {
+                    title: 'Fast and smooth deployment',
+                    content: 'Quick implementation ensuring minimal disruption to your business operations.'
+                }
+            ]
+        }
+    },
+    edit: function Edit({ attributes, setAttributes }) {
+        const blockProps = useBlockProps({
+            className: 'importance-section'
+        });
+
+        const [activeAccordion, setActiveAccordion] = useState(0);
+
+        const toggleAccordion = (index) => {
+            setActiveAccordion(activeAccordion === index ? -1 : index);
+        };
+
+        const onSelectImage = (media) => {
+            setAttributes({
+                imageUrl: media.url,
+                imageId: media.id
+            });
+        };
+
+        const updateAccordionItem = (index, field, value) => {
+            const newItems = [...attributes.accordionItems];
+            newItems[index] = { ...newItems[index], [field]: value };
+            setAttributes({ accordionItems: newItems });
+        };
+
+        return (
+            <>
+                <style>{blockStyle}</style>
+                <div {...blockProps}>
+                    <div className="container">
+                        <div className="importance-section__header">
+                            <RichText
+                                tagName="div"
+                                className="importance-section__subtitle"
+                                value={attributes.subtitle}
+                                onChange={(subtitle) => setAttributes({ subtitle })}
+                                placeholder="Enter subtitle"
+                            />
+                            <RichText
+                                tagName="h2"
+                                className="importance-section__title"
+                                value={attributes.title}
+                                onChange={(title) => setAttributes({ title })}
+                                placeholder="Enter title"
+                            />
+                        </div>
+                        <div className="importance-section__content-wrapper">
+                            <div className="importance-section__content">
+                                {attributes.accordionItems.map((item, index) => (
+                                    <div key={index} className={`accordion-item ${index === activeAccordion ? 'active' : ''}`}>
+                                        <div className="accordion-header" onClick={() => toggleAccordion(index)}>
+                                            <RichText
+                                                tagName="div"
+                                                className="accordion-title"
+                                                value={item.title}
+                                                onChange={(value) => updateAccordionItem(index, 'title', value)}
+                                                placeholder="Enter title"
+                                            />
+                                        </div>
+                                        <div className="accordion-content">
+                                            <RichText
+                                                tagName="p"
+                                                value={item.content}
+                                                onChange={(value) => updateAccordionItem(index, 'content', value)}
+                                                placeholder="Enter content"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="importance-section__image">
+                                <MediaUploadCheck>
+                                    <MediaUpload
+                                        onSelect={onSelectImage}
+                                        allowedTypes={['image']}
+                                        value={attributes.imageId}
+                                        render={({ open }) => (
+                                            attributes.imageUrl ? (
+                                                <img
+                                                    src={attributes.imageUrl}
+                                                    onClick={open}
+                                                    style={{ cursor: 'pointer' }}
+                                                    alt="Click to change image"
+                                                />
+                                            ) : (
+                                                <Button
+                                                    onClick={open}
+                                                    variant="secondary"
+                                                >
+                                                    Upload Image
+                                                </Button>
+                                            )
+                                        )}
+                                    />
+                                </MediaUploadCheck>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    },
+    save: function Save({ attributes }) {
+        const blockProps = useBlockProps.save({
+            className: 'importance-section'
+        });
+
+        return (
+            <>
+                <style>{blockStyle}</style>
+                <div {...blockProps}>
+                    <div className="container">
+                        <div className="importance-section__header">
+                            <div className="importance-section__subtitle">
+                                {attributes.subtitle}
+                            </div>
+                            <h2 className="importance-section__title">
+                                {attributes.title}
+                            </h2>
+                        </div>
+                        <div className="importance-section__content-wrapper">
+                            <div className="importance-section__content">
+                                {attributes.accordionItems.map((item, index) => (
+                                    <div key={index} className="accordion-item">
+                                        <div className="accordion-header">
+                                            <div className="accordion-title">
+                                                {item.title}
+                                            </div>
+                                        </div>
+                                        <div className="accordion-content">
+                                            <p>{item.content}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="importance-section__image">
+                                {attributes.imageUrl && (
+                                    <img src={attributes.imageUrl} alt="" />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    {`
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const accordions = document.querySelectorAll('.accordion-header');
+                        
+                        // Set first accordion as active by default
+                        const firstAccordion = document.querySelector('.accordion-item');
+                        if (firstAccordion) {
+                            firstAccordion.classList.add('active');
+                        }
+                        
+                        accordions.forEach(accordion => {
+                            accordion.addEventListener('click', function() {
+                                const parent = this.parentElement;
+                                const wasActive = parent.classList.contains('active');
+                                
+                                // Close all accordions
+                                document.querySelectorAll('.accordion-item').forEach(item => {
+                                    item.classList.remove('active');
+                                });
+                                
+                                // If the clicked accordion wasn't active, open it
+                                if (!wasActive) {
+                                    parent.classList.add('active');
+                                }
+                            });
+                        });
+                    });
+                    `}
+                </script>
+            </>
+        );
+    }
+});
