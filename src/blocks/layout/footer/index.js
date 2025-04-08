@@ -210,7 +210,7 @@ registerBlockType('bevision/footer-section', {
                 <footer style={{ backgroundColor: backgroundColor }}>
                     <div style={{ 
                         maxWidth: '1440px',
-                        margin: '120px auto 0pxs',
+                        margin: '120px auto 0px',
                         padding: '40px 20px'
                     }}>
                         <div style={{
