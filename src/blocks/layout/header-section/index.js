@@ -98,7 +98,9 @@ registerBlockType('bevision/header-section', {
     },
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps({
-            className: 'w-full bg-white'
+            style: {
+                backgroundColor: attributes.backgroundColor,
+            }
         });
 
         const updateMenuItem = (index, field, value) => {
@@ -163,18 +165,18 @@ registerBlockType('bevision/header-section', {
                                                                 allowedTypes={['image']}
                                                                 value={attributes.logo}
                                                                 render={({ open }) => (
-                                                                    <div className="mb-4">
+                                                                    <div style={{ marginBottom: '16px' }}>
                                                                         {attributes.logo ? (
                                                                             <div>
                                                                                 <img
                                                                                     src={attributes.logo}
                                                                                     alt="Selected logo"
-                                                                                    className="max-w-full mb-2.5"
+                                                                                    style={{ maxWidth: '100%', marginBottom: '10px' }}
                                                                                 />
                                                                                 <Button
                                                                                     onClick={open}
                                                                                     variant="secondary"
-                                                                                    className="w-full"
+                                                                                    style={{ width: '100%' }}
                                                                                 >
                                                                                     ლოგოს შეცვლა
                                                                                 </Button>
@@ -183,7 +185,7 @@ registerBlockType('bevision/header-section', {
                                                                             <Button
                                                                                 onClick={open}
                                                                                 variant="secondary"
-                                                                                className="w-full"
+                                                                                style={{ width: '100%' }}
                                                                             >
                                                                                 აირჩიეთ ლოგო
                                                                             </Button>
@@ -200,7 +202,12 @@ registerBlockType('bevision/header-section', {
                                                     <>
                                                         <PanelBody title="მენიუს ბმულები" initialOpen={true}>
                                                             {attributes.menuItems.map((item, index) => (
-                                                                <div key={index} className="menu-item-control mb-4 p-3 bg-gray-100 rounded">
+                                                                <div key={index} className="menu-item-control" style={{ 
+                                                                    marginBottom: '16px',
+                                                                    padding: '12px',
+                                                                    backgroundColor: '#f0f0f0',
+                                                                    borderRadius: '4px'
+                                                                }}>
                                                                     <TextControl
                                                                         label={`ბმული ${index + 1} - ტექსტი`}
                                                                         value={item.text}
@@ -216,7 +223,11 @@ registerBlockType('bevision/header-section', {
                                                         </PanelBody>
 
                                                         <PanelBody title="ენის პარამეტრები" initialOpen={true}>
-                                                            <div className="p-3 bg-gray-100 rounded">
+                                                            <div className="language-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
                                                                 <TextControl
                                                                     label="ენის ტექსტი"
                                                                     value={attributes.languageText}
@@ -235,7 +246,11 @@ registerBlockType('bevision/header-section', {
                                             if (contentTab.name === 'actions') {
                                                 return (
                                                     <PanelBody title="ღილაკის პარამეტრები" initialOpen={true}>
-                                                        <div className="button-control p-3 bg-gray-100 rounded">
+                                                        <div className="button-control" style={{ 
+                                                            padding: '12px',
+                                                            backgroundColor: '#f0f0f0',
+                                                            borderRadius: '4px'
+                                                        }}>
                                                             <TextControl
                                                                 label="ღილაკის ტექსტი"
                                                                 value={attributes.buttonText}
@@ -250,116 +265,352 @@ registerBlockType('bevision/header-section', {
                                                     </PanelBody>
                                                 );
                                             }
-                                            return null;
+                                        }}
+                                    </TabPanel>
+                                );
+                            } else {
+                                return (
+                                    <TabPanel
+                                        className="bevision-style-tabs"
+                                        activeClass="is-active"
+                                        tabs={[
+                                            {
+                                                name: 'layout',
+                                                title: 'განლაგება',
+                                                className: 'tab-layout'
+                                            },
+                                            {
+                                                name: 'colors',
+                                                title: 'ფერები',
+                                                className: 'tab-colors'
+                                            },
+                                            {
+                                                name: 'typography',
+                                                title: 'ტიპოგრაფია',
+                                                className: 'tab-typography'
+                                            }
+                                        ]}
+                                    >
+                                        {(styleTab) => {
+                                            if (styleTab.name === 'layout') {
+                                                return (
+                                                    <>
+                                                        <PanelBody title="ჰედერის განლაგება" initialOpen={true}>
+                                                            <div className="spacing-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <RangeControl
+                                                                    label="ჰედერის სიმაღლე"
+                                                                    value={attributes.headerHeight}
+                                                                    onChange={(value) => setAttributes({ headerHeight: value })}
+                                                                    min={50}
+                                                                    max={200}
+                                                                />
+                                                            </div>
+                                                        </PanelBody>
+                                                        
+                                                        <PanelBody title="ღილაკის განლაგება" initialOpen={true}>
+                                                            <div className="button-spacing-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                                                                    <RangeControl
+                                                                        label="ვერტიკალური padding"
+                                                                        value={attributes.buttonPaddingV}
+                                                                        onChange={(value) => setAttributes({ buttonPaddingV: value })}
+                                                                        min={5}
+                                                                        max={30}
+                                                                    />
+                                                                    <RangeControl
+                                                                        label="ჰორიზონტალური padding"
+                                                                        value={attributes.buttonPaddingH}
+                                                                        onChange={(value) => setAttributes({ buttonPaddingH: value })}
+                                                                        min={10}
+                                                                        max={50}
+                                                                    />
+                                                                </div>
+                                                                <RangeControl
+                                                                    label="ღილაკის მომრგვალება"
+                                                                    value={attributes.buttonBorderRadius}
+                                                                    onChange={(value) => setAttributes({ buttonBorderRadius: value })}
+                                                                    min={0}
+                                                                    max={50}
+                                                                />
+                                                            </div>
+                                                        </PanelBody>
+                                                    </>
+                                                );
+                                            }
+                                            if (styleTab.name === 'colors') {
+                                                return (
+                                                    <>
+                                                        <PanelBody title="ძირითადი ფერები" initialOpen={true}>
+                                                            <div className="color-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <p style={{ marginBottom: '8px', fontWeight: '500' }}>ფონის ფერი</p>
+                                                                <ColorPalette
+                                                                    value={attributes.backgroundColor}
+                                                                    onChange={(color) => setAttributes({ backgroundColor: color })}
+                                                                />
+                                                            </div>
+                                                        </PanelBody>
+
+                                                        <PanelBody title="ღილაკის ფერები" initialOpen={true}>
+                                                            <div className="button-color-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <p style={{ marginBottom: '8px', fontWeight: '500' }}>ღილაკის ფერი</p>
+                                                                <ColorPalette
+                                                                    value={attributes.buttonColor}
+                                                                    onChange={(color) => setAttributes({ buttonColor: color })}
+                                                                />
+                                                                
+                                                                <p style={{ marginBottom: '8px', fontWeight: '500' }}>ტექსტის ფერი</p>
+                                                                <ColorPalette
+                                                                    value={attributes.buttonTextColor}
+                                                                    onChange={(color) => setAttributes({ buttonTextColor: color })}
+                                                                />
+                                                            </div>
+                                                        </PanelBody>
+
+                                                        <PanelBody title="ტექსტის ფერები" initialOpen={true}>
+                                                            <div className="text-color-control" style={{ 
+                                                                padding: '12px',
+                                                                backgroundColor: '#f0f0f0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                <p style={{ marginBottom: '8px', fontWeight: '500' }}>სათაურის ფერი</p>
+                                                                <ColorPalette
+                                                                    value={attributes.headingColor}
+                                                                    onChange={(color) => setAttributes({ headingColor: color })}
+                                                                />
+                                                                
+                                                                <p style={{ marginBottom: '8px', fontWeight: '500' }}>აღწერის ფერი</p>
+                                                                <ColorPalette
+                                                                    value={attributes.descriptionColor}
+                                                                    onChange={(color) => setAttributes({ descriptionColor: color })}
+                                                                />
+                                                            </div>
+                                                        </PanelBody>
+                                                    </>
+                                                );
+                                            }
+                                            if (styleTab.name === 'typography') {
+                                                return (
+                                                    <PanelBody title="ღილაკის ტიპოგრაფია" initialOpen={true}>
+                                                        <div className="button-typography-control" style={{ 
+                                                            padding: '12px',
+                                                            backgroundColor: '#f0f0f0',
+                                                            borderRadius: '4px'
+                                                        }}>
+                                                            <RangeControl
+                                                                label="ტექსტის ზომა"
+                                                                value={attributes.buttonFontSize}
+                                                                onChange={(value) => setAttributes({ buttonFontSize: value })}
+                                                                min={12}
+                                                                max={24}
+                                                            />
+
+                                                            <RangeControl
+                                                                label="ტექსტის სისქე"
+                                                                value={attributes.buttonFontWeight}
+                                                                onChange={(value) => setAttributes({ buttonFontWeight: value })}
+                                                                min={300}
+                                                                max={900}
+                                                                step={100}
+                                                            />
+                                                        </div>
+                                                    </PanelBody>
+                                                );
+                                            }
                                         }}
                                     </TabPanel>
                                 );
                             }
-                            return null;
                         }}
                     </TabPanel>
                 </InspectorControls>
-                
                 <header {...blockProps}>
-                    <div className="max-w-[1440px] mx-auto py-6 px-4">
-                        <div className="flex justify-between items-center">
-                            <div className="flex-shrink-0">
-                                <img 
-                                    src={attributes.logo} 
-                                    alt="Logo" 
-                                    className="h-10 w-auto object-contain"
-                                />
-                            </div>
+                    <div className="header-container" style={{
+                        maxWidth: '1440px',
+                        margin: '0 auto',
+                        padding: '25px 0px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        {/* Logo Section */}
+                        <div className="logo-section">
+                            <img 
+                                src={attributes.logo} 
+                                alt="Logo" 
+                                style={{
+                                    height: `${attributes.logoHeight}px`,
+                                    width: attributes.logoWidth === 'auto' ? 'auto' : `${attributes.logoWidth}px`,
+                                    objectFit: 'contain'
+                                }} 
+                            />
+                        </div>
 
-                            <nav className="flex gap-8">
-                                {attributes.menuItems.map((item, index) => (
-                                    <RichText
-                                        key={index}
-                                        tagName="a"
-                                        value={item.text}
-                                        onChange={(text) => updateMenuItem(index, 'text', text)}
-                                        className="text-gray-800 hover:text-primary transition-colors duration-300"
-                                    />
-                                ))}
-                            </nav>
-
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <img 
-                                        src={attributes.languageFlag} 
-                                        alt="Language Flag" 
-                                        className="w-6 h-6 object-contain"
-                                    />
-                                    <RichText
-                                        tagName="span"
-                                        value={attributes.languageText}
-                                        onChange={(text) => setAttributes({ languageText: text })}
-                                        className="text-gray-800"
-                                    />
-                                </div>
-
+                        {/* Navigation Menu */}
+                        <nav className="main-navigation" style={{
+                            display: 'flex',
+                            gap: '2rem'
+                        }}>
+                            {attributes.menuItems.map((item, index) => (
                                 <RichText
+                                    key={index}
                                     tagName="a"
-                                    value={attributes.buttonText}
-                                    onChange={(text) => setAttributes({ buttonText: text })}
-                                    className="inline-flex items-center px-6 py-3 bg-[#00E640] text-white rounded hover:bg-[#00cc39] transition-colors duration-300 text-base font-semibold"
+                                    value={item.text}
+                                    onChange={(text) => updateMenuItem(index, 'text', text)}
+                                    style={{ color: '#333', textDecoration: 'none' }}
+                                />
+                            ))}
+                        </nav>
+
+                        {/* Right Section */}
+                        <div className="right-section" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '1rem'
+                        }}>
+                            {/* Language Selector */}
+                            <div className="language-selector" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <img 
+                                    src={attributes.languageFlag} 
+                                    alt="Language Flag" 
+                                    style={{
+                                        width: `${attributes.languageFlagSize}px`,
+                                        height: `${attributes.languageFlagSize}px`
+                                    }} 
+                                />
+                                <RichText
+                                    tagName="span"
+                                    value={attributes.languageText}
+                                    onChange={(text) => setAttributes({ languageText: text })}
                                 />
                             </div>
+
+                            {/* Demo Button */}
+                            <RichText
+                                tagName="a"
+                                value={attributes.buttonText}
+                                onChange={(text) => setAttributes({ buttonText: text })}
+                                style={{
+                                    backgroundColor: attributes.buttonColor,
+                                    color: attributes.buttonTextColor,
+                                    padding: `${attributes.buttonPaddingV}px ${attributes.buttonPaddingH}px`,
+                                    borderRadius: `${attributes.buttonBorderRadius}px`,
+                                    textDecoration: 'none',
+                                    fontWeight: attributes.buttonFontWeight,
+                                    fontSize: `${attributes.buttonFontSize}px`,
+                                    display: 'inline-block',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            />
                         </div>
                     </div>
                 </header>
             </>
         );
     },
-
     save: ({ attributes }) => {
         const blockProps = useBlockProps.save({
-            className: 'w-full bg-white'
+            style: {
+                backgroundColor: attributes.backgroundColor,
+            }
         });
 
         return (
             <header {...blockProps}>
-                <div className="max-w-[1440px] mx-auto py-6 px-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex-shrink-0">
-                            <a href="/" className="block">
-                                <img 
-                                    src={attributes.logo} 
-                                    alt="Logo" 
-                                    className="h-10 w-auto object-contain"
-                                />
-                            </a>
-                        </div>
+                <div className="header-container" style={{
+                    maxWidth: '1440px',
+                    margin: '0 auto',
+                    padding: '25px 0px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    <div className="logo-section">
+                        <a href="/">
+                            <img 
+                                src={attributes.logo} 
+                                alt="Logo" 
+                                style={{
+                                    height: `${attributes.logoHeight}px`,
+                                    width: attributes.logoWidth === 'auto' ? 'auto' : `${attributes.logoWidth}px`,
+                                    objectFit: 'contain'
+                                }} 
+                            />
+                        </a>
+                    </div>
 
-                        <nav className="flex gap-8">
-                            {attributes.menuItems.map((item, index) => (
-                                <a 
-                                    key={index} 
-                                    href={item.url} 
-                                    className="text-gray-800 hover:text-primary transition-colors duration-300"
-                                >
-                                    {item.text}
-                                </a>
-                            ))}
-                        </nav>
-
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <img 
-                                    src={attributes.languageFlag} 
-                                    alt="Language Flag" 
-                                    className="w-6 h-6 object-contain"
-                                />
-                                <span className="text-gray-800">{attributes.languageText}</span>
-                            </div>
-
+                    <nav className="main-navigation" style={{
+                        display: 'flex',
+                        gap: '2rem'
+                    }}>
+                        {attributes.menuItems.map((item, index) => (
                             <a 
-                                href={attributes.buttonUrl}
-                                className="inline-flex items-center px-6 py-3 bg-[#00E640] text-white rounded hover:bg-[#00cc39] transition-colors duration-300 text-base font-semibold"
+                                key={index} 
+                                href={item.url} 
+                                style={{ color: '#333', textDecoration: 'none' }}
                             >
-                                {attributes.buttonText}
+                                {item.text}
                             </a>
+                        ))}
+                    </nav>
+
+                    <div className="right-section" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem'
+                    }}>
+                        <div className="language-selector" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem'
+                        }}>
+                            <img 
+                                src={attributes.languageFlag} 
+                                alt="Language Flag" 
+                                style={{
+                                    width: `${attributes.languageFlagSize}px`,
+                                    height: `${attributes.languageFlagSize}px`
+                                }} 
+                            />
+                            <span>{attributes.languageText}</span>
                         </div>
+
+                        <a 
+                            href={attributes.buttonUrl}
+                            className="demo-button" 
+                            style={{
+                                backgroundColor: attributes.buttonColor,
+                                color: attributes.buttonTextColor,
+                                padding: `${attributes.buttonPaddingV}px ${attributes.buttonPaddingH}px`,
+                                borderRadius: `${attributes.buttonBorderRadius}px`,
+                                textDecoration: 'none',
+                                fontWeight: attributes.buttonFontWeight,
+                                fontSize: `${attributes.buttonFontSize}px`,
+                                display: 'inline-block',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            {attributes.buttonText}
+                        </a>
                     </div>
                 </div>
             </header>

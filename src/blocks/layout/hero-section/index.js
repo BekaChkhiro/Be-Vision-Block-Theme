@@ -29,6 +29,54 @@ registerBlockType('bevision/hero-section', {
             type: 'string',
             default: 'Request a demo'
         },
+        backgroundColor: {
+            type: 'string',
+            default: '#6B46C1'
+        },
+        accentColor: {
+            type: 'string',
+            default: '#4ADE80'
+        },
+        textColor: {
+            type: 'string',
+            default: '#ffffff'
+        },
+        subtitleColor: {
+            type: 'string',
+            default: '#2FCA02'
+        },
+        titleColor: {
+            type: 'string',
+            default: '#221A4C'
+        },
+        descriptionColor: {
+            type: 'string',
+            default: '#8399AF'
+        },
+        buttonBgColor: {
+            type: 'string',
+            default: '#4ADE80'
+        },
+        buttonTextColor: {
+            type: 'string',
+            default: '#1A1A1A'
+        },
+        subtitleFontSize: {
+            type: 'number',
+            default: 24
+        },
+        titleFontSize: {
+            type: 'number',
+            default: 50
+        },
+        descriptionFontSize: {
+            type: 'number',
+            default: 18
+        },
+        buttonFontSize: {
+            type: 'number',
+            default: 18
+        },
         backgroundImage: {
             type: 'object',
             default: null
@@ -37,7 +85,12 @@ registerBlockType('bevision/hero-section', {
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps();
         const { 
-            title, subtitle, description, buttonText, backgroundImage
+            title, subtitle, description, buttonText,
+            backgroundColor, accentColor, textColor,
+            subtitleColor, titleColor, descriptionColor,
+            buttonBgColor, buttonTextColor,
+            subtitleFontSize, titleFontSize, descriptionFontSize,
+            buttonFontSize, backgroundImage
         } = attributes;
 
         return (
@@ -51,96 +104,240 @@ registerBlockType('bevision/hero-section', {
                                 name: 'content',
                                 title: 'კონტენტი',
                                 className: 'tab-content'
+                            },
+                            {
+                                name: 'style',
+                                title: 'სტილი',
+                                className: 'tab-style'
                             }
                         ]}
                     >
-                        {(tab) => (
-                            <PanelBody>
-                                <TextControl
-                                    label="Subtitle"
-                                    value={subtitle}
-                                    onChange={(value) => setAttributes({ subtitle: value })}
-                                />
-                                <TextControl
-                                    label="Title"
-                                    value={title}
-                                    onChange={(value) => setAttributes({ title: value })}
-                                />
-                                <TextControl
-                                    label="Description"
-                                    value={description}
-                                    onChange={(value) => setAttributes({ description: value })}
-                                />
-                                <TextControl
-                                    label="Button Text"
-                                    value={buttonText}
-                                    onChange={(value) => setAttributes({ buttonText: value })}
-                                />
-                                <MediaUploadCheck>
-                                    <MediaUpload
-                                        onSelect={(media) => setAttributes({ backgroundImage: media })}
-                                        allowedTypes={['image']}
-                                        value={backgroundImage ? backgroundImage.id : ''}
-                                        render={({ open }) => (
+                        {(tab) => {
+                            if (tab.name === 'content') {
+                                return (
+                                    <PanelBody>
+                                        <TextControl
+                                            label="Subtitle"
+                                            value={subtitle}
+                                            onChange={(value) => setAttributes({ subtitle: value })}
+                                        />
+                                        <TextControl
+                                            label="Title"
+                                            value={title}
+                                            onChange={(value) => setAttributes({ title: value })}
+                                        />
+                                        <TextControl
+                                            label="Description"
+                                            value={description}
+                                            onChange={(value) => setAttributes({ description: value })}
+                                        />
+                                        <TextControl
+                                            label="Button Text"
+                                            value={buttonText}
+                                            onChange={(value) => setAttributes({ buttonText: value })}
+                                        />
+                                        <MediaUploadCheck>
+                                            <MediaUpload
+                                                onSelect={(media) => setAttributes({ backgroundImage: media })}
+                                                allowedTypes={['image']}
+                                                value={backgroundImage ? backgroundImage.id : ''}
+                                                render={({ open }) => (
+                                                    <Button
+                                                        onClick={open}
+                                                        variant="secondary"
+                                                        style={{ marginBottom: '10px', width: '100%' }}
+                                                    >
+                                                        {backgroundImage ? 'Change Background Image' : 'Add Background Image'}
+                                                    </Button>
+                                                )}
+                                            />
+                                        </MediaUploadCheck>
+                                        {backgroundImage && (
                                             <Button
-                                                onClick={open}
-                                                variant="secondary"
-                                                className="w-full mb-2.5"
+                                                onClick={() => setAttributes({ backgroundImage: null })}
+                                                variant="link"
+                                                isDestructive
                                             >
-                                                {backgroundImage ? 'Change Background Image' : 'Add Background Image'}
+                                                Remove Background Image
                                             </Button>
                                         )}
-                                    />
-                                </MediaUploadCheck>
-                                {backgroundImage && (
-                                    <Button
-                                        onClick={() => setAttributes({ backgroundImage: null })}
-                                        variant="link"
-                                        isDestructive
-                                    >
-                                        Remove Background Image
-                                    </Button>
-                                )}
-                            </PanelBody>
-                        )}
+                                    </PanelBody>
+                                );
+                            }
+                            return (
+                                <>
+                                    <PanelBody title="Colors">
+                                        <div>
+                                            <p>Subtitle Color</p>
+                                            <ColorPalette
+                                                value={subtitleColor}
+                                                onChange={(color) => setAttributes({ subtitleColor: color })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <p>Title Color</p>
+                                            <ColorPalette
+                                                value={titleColor}
+                                                onChange={(color) => setAttributes({ titleColor: color })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <p>Description Color</p>
+                                            <ColorPalette
+                                                value={descriptionColor}
+                                                onChange={(color) => setAttributes({ descriptionColor: color })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <p>Button Background Color</p>
+                                            <ColorPalette
+                                                value={buttonBgColor}
+                                                onChange={(color) => setAttributes({ buttonBgColor: color })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <p>Button Text Color</p>
+                                            <ColorPalette
+                                                value={buttonTextColor}
+                                                onChange={(color) => setAttributes({ buttonTextColor: color })}
+                                            />
+                                        </div>
+                                    </PanelBody>
+                                    <PanelBody title="Typography" initialOpen={false}>
+                                        <RangeControl
+                                            label="Subtitle Font Size"
+                                            value={subtitleFontSize}
+                                            onChange={(value) => setAttributes({ subtitleFontSize: value })}
+                                            min={12}
+                                            max={50}
+                                        />
+                                        <RangeControl
+                                            label="Title Font Size"
+                                            value={titleFontSize}
+                                            onChange={(value) => setAttributes({ titleFontSize: value })}
+                                            min={20}
+                                            max={100}
+                                        />
+                                        <RangeControl
+                                            label="Description Font Size"
+                                            value={descriptionFontSize}
+                                            onChange={(value) => setAttributes({ descriptionFontSize: value })}
+                                            min={12}
+                                            max={30}
+                                        />
+                                        <RangeControl
+                                            label="Button Font Size"
+                                            value={buttonFontSize}
+                                            onChange={(value) => setAttributes({ buttonFontSize: value })}
+                                            min={12}
+                                            max={30}
+                                        />
+                                    </PanelBody>
+                                </>
+                            );
+                        }}
                     </TabPanel>
                 </InspectorControls>
-                <div {...blockProps} className="relative overflow-hidden max-w-[1440px] mx-auto">
-                    <div className="mx-auto p-[60px] flex justify-between items-center gap-[43px] rounded-[20px] bg-[rgba(102,83,198,0.05)] relative">
+                <div {...blockProps} style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    maxWidth: '1440px',
+                    margin: '0 auto'
+                }}>
+                    <div className="hero-content" style={{
+                        margin: '0 auto',
+                        padding: '60px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '43px',
+                        borderRadius: '20px',
+                        background: 'rgba(102, 83, 198, 0.05)',
+                        position: 'relative'
+                    }}>
                         {backgroundImage && (
-                            <div className="absolute right-0 top-0 bottom-0 w-[40%] bg-cover bg-center opacity-70"
-                                style={{
-                                    backgroundImage: `url(${backgroundImage.url})`
-                                }}
-                            />
+                            <div style={{
+                                position: 'absolute',
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                width: '40%',
+                                backgroundImage: `url(${backgroundImage.url})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                opacity: 0.7
+                            }} />
                         )}
-                        <div className="flex-1 max-w-[40%]">
+                        <div className="hero-text" style={{
+                            flex: '1',
+                            maxWidth: '40%'
+                        }}>
                             <RichText
                                 tagName="span"
-                                className="subtitle block mb-2.5 text-[24px] font-[750] text-[#2FCA02]"
+                                className="subtitle"
                                 value={subtitle}
                                 onChange={(content) => setAttributes({ subtitle: content })}
                                 placeholder="Lead with Data"
+                                style={{ 
+                                    color: subtitleColor,
+                                    fontSize: `${subtitleFontSize}px`,
+                                    fontStyle: 'normal',
+                                    fontWeight: 750,
+                                    lineHeight: 'normal',
+                                    display: 'block',
+                                    marginBottom: '10px'
+                                }}
                             />
                             <RichText
                                 tagName="h1"
-                                className="text-[50px] font-[750] leading-[50px] mb-10 mt-0 text-[#221A4C]"
                                 value={title}
                                 onChange={(content) => setAttributes({ title: content })}
                                 placeholder="Start analyzing your data today"
+                                style={{ 
+                                    color: titleColor,
+                                    fontSize: `${titleFontSize}px`,
+                                    fontStyle: 'normal',
+                                    fontWeight: 750,
+                                    lineHeight: '50px',
+                                    marginBottom: '40px',
+                                    marginTop: '0px'
+                                }}
                             />
                             <RichText
                                 tagName="p"
-                                className="text-[18px] font-normal mb-10 text-[#8399AF]"
                                 value={description}
                                 onChange={(content) => setAttributes({ description: content })}
                                 placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                style={{ 
+                                    color: descriptionColor,
+                                    fontSize: `${descriptionFontSize}px`,
+                                    fontStyle: 'normal',
+                                    fontWeight: 400,
+                                    lineHeight: 'normal',
+                                    marginBottom: '40px'
+                                }}
                             />
                             <RichText
                                 tagName="button"
-                                className="flex h-[50px] px-10 py-2.5 justify-center items-center gap-2.5 rounded-lg bg-[#4ADE80] text-[#1A1A1A] text-[18px] font-semibold cursor-pointer shadow-[0_4px_6px_rgba(74,222,128,0.2)] hover:bg-[#00cc39] transition-colors duration-300"
                                 value={buttonText}
                                 onChange={(content) => setAttributes({ buttonText: content })}
+                                style={{
+                                    backgroundColor: buttonBgColor,
+                                    color: buttonTextColor,
+                                    display: 'flex',
+                                    height: '50px',
+                                    padding: '10px 40px',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    flexShrink: 0,
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: `${buttonFontSize}px`,
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 6px rgba(74, 222, 128, 0.2)'
+                                }}
                             />
                         </div>
                     </div>
@@ -150,31 +347,98 @@ registerBlockType('bevision/hero-section', {
     },
     save: ({ attributes }) => {
         const { 
-            title, subtitle, description, buttonText, backgroundImage
+            title, subtitle, description, buttonText,
+            backgroundColor, accentColor, textColor,
+            subtitleColor, titleColor, descriptionColor,
+            buttonBgColor, buttonTextColor,
+            subtitleFontSize, titleFontSize, descriptionFontSize,
+            buttonFontSize, backgroundImage
         } = attributes;
         
         return (
-            <div className="relative overflow-hidden max-w-[1440px] mx-auto">
-                <div className="mx-auto p-[60px] flex justify-between items-center gap-[43px] rounded-[20px] bg-[rgba(102,83,198,0.05)] relative">
+            <div style={{
+                position: 'relative',
+                overflow: 'hidden',
+                maxWidth: '1440px',
+                margin: '0 auto'
+            }}>
+                <div className="hero-content" style={{
+                    margin: '0 auto',
+                    padding: '60px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '43px',
+                    borderRadius: '20px',
+                    background: 'rgba(102, 83, 198, 0.05)',
+                    position: 'relative'
+                }}>
                     {backgroundImage && (
-                        <div 
-                            className="absolute right-0 top-0 bottom-0 w-[40%] bg-cover bg-center opacity-70"
-                            style={{
-                                backgroundImage: `url(${backgroundImage.url})`
-                            }}
-                        />
+                        <div style={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: '40%',
+                            backgroundImage: `url(${backgroundImage.url})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            opacity: 0.7
+                        }} />
                     )}
-                    <div className="flex-1 max-w-[40%]">
-                        <span className="subtitle block mb-2.5 text-[24px] font-[750] text-[#2FCA02]">
+                    <div className="hero-text" style={{
+                        flex: '1',
+                        maxWidth: '40%'
+                    }}>
+                        <span className="subtitle" style={{ 
+                            color: subtitleColor,
+                            fontSize: `${subtitleFontSize}px`,
+                            fontStyle: 'normal',
+                            fontWeight: 750,
+                            lineHeight: 'normal',
+                            display: 'block',
+                            marginBottom: '10px'
+                        }}>
                             {subtitle}
                         </span>
-                        <h1 className="text-[50px] font-[750] leading-[50px] mb-10 mt-0 text-[#221A4C]">
+                        <h1 style={{ 
+                            color: titleColor,
+                            fontSize: `${titleFontSize}px`,
+                            fontStyle: 'normal',
+                            fontWeight: 750,
+                            lineHeight: '50px',
+                            marginBottom: '40px',
+                            marginTop: '0px'
+                        }}>
                             {title}
                         </h1>
-                        <p className="text-[18px] font-normal mb-10 text-[#8399AF]">
+                        <p style={{ 
+                            color: descriptionColor,
+                            fontSize: `${descriptionFontSize}px`,
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            lineHeight: 'normal',
+                            marginBottom: '40px'
+                        }}>
                             {description}
                         </p>
-                        <button className="flex h-[50px] px-10 py-2.5 justify-center items-center gap-2.5 rounded-lg bg-[#4ADE80] text-[#1A1A1A] text-[18px] font-semibold cursor-pointer shadow-[0_4px_6px_rgba(74,222,128,0.2)] hover:bg-[#00cc39] transition-colors duration-300">
+                        <button style={{
+                            backgroundColor: buttonBgColor,
+                            color: buttonTextColor,
+                            display: 'flex',
+                            height: '50px',
+                            padding: '10px 40px',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '10px',
+                            flexShrink: 0,
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: `${buttonFontSize}px`,
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 6px rgba(74, 222, 128, 0.2)'
+                        }}>
                             {buttonText}
                         </button>
                     </div>
