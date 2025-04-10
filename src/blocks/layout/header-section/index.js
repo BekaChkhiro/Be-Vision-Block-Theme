@@ -558,7 +558,14 @@ registerBlockType('bevision/header-section', {
                         </a>
                     </div>
 
-                    <nav className="main-navigation" style={{
+                   <div style={
+                    {
+                        display: 'flex',
+                        gap: '15px',
+                        alignItems: 'center',
+                    }
+                   }>
+                   <nav className="main-navigation" style={{
                         display: 'flex',
                         gap: '2rem'
                     }}>
@@ -612,6 +619,7 @@ registerBlockType('bevision/header-section', {
                             {attributes.buttonText}
                         </a>
                     </div>
+                   </div>
                 </div>
             </header>
         );

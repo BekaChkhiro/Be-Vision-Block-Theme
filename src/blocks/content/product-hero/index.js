@@ -10,7 +10,7 @@ const blockStyle = `
     }
 
     .product-hero-section .container {
-        max-width: 1320px;
+        max-width: 1440px;
         margin: 0 auto;
         padding: 0 20px;
         display: flex;

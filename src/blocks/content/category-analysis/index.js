@@ -9,7 +9,7 @@ const blockStyle = `
     }
 
     .category-analysis .container {
-        max-width: 1320px;
+        max-width: 1440px;
         margin: 0 auto;
         padding: 0 20px;
         display: flex;
@@ -84,7 +84,7 @@ const blockStyle = `
 
     .category-analysis__title {
         color: var(--Dark-Blue, #221A4C);
-        font-size: 42px;
+        font-size: 24px;
         font-weight: 700;
         line-height: 1.2;
         margin-bottom: 1.5rem;
