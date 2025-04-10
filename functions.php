@@ -24,6 +24,42 @@ add_action('after_setup_theme', function() {
     add_action('admin_enqueue_scripts', [$fonts, 'register_fonts']);
 });
 
+// Posts tab block render callback
+function bevision_render_posts_tab($attributes) {
+    wp_enqueue_script(
+        'bevision-posts-tab',
+        get_template_directory_uri() . '/src/blocks/content/posts-tab/frontend.js',
+        array(),
+        filemtime(get_template_directory() . '/src/blocks/content/posts-tab/frontend.js'),
+        true
+    );
+
+    wp_localize_script('bevision-posts-tab', 'bevisionSettings', array(
+        'restUrl' => esc_url_raw(rest_url()),
+        'nonce' => wp_create_nonce('wp_rest'),
+        'themeUrl' => get_template_directory_uri()
+    ));
+
+    $wrapper_attributes = get_block_wrapper_attributes();
+    
+    return sprintf(
+        '<div %1$s>
+            <div class="blog-posts-filter" data-posts-per-page="%2$s" data-max-posts="%3$s">
+                <div class="posts-tabs-container"></div>
+                <div class="posts-grid-container">
+                    <div class="loading-indicator" style="display: none">პოსტების ჩატვირთვა...</div>
+                </div>
+                <div class="load-more-container">
+                    <button class="load-more-button">მეტის ნახვა</button>
+                </div>
+            </div>
+        </div>',
+        $wrapper_attributes,
+        isset($attributes['postsPerPage']) ? esc_attr($attributes['postsPerPage']) : '4',
+        isset($attributes['maxPosts']) ? esc_attr($attributes['maxPosts']) : '12'
+    );
+}
+
 function bevision_enqueue_block_editor_assets() {
     $asset_file = include( get_template_directory() . '/build/index.asset.php' );
     

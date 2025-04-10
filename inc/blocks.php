@@ -15,5 +15,8 @@ function bevision_register_blocks() {
     register_block_type(get_template_directory() . '/src/blocks/content/product-hero');
     register_block_type(get_template_directory() . '/src/blocks/content/dashboard-features');
     register_block_type(get_template_directory() . '/src/blocks/content/category-analysis');
+    register_block_type(get_template_directory() . '/src/blocks/content/posts-tab', array(
+        'render_callback' => 'bevision_render_posts_tab'
+    ));
 }
 add_action('init', 'bevision_register_blocks');
