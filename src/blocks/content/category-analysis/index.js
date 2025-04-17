@@ -3,15 +3,10 @@ import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } f
 import { Button } from '@wordpress/components';
 
 const blockStyle = `
-    .category-analysis {
-        padding: 5rem 0;
-        background-color: #fafafa;
-    }
 
     .category-analysis .container {
         max-width: 1440px;
         margin: 0 auto;
-        padding: 0 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -19,33 +14,11 @@ const blockStyle = `
     }
 
     .category-analysis__image {
-        flex: 0 0 45%;
-        min-height: 300px;
-        display: flex;
+        diosplay: flex;
         align-items: center;
-        justify-content: center;
-        position: relative;
+        justify-content: start;
     }
 
-    .category-analysis__image-wrapper {
-        position: relative;
-        background-color: #fff;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-        width: 100%;
-    }
-
-    .category-analysis__image-wrapper:before {
-        content: '';
-        position: absolute;
-        top: -20px;
-        left: -20px;
-        right: -20px;
-        bottom: -20px;
-        background-color: #f0eeff;
-        border-radius: 30px;
-        z-index: -1;
     }
 
     .category-analysis__image img {
@@ -160,7 +133,6 @@ registerBlockType('bevision/category-analysis', {
                 <div {...blockProps}>
                     <div className="container">
                         <div className="category-analysis__image">
-                            <div className="category-analysis__image-wrapper">
                                 <MediaUploadCheck>
                                     <MediaUpload
                                         onSelect={onSelectImage}
@@ -185,7 +157,7 @@ registerBlockType('bevision/category-analysis', {
                                         )}
                                     />
                                 </MediaUploadCheck>
-                            </div>
+                            
                         </div>
                         <div className="category-analysis__content">
                             <div className="category-analysis__title">

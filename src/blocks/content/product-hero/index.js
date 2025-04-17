@@ -3,20 +3,16 @@ import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } f
 import { Button } from '@wordpress/components';
 
 const blockStyle = `
-    .product-hero-section {
-        background-color: #f8f7ff;
-        padding: 5rem 0;
-        overflow: hidden;
-    }
-
     .product-hero-section .container {
-        max-width: 1440px;
+        max-width: 1320px;
+        background-color: #f8f7ff;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 60px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 4rem;
+        border-radius: 20px;
     }
 
     .product-hero-section__content {
@@ -24,11 +20,12 @@ const blockStyle = `
     }
 
     .product-hero-section__title {
-        color: var(--Dark-Blue, #221A4C);
-        font-size: 48px;
-        font-weight: 700;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
+        color: #221A4C;
+        font-size: 50px;
+        font-weight: 750;
+        line-height: 50px;
+        font-style: normal;
+        margin: 0px 0px 40px;
     }
 
     .product-hero-section__description {
@@ -36,7 +33,7 @@ const blockStyle = `
         font-size: 18px;
         font-weight: 400;
         line-height: 1.5;
-        margin-bottom: 2rem;
+        margin: 0px 0px 40px;
     }
 
     .product-hero-section__cta {

@@ -17,3 +17,4 @@ import './blocks/content/dashboard-features';
 import './blocks/content/category-analysis';
 import './blocks/content/posts-tab';
 import './blocks/content/contact-us';
+import './blocks/content/cross-sell-basket';

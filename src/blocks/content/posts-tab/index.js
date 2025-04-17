@@ -350,7 +350,7 @@ registerBlockType('bevision/blog-posts-filter', {
     },
 
     save: ({ attributes }) => {
-        const { postsPerPage, maxPosts } = attributes;
+        const { postsPerPage, maxPosts, categories, currentTab } = attributes;
         const blockProps = useBlockProps.save();
 
         return (
@@ -358,15 +358,19 @@ registerBlockType('bevision/blog-posts-filter', {
                 <div className="blog-posts-filter" 
                     data-posts-per-page={postsPerPage}
                     data-max-posts={maxPosts}
+                    data-categories={JSON.stringify(categories)}
+                    data-current-tab={currentTab}
                 >
                     <div className="posts-tabs-container">
-                        {/* Tabs will be dynamically loaded */}
+                        {/* თაბები დინამიურად ჩაიტვირთება */}
                     </div>
                     
                     <div className="posts-grid-container">
-                        <div className="loading-indicator" style={{ display: 'none' }}>
-                            პოსტების ჩატვირთვა...
-                        </div>
+                        {/* პოსტების grid კონტეინერი */}
+                    </div>
+                    
+                    <div className="loading-indicator" style={{ display: 'none' }}>
+                        პოსტების ჩატვირთვა...
                     </div>
                     
                     <div className="load-more-container">
