@@ -1,8 +1,10 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { PanelBody, Button, TextControl, TabPanel } from '@wordpress/components';
+import TabNavigation from './components/TabNavigation';
+import TabContent from './components/TabContent';
 
-const blockStyle = {
+const styles = {
     productsSection: {
         padding: '70px 0px 120px',
         color: '#333',
@@ -29,7 +31,6 @@ const blockStyle = {
     sectionTitle: {
         color: '#6653C6',
         textAlign: 'center',
-        fontFamily: '"Helvetica Neue LT GEO"',
         fontSize: '14px',
         fontStyle: 'normal',
         fontWeight: 750,
@@ -44,127 +45,6 @@ const blockStyle = {
         fontWeight: 750,
         lineHeight: 'normal',
         margin: '0px 0px 60px'
-    },
-    navigation: {
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '10px',
-        listStyle: 'none',
-        padding: 0,
-        marginBottom: '60px'
-    },
-    navItem: {
-        color: '#221A4C',
-        fontSize: '20px',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        padding: '12px 24px',
-        borderRadius: '5px',
-        fontWeight: '700',
-        background: '#fff',
-        ':hover': {
-            color: '#6653C6',
-            background: '#ecf0f8',
-        }
-    },
-    navItemActive: {
-        color: '#6653C6',
-        background: '#ecf0f8',
-        borderRadius: '5px'
-    },
-    productsGrid: {
-        display: 'grid',
-        gridTemplateColumns: '55% 45%',
-        gap: '48px',
-        alignItems: 'center'
-    },
-    productItem: {
-        padding: '0'
-    },
-    subtitle: {
-        color: '#7B61FF',
-        fontSize: '16px',
-        fontWeight: '750',
-        margin: '0px 0px 5px'
-    },
-    title: {
-        color: '#333',
-        fontSize: '24px',
-        fontWeight: '600',
-        margin: '0px 0px 40px'
-    },
-    featuresList: {
-        listStyle: 'none',
-        padding: 0,
-        marginBottom: '32px'
-    },
-    featureItem: {
-        position: 'relative',
-        paddingLeft: '28px',
-        marginBottom: '20px',
-        color: '#333',
-        fontSize: '18px',
-        fontWeight: '400',
-    },
-    checkmark: {
-        position: 'absolute',
-        left: 0,
-        top: '2px',
-        color: '#4CD964',
-        fontSize: '18px'
-    },
-    buttonGroup: {
-        display: 'flex',
-        gap: '16px',
-        marginTop: '32px'
-    },
-    button: {
-        padding: '14px 28px',
-        border: 'none',
-        borderRadius: '8px',
-        fontSize: '16px',
-        fontWeight: '500',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease'
-    },
-    primaryButton: {
-        backgroundColor: '#6653C6',
-        color: '#fff',
-        padding: '16.5px 40px',
-        fontSize: '16px',
-        '&:hover': {
-            backgroundColor: '#6B4FFF'
-        }
-    },
-    secondaryButton: {
-        backgroundColor: '#2FCA02',
-        color: '#fff',
-        padding: '16.5px 40px',
-        fontSize: '16px',
-        '&:hover': {
-            backgroundColor: '#3CC954'
-        }
-    },
-    imageContainer: {
-        width: '100%',
-        height: '400px',
-        borderRadius: '16px',
-        overflow: 'hidden'
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover'
-    },
-    uploadButton: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        border: '2px dashed rgba(123, 97, 255, 0.3)',
-        borderRadius: '16px'
     }
 };
 
@@ -214,51 +94,48 @@ registerBlockType('bevision/products', {
             setAttributes({ tabs: [...tabs, newTab] });
         };
 
-        const duplicateTab = (tabIndex) => {
-            const sourceTab = tabs[tabIndex];
-            const newTab = {
-                ...sourceTab,
-                id: `tab${tabs.length + 1}`,
-                name: `${sourceTab.name} (Copy)`
-            };
-            const newTabs = [...tabs];
-            newTabs.splice(tabIndex + 1, 0, newTab);
-            setAttributes({ 
-                tabs: newTabs,
-                activeTab: newTab.id
+        const updateTab = (tabId, field, value) => {
+            const newTabs = tabs.map(tab => 
+                tab.id === tabId ? { ...tab, [field]: value } : tab
+            );
+            setAttributes({ tabs: newTabs });
+        };
+
+        const updateFeature = (tabId, featureIndex, value) => {
+            const newTabs = tabs.map(tab => {
+                if (tab.id === tabId) {
+                    const newFeatures = [...tab.features];
+                    newFeatures[featureIndex] = value;
+                    return { ...tab, features: newFeatures };
+                }
+                return tab;
             });
-        };
-
-        const updateTab = (index, field, value) => {
-            const newTabs = [...tabs];
-            newTabs[index] = { ...newTabs[index], [field]: value };
             setAttributes({ tabs: newTabs });
         };
 
-        const updateFeature = (tabIndex, featureIndex, value) => {
-            const newTabs = [...tabs];
-            newTabs[tabIndex].features[featureIndex] = value;
+        const addFeature = (tabId) => {
+            const newTabs = tabs.map(tab => {
+                if (tab.id === tabId) {
+                    return {
+                        ...tab,
+                        features: [...tab.features, 'New Feature']
+                    };
+                }
+                return tab;
+            });
             setAttributes({ tabs: newTabs });
         };
 
-        const addFeature = (tabIndex) => {
-            const newTabs = [...tabs];
-            newTabs[tabIndex].features.push('New Feature');
+        const removeFeature = (tabId, featureIndex) => {
+            const newTabs = tabs.map(tab => {
+                if (tab.id === tabId) {
+                    const newFeatures = [...tab.features];
+                    newFeatures.splice(featureIndex, 1);
+                    return { ...tab, features: newFeatures };
+                }
+                return tab;
+            });
             setAttributes({ tabs: newTabs });
-        };
-
-        const removeFeature = (tabIndex, featureIndex) => {
-            const newTabs = [...tabs];
-            newTabs[tabIndex].features.splice(featureIndex, 1);
-            setAttributes({ tabs: newTabs });
-        };
-
-        const removeTab = (index) => {
-            const newTabs = tabs.filter((_, i) => i !== index);
-            setAttributes({ tabs: newTabs });
-            if (tabs[index].id === activeTab && newTabs.length > 0) {
-                setAttributes({ activeTab: newTabs[0].id });
-            }
         };
 
         return (
@@ -660,62 +537,30 @@ registerBlockType('bevision/products', {
                 </InspectorControls>
 
                 <div {...blockProps}>
-                    <div style={blockStyle.productsSection}>
-                        <div style={blockStyle.glowEffect}></div>
-                        <div style={blockStyle.container}>
-                            <h2 style={blockStyle.sectionTitle}>PRODUCTS</h2>
-                            <h3 style={blockStyle.sectionSubtitle}>What we offer</h3>
+                    <div style={styles.productsSection}>
+                        <div style={styles.glowEffect}></div>
+                        <div style={styles.container}>
+                            <h2 style={styles.sectionTitle}>PRODUCTS</h2>
+                            <h3 style={styles.sectionSubtitle}>What we offer</h3>
                             
-                            <ul style={blockStyle.navigation}>
-                                {tabs.map((tab) => (
-                                    <li
-                                        key={tab.id}
-                                        onClick={() => setAttributes({ activeTab: tab.id })}
-                                        style={{
-                                            ...blockStyle.navItem,
-                                            ...(activeTab === tab.id ? blockStyle.navItemActive : {})
-                                        }}
-                                    >
-                                        {tab.name}
-                                    </li>
-                                ))}
-                            </ul>
+                            <TabNavigation
+                                tabs={tabs}
+                                activeTab={activeTab}
+                                onTabChange={(tabId) => setAttributes({ activeTab: tabId })}
+                            />
 
                             {tabs.map((tab) => (
                                 <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
-                                    <div style={blockStyle.productsGrid}>
-                                        <div style={blockStyle.productItem}>
-                                            <h4 style={blockStyle.subtitle}>{tab.subtitle}</h4>
-                                            <h3 style={blockStyle.title}>{tab.title}</h3>
-                                            <ul style={blockStyle.featuresList}>
-                                                {tab.features.map((feature, index) => (
-                                                    <li key={index} style={blockStyle.featureItem}>
-                                                        <span style={blockStyle.checkmark}>✓</span>
-                                                        {feature}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <div style={blockStyle.buttonGroup}>
-                                                <button style={{...blockStyle.button, ...blockStyle.primaryButton}}>
-                                                    Learn more
-                                                </button>
-                                                <button style={{...blockStyle.button, ...blockStyle.secondaryButton}}>
-                                                    Book a call
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div style={blockStyle.imageContainer}>
-                                            {tab.image && (
-                                                <div style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    background: `url(${tab.image})`,
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition: 'center'
-                                                }} />
-                                            )}
-                                        </div>
-                                    </div>
+                                    <TabContent
+                                        tab={tab}
+                                        isEditing={true}
+                                        onUpdateField={(field, value) => updateTab(tab.id, field, value)}
+                                        onUpdateFeature={(index, value) => updateFeature(tab.id, index, value)}
+                                        onAddFeature={() => addFeature(tab.id)}
+                                        onRemoveFeature={(index) => removeFeature(tab.id, index)}
+                                        onSelectImage={(url) => updateTab(tab.id, 'image', url)}
+                                        onRemoveImage={() => updateTab(tab.id, 'image', '')}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -731,69 +576,26 @@ registerBlockType('bevision/products', {
 
         return (
             <div {...blockProps}>
-                <div style={blockStyle.productsSection}>
-                    <div style={blockStyle.glowEffect}></div>
-                    <div style={blockStyle.container}>
-                        <h2 style={blockStyle.sectionTitle}>PRODUCTS</h2>
-                        <h3 style={blockStyle.sectionSubtitle}>What we offer</h3>
+                <div style={styles.productsSection}>
+                    <div style={styles.glowEffect}></div>
+                    <div style={styles.container}>
+                        <h2 style={styles.sectionTitle}>PRODUCTS</h2>
+                        <h3 style={styles.sectionSubtitle}>What we offer</h3>
                         
-                        <ul style={blockStyle.navigation} className="products-tabs-nav">
-                            {tabs.map((tab) => (
-                                <li
-                                    key={tab.id}
-                                    style={{
-                                        ...blockStyle.navItem,
-                                        ...(activeTab === tab.id ? blockStyle.navItemActive : {})
-                                    }}
-                                    data-tab={tab.id}
-                                    className="products-tab-item"
-                                >
-                                    {tab.name}
-                                </li>
-                            ))}
-                        </ul>
+                        <TabNavigation
+                            tabs={tabs}
+                            activeTab={activeTab}
+                        />
 
                         <div className="products-tabs-content">
                             {tabs.map((tab) => (
                                 <div 
-                                    key={tab.id} 
-                                    style={{ display: activeTab === tab.id ? 'block' : 'none' }} 
+                                    key={tab.id}
+                                    style={{ display: activeTab === tab.id ? 'block' : 'none' }}
                                     data-tab-content={tab.id}
                                     className="products-tab-content"
                                 >
-                                    <div style={blockStyle.productsGrid}>
-                                        <div style={blockStyle.productItem}>
-                                            <h4 style={blockStyle.subtitle}>{tab.subtitle}</h4>
-                                            <h3 style={blockStyle.title}>{tab.title}</h3>
-                                            <ul style={blockStyle.featuresList}>
-                                                {tab.features.map((feature, index) => (
-                                                    <li key={index} style={blockStyle.featureItem}>
-                                                        <span style={blockStyle.checkmark}>✓</span>
-                                                        {feature}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <div style={blockStyle.buttonGroup}>
-                                                <button style={{...blockStyle.button, ...blockStyle.primaryButton}}>
-                                                    Learn more
-                                                </button>
-                                                <button style={{...blockStyle.button, ...blockStyle.secondaryButton}}>
-                                                    Book a call
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div style={blockStyle.imageContainer}>
-                                            {tab.image && (
-                                                <div style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    background: `url(${tab.image})`,
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition: 'center'
-                                                }} />
-                                            )}
-                                        </div>
-                                    </div>
+                                    <TabContent tab={tab} />
                                 </div>
                             ))}
                         </div>
@@ -808,13 +610,11 @@ registerBlockType('bevision/products', {
                                     const tabItems = tabsNav.querySelectorAll('.products-tab-item');
                                     const tabContents = document.querySelectorAll('.products-tab-content');
 
-                                    // Add hover effect styles
                                     const style = document.createElement('style');
                                     style.innerHTML = '.products-tab-item:hover { color: #6653C6 !important; background: #ecf0f8 !important; }';
                                     document.head.appendChild(style);
 
                                     function setActiveTab(tabId) {
-                                        // Update active tab styles
                                         tabItems.forEach(item => {
                                             if (item.dataset.tab === tabId) {
                                                 item.style.color = '#6653C6';
@@ -827,7 +627,6 @@ registerBlockType('bevision/products', {
                                             }
                                         });
 
-                                        // Show active content, hide others
                                         tabContents.forEach(content => {
                                             if (content.dataset.tabContent === tabId) {
                                                 content.style.display = 'block';

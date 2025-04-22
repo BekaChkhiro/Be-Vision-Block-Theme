@@ -1,11 +1,10 @@
-import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, RichText, InspectorControls, MediaUpload } from '@wordpress/block-editor';
 import { PanelBody, ColorPalette, Button, RangeControl, TextControl } from '@wordpress/components';
+import { registerCustomBlock } from '../../../utils/block-utils';
 
-registerBlockType('bevision/footer-section', {
+const settings = {
     title: 'Footer Section',
     icon: 'align-wide',
-    category: 'design',
     attributes: {
         backgroundColor: {
             type: 'string',
@@ -44,7 +43,6 @@ registerBlockType('bevision/footer-section', {
             default: 'Privacy policy'
         }
     },
-
     edit: ({ attributes, setAttributes }) => {
         const { backgroundColor, textColor, logo, logoHeight, phone, email, address, copyright, privacyPolicy } = attributes;
         const blockProps = useBlockProps();
@@ -291,4 +289,6 @@ registerBlockType('bevision/footer-section', {
             </div>
         );
     }
-});
+};
+
+registerCustomBlock('footer-section', settings);

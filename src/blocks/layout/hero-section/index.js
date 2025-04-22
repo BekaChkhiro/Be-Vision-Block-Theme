@@ -1,6 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, RichText, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { PanelBody, ColorPalette, Button, TabPanel, TextControl, RangeControl } from '@wordpress/components';
+import { styles } from './styles';
 
 registerBlockType('bevision/hero-section', {
     title: 'Hero Section',
@@ -238,106 +239,42 @@ registerBlockType('bevision/hero-section', {
                         }}
                     </TabPanel>
                 </InspectorControls>
-                <div {...blockProps} style={{
-                    position: 'relative',
-                    overflow: 'hidden',
-                    maxWidth: '1440px',
-                    margin: '0 auto'
-                }}>
-                    <div className="hero-content" style={{
-                        margin: '0 auto',
-                        padding: '60px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: '43px',
-                        borderRadius: '20px',
-                        background: 'rgba(102, 83, 198, 0.05)',
-                        position: 'relative'
-                    }}>
+                <div {...blockProps} style={styles.container}>
+                    <div className="hero-content" style={styles.heroContent}>
                         {backgroundImage && (
                             <div style={{
-                                position: 'absolute',
-                                right: 0,
-                                top: 0,
-                                bottom: 0,
-                                width: '40%',
-                                backgroundImage: `url(${backgroundImage.url})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                opacity: 0.7
+                                ...styles.backgroundImage,
+                                backgroundImage: `url(${backgroundImage.url})`
                             }} />
                         )}
-                        <div className="hero-text" style={{
-                            flex: '1',
-                            maxWidth: '40%'
-                        }}>
+                        <div className="hero-text" style={styles.heroText}>
                             <RichText
                                 tagName="span"
                                 className="subtitle"
                                 value={subtitle}
                                 onChange={(content) => setAttributes({ subtitle: content })}
                                 placeholder="Lead with Data"
-                                style={{ 
-                                    color: subtitleColor,
-                                    fontSize: `${subtitleFontSize}px`,
-                                    fontStyle: 'normal',
-                                    fontWeight: 750,
-                                    lineHeight: 'normal',
-                                    display: 'block',
-                                    marginBottom: '10px'
-                                }}
+                                style={styles.subtitle(subtitleColor, subtitleFontSize)}
                             />
                             <RichText
                                 tagName="h1"
                                 value={title}
                                 onChange={(content) => setAttributes({ title: content })}
                                 placeholder="Start analyzing your data today"
-                                style={{ 
-                                    color: titleColor,
-                                    fontSize: `${titleFontSize}px`,
-                                    fontStyle: 'normal',
-                                    fontWeight: 750,
-                                    lineHeight: '50px',
-                                    marginBottom: '40px',
-                                    marginTop: '0px'
-                                }}
+                                style={styles.title(titleColor, titleFontSize)}
                             />
                             <RichText
                                 tagName="p"
                                 value={description}
                                 onChange={(content) => setAttributes({ description: content })}
                                 placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                                style={{ 
-                                    color: descriptionColor,
-                                    fontSize: `${descriptionFontSize}px`,
-                                    fontStyle: 'normal',
-                                    fontWeight: 400,
-                                    lineHeight: 'normal',
-                                    marginBottom: '40px'
-                                }}
+                                style={styles.description(descriptionColor, descriptionFontSize)}
                             />
                             <RichText
                                 tagName="button"
                                 value={buttonText}
                                 onChange={(content) => setAttributes({ buttonText: content })}
-                                style={{
-                                    backgroundColor: buttonBgColor,
-                                    color: buttonTextColor,
-                                    display: 'flex',
-                                    height: '50px',
-                                    padding: '10px 40px',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    flexShrink: 0,
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    fontSize: `${buttonFontSize}px`,
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 6px rgba(74, 222, 128, 0.2)'
-                                }}
+                                style={styles.button(buttonBgColor, buttonTextColor, buttonFontSize)}
                             />
                         </div>
                     </div>
@@ -356,89 +293,25 @@ registerBlockType('bevision/hero-section', {
         } = attributes;
         
         return (
-            <div style={{
-                position: 'relative',
-                overflow: 'hidden',
-                maxWidth: '1440px',
-                margin: '0 auto'
-            }}>
-                <div className="hero-content" style={{
-                    margin: '0 auto',
-                    padding: '60px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '43px',
-                    borderRadius: '20px',
-                    background: 'rgba(102, 83, 198, 0.05)',
-                    position: 'relative'
-                }}>
+            <div style={styles.container}>
+                <div className="hero-content" style={styles.heroContent}>
                     {backgroundImage && (
                         <div style={{
-                            position: 'absolute',
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: '40%',
-                            backgroundImage: `url(${backgroundImage.url})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            opacity: 0.7
+                            ...styles.backgroundImage,
+                            backgroundImage: `url(${backgroundImage.url})`
                         }} />
                     )}
-                    <div className="hero-text" style={{
-                        flex: '1',
-                        maxWidth: '40%'
-                    }}>
-                        <span className="subtitle" style={{ 
-                            color: subtitleColor,
-                            fontSize: `${subtitleFontSize}px`,
-                            fontStyle: 'normal',
-                            fontWeight: 750,
-                            lineHeight: 'normal',
-                            display: 'block',
-                            marginBottom: '10px'
-                        }}>
+                    <div className="hero-text" style={styles.heroText}>
+                        <span className="subtitle" style={styles.subtitle(subtitleColor, subtitleFontSize)}>
                             {subtitle}
                         </span>
-                        <h1 style={{ 
-                            color: titleColor,
-                            fontSize: `${titleFontSize}px`,
-                            fontStyle: 'normal',
-                            fontWeight: 750,
-                            lineHeight: '50px',
-                            marginBottom: '40px',
-                            marginTop: '0px'
-                        }}>
+                        <h1 style={styles.title(titleColor, titleFontSize)}>
                             {title}
                         </h1>
-                        <p style={{ 
-                            color: descriptionColor,
-                            fontSize: `${descriptionFontSize}px`,
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            lineHeight: 'normal',
-                            marginBottom: '40px'
-                        }}>
+                        <p style={styles.description(descriptionColor, descriptionFontSize)}>
                             {description}
                         </p>
-                        <button style={{
-                            backgroundColor: buttonBgColor,
-                            color: buttonTextColor,
-                            display: 'flex',
-                            height: '50px',
-                            padding: '10px 40px',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: '10px',
-                            flexShrink: 0,
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: `${buttonFontSize}px`,
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 6px rgba(74, 222, 128, 0.2)'
-                        }}>
+                        <button style={styles.button(buttonBgColor, buttonTextColor, buttonFontSize)}>
                             {buttonText}
                         </button>
                     </div>

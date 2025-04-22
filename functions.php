@@ -38,7 +38,6 @@ add_action('wp_footer', function() {
 
 // Include necessary files
 require_once get_template_directory() . '/inc/class-bevision-fonts.php';
-require_once get_template_directory() . '/inc/theme-settings.php';
 require_once get_template_directory() . '/inc/blocks.php';
 
 // Basic theme setup
@@ -160,65 +159,97 @@ function bevision_render_posts_tab($attributes) {
     );
 }
 
-// AJAX fallback for posts loading
+// AJAX posts endpoint
 function bevision_ajax_get_posts() {
-    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-    $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 4;
+    $current_page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $posts_per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 4;
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : 'all';
-    
+
     $args = array(
         'post_type' => 'post',
         'post_status' => 'publish',
-        'posts_per_page' => $per_page,
-        'paged' => $page,
+        'posts_per_page' => $posts_per_page,
+        'paged' => $current_page,
         'orderby' => 'date',
         'order' => 'DESC'
     );
-    
-    if ($category !== 'all') {
+
+    if ($category && $category !== 'all') {
         $args['cat'] = $category;
     }
-    
+
     $query = new WP_Query($args);
     $posts = array();
-    
+
     if ($query->have_posts()) {
         while ($query->have_posts()) {
             $query->the_post();
-            $post = array(
-                'id' => get_the_ID(),
-                'title' => array(
-                    'rendered' => get_the_title()
-                ),
-                'link' => get_permalink(),
-                'featured_image_url' => get_the_post_thumbnail_url(null, 'medium'),
-                'categories' => array()
-            );
             
+            // Get featured image
+            $featured_image = get_the_post_thumbnail_url(null, 'medium');
+            if (!$featured_image) {
+                $featured_image = get_theme_file_uri('assets/images/post-placeholder.jpg');
+            }
+
+            // Get categories
+            $post_categories = array();
             $categories = get_the_category();
             if (!empty($categories)) {
                 foreach ($categories as $cat) {
-                    $post['categories'][] = array(
+                    $post_categories[] = array(
                         'id' => $cat->term_id,
                         'name' => $cat->name,
                         'slug' => $cat->slug
                     );
                 }
             }
-            
-            $posts[] = $post;
+
+            $posts[] = array(
+                'id' => get_the_ID(),
+                'title' => array(
+                    'rendered' => get_the_title()
+                ),
+                'link' => get_permalink(),
+                'featured_image_url' => $featured_image,
+                'categories' => $post_categories,
+                'excerpt' => array(
+                    'rendered' => get_the_excerpt()
+                ),
+                'date' => get_the_date('c')
+            );
         }
         wp_reset_postdata();
     }
-    
+
     wp_send_json_success(array(
         'posts' => $posts,
         'total' => $query->found_posts,
         'max_pages' => $query->max_num_pages
     ));
 }
+
+// Register AJAX endpoints
 add_action('wp_ajax_get_posts', 'bevision_ajax_get_posts');
 add_action('wp_ajax_nopriv_get_posts', 'bevision_ajax_get_posts');
+
+// Ensure scripts are properly enqueued
+function bevision_enqueue_posts_scripts() {
+    wp_enqueue_script(
+        'bevision-posts-tab',
+        get_theme_file_uri('/src/blocks/content/posts-tab/frontend.js'),
+        array(),
+        filemtime(get_theme_file_path('/src/blocks/content/posts-tab/frontend.js')),
+        true
+    );
+
+    wp_localize_script('bevision-posts-tab', 'bevisionSettings', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'themeUrl' => get_theme_file_uri(),
+        'nonce' => wp_create_nonce('bevision_posts_nonce'),
+        'debug' => defined('WP_DEBUG') && WP_DEBUG
+    ));
+}
+add_action('wp_enqueue_scripts', 'bevision_enqueue_posts_scripts');
 
 // Register assets
 function bevision_enqueue_block_editor_assets() {
