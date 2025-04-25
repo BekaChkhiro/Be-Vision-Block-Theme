@@ -39,6 +39,74 @@ add_action('wp_footer', function() {
 // Include necessary files
 require_once get_template_directory() . '/inc/class-bevision-fonts.php';
 require_once get_template_directory() . '/inc/blocks.php';
+require_once get_template_directory() . '/inc/lead-form-handler.php';
+require_once get_template_directory() . '/inc/lead-popup.php';
+
+// Add cache clearing functionality
+function bevision_clear_all_caches() {
+    // Clear WordPress transients
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%_transient_%'");
+    
+    // Clear any plugin caches if they exist
+    if (function_exists('wp_cache_flush')) {
+        wp_cache_flush();
+    }
+    
+    // Clear LiteSpeed Cache if installed
+    if (class_exists('\\LiteSpeed\\Purge')) {
+        do_action('litespeed_purge_all');
+    }
+    
+    // Generate new version for CSS/JS files to force browser reload
+    update_option('bevision_assets_version', time());
+    
+    // Redirect back to referring page
+    wp_redirect(wp_get_referer());
+    exit;
+}
+
+// Register our custom cache clearing endpoint
+function bevision_register_cache_clear_endpoint() {
+    add_rewrite_endpoint('bevision-clear-cache', EP_ALL);
+    
+    // Flush rewrite rules once to make sure our endpoint works
+    if (get_option('bevision_flush_rewrite_needed', 'yes') === 'yes') {
+        flush_rewrite_rules();
+        update_option('bevision_flush_rewrite_needed', 'no');
+    }
+}
+add_action('init', 'bevision_register_cache_clear_endpoint');
+
+function bevision_handle_cache_clear_endpoint() {
+    global $wp_query;
+    
+    if (isset($wp_query->query_vars['bevision-clear-cache'])) {
+        // Only allow admin users
+        if (current_user_can('manage_options')) {
+            bevision_clear_all_caches();
+        } else {
+            wp_die('You do not have permission to clear cache.', 'Error', array('response' => 403));
+        }
+    }
+}
+add_action('template_redirect', 'bevision_handle_cache_clear_endpoint');
+
+// Add the button to the admin bar
+function bevision_add_clear_cache_button($admin_bar) {
+    if (current_user_can('manage_options')) {
+        $admin_bar->add_menu(array(
+            'id'    => 'bevision-clear-cache',
+            'title' => 'გაასუფთავე ქეში',
+            'href'  => site_url('bevision-clear-cache'),
+            'meta'  => array(
+                'title' => 'გაასუფთავე ყველა ქეში სტილების და პოპაპის დასანახად',
+                'class' => 'bevision-clear-cache-button'
+            )
+        ));
+    }
+}
+add_action('admin_bar_menu', 'bevision_add_clear_cache_button', 100);
 
 // Basic theme setup
 function bevision_setup() {
@@ -232,19 +300,19 @@ function bevision_ajax_get_posts() {
 add_action('wp_ajax_get_posts', 'bevision_ajax_get_posts');
 add_action('wp_ajax_nopriv_get_posts', 'bevision_ajax_get_posts');
 
-// Ensure scripts are properly enqueued
+// Ensure posts scripts are properly enqueued
 function bevision_enqueue_posts_scripts() {
     wp_enqueue_script(
         'bevision-posts-tab',
         get_theme_file_uri('/src/blocks/content/posts-tab/frontend.js'),
-        array(),
+        array('jquery'),
         filemtime(get_theme_file_path('/src/blocks/content/posts-tab/frontend.js')),
         true
     );
-
+    
     wp_localize_script('bevision-posts-tab', 'bevisionSettings', array(
-        'ajaxUrl' => admin_url('admin-ajax.php'),
         'themeUrl' => get_theme_file_uri(),
+        'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('bevision_posts_nonce'),
         'debug' => defined('WP_DEBUG') && WP_DEBUG
     ));
@@ -273,14 +341,67 @@ add_action('enqueue_block_editor_assets', 'bevision_enqueue_block_editor_assets'
 
 // Frontend assets
 function bevision_enqueue_assets() {
-    $asset_file = include(get_template_directory() . '/build/index.asset.php');
-
+    // Get the assets version or create one if it doesn't exist
+    $assets_version = get_option('bevision_assets_version', time());
+    
+    // Main theme styles and scripts with cache busting
     wp_enqueue_style(
         'bevision-styles',
         get_template_directory_uri() . '/build/index.css',
         array(),
-        $asset_file['version']
+        $assets_version
     );
+    
+    wp_enqueue_script(
+        'bevision-script',
+        get_template_directory_uri() . '/build/index.js',
+        array('jquery'),
+        $assets_version,
+        true
+    );
+    
+    // Localize the script with site data
+    wp_localize_script('bevision-script', 'bevisionData', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('bevision-nonce')
+    ));
+    
+    // Lead Popup CSS - not needed anymore since we're using the build files
+    // wp_enqueue_style(
+    //     'bevision-lead-popup-style',
+    //     get_template_directory_uri() . '/assets/css/lead-popup.css',
+    //     array(),
+    //     filemtime(get_template_directory() . '/assets/css/lead-popup.css')
+    // );
+    
+    // Lead Popup Script
+    wp_enqueue_script(
+        'bevision-lead-popup',
+        get_template_directory_uri() . '/assets/js/lead-popup.js',
+        array('jquery'),
+        $assets_version,
+        true
+    );
+    
+    // Localize script for lead popup
+    wp_localize_script('bevision-lead-popup', 'bevisionLeadPopup', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('bevision_lead_form')
+    ));
+    
+    // Add cache-busting styles for admin bar button
+    if (is_admin_bar_showing() && current_user_can('manage_options')) {
+        wp_add_inline_style('bevision-styles', '
+            #wp-admin-bar-bevision-clear-cache > a {
+                background-color: #6c5ce7 !important;
+                color: white !important;
+                font-weight: bold !important;
+            }
+            #wp-admin-bar-bevision-clear-cache > a:hover {
+                background-color: #5d4ed6 !important;
+            }
+        ');
+    }
 }
 add_action('wp_enqueue_scripts', 'bevision_enqueue_assets');
 
@@ -344,3 +465,92 @@ function bevision_test_endpoint() {
 }
 add_action('wp_ajax_test_endpoint', 'bevision_test_endpoint');
 add_action('wp_ajax_nopriv_test_endpoint', 'bevision_test_endpoint');
+
+// Post Duplication functionality
+function bevision_duplicate_post_as_draft() {
+    // Check if post ID is provided and user has proper permissions
+    if (empty($_GET['post']) || !current_user_can('edit_posts')) {
+        wp_die('No post to duplicate has been provided or you do not have permission.');
+    }
+
+    // Nonce verification for security
+    if (!isset($_GET['duplicate_nonce']) || !wp_verify_nonce($_GET['duplicate_nonce'], basename(__FILE__))) {
+        wp_die('Security check failed');
+    }
+
+    // Get the original post id
+    $post_id = absint($_GET['post']);
+    
+    // Get the original post data
+    $post = get_post($post_id);
+    
+    // If post data exists, create the duplicate
+    if ($post) {
+        // Create new post data array
+        $args = array(
+            'comment_status' => $post->comment_status,
+            'ping_status'    => $post->ping_status,
+            'post_author'    => get_current_user_id(),
+            'post_content'   => $post->post_content,
+            'post_excerpt'   => $post->post_excerpt,
+            'post_name'      => $post->post_name,
+            'post_parent'    => $post->post_parent,
+            'post_password'  => $post->post_password,
+            'post_status'    => 'draft', // Always set as draft initially
+            'post_title'     => $post->post_title . ' (Copy)',
+            'post_type'      => $post->post_type,
+            'to_ping'        => $post->to_ping,
+            'menu_order'     => $post->menu_order
+        );
+        
+        // Create the new post
+        $new_post_id = wp_insert_post($args);
+        
+        // Get all current post terms and set them to the new post
+        $taxonomies = get_object_taxonomies($post->post_type);
+        if ($taxonomies) {
+            foreach ($taxonomies as $taxonomy) {
+                $post_terms = wp_get_object_terms($post_id, $taxonomy, array('fields' => 'slugs'));
+                wp_set_object_terms($new_post_id, $post_terms, $taxonomy, false);
+            }
+        }
+        
+        // Duplicate all post meta
+        $post_meta = get_post_meta($post_id);
+        if ($post_meta) {
+            foreach ($post_meta as $meta_key => $meta_values) {
+                foreach ($meta_values as $meta_value) {
+                    add_post_meta($new_post_id, $meta_key, $meta_value);
+                }
+            }
+        }
+        
+        // If the post has a featured image, duplicate it
+        if (has_post_thumbnail($post_id)) {
+            $thumbnail_id = get_post_thumbnail_id($post_id);
+            set_post_thumbnail($new_post_id, $thumbnail_id);
+        }
+        
+        // Redirect to the edit screen for the new draft post
+        wp_redirect(admin_url('post.php?action=edit&post=' . $new_post_id));
+        exit;
+    } else {
+        wp_die('Post creation failed, could not find original post: ' . $post_id);
+    }
+}
+add_action('admin_action_bevision_duplicate_post_as_draft', 'bevision_duplicate_post_as_draft');
+
+// Add the duplicate link to post actions
+function bevision_duplicate_post_link($actions, $post) {
+    if (current_user_can('edit_posts')) {
+        $actions['duplicate'] = '<a href="' . 
+            wp_nonce_url(
+                admin_url('admin.php?action=bevision_duplicate_post_as_draft&post=' . $post->ID),
+                basename(__FILE__),
+                'duplicate_nonce'
+            ) . '" title="Duplicate this item" rel="permalink">Duplicate</a>';
+    }
+    return $actions;
+}
+add_filter('post_row_actions', 'bevision_duplicate_post_link', 10, 2);
+add_filter('page_row_actions', 'bevision_duplicate_post_link', 10, 2);

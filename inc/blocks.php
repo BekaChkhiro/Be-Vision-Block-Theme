@@ -20,6 +20,7 @@ function bevision_register_blocks() {
     register_block_type(get_template_directory() . '/src/blocks/content/dashboard-features');
     register_block_type(get_template_directory() . '/src/blocks/content/category-analysis');
     register_block_type(get_template_directory() . '/src/blocks/content/cross-sell-basket');
+    register_block_type(get_template_directory() . '/src/blocks/content/lead-popup');
     
     // Register posts tab block with additional settings
     register_block_type('bevision/posts-tab', array(

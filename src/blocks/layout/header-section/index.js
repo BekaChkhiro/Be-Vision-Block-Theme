@@ -531,10 +531,14 @@ registerBlockType('bevision/header-section', {
         const blockProps = useBlockProps.save({
             style: {
                 backgroundColor: attributes.backgroundColor,
+                position: 'sticky',
+                top: 0,
+                zIndex: 1000,
             }
         });
 
         return (
+            <>
             <header {...blockProps}>
                 <div className="header-container" style={{
                     maxWidth: '1440px',
@@ -601,8 +605,8 @@ registerBlockType('bevision/header-section', {
                             <span>{attributes.languageText}</span>
                         </div>
 
-                        <a 
-                            href={attributes.buttonUrl}
+                        <button 
+                            id="header-demo-button"
                             className="demo-button" 
                             style={{
                                 backgroundColor: attributes.buttonColor,
@@ -613,15 +617,64 @@ registerBlockType('bevision/header-section', {
                                 fontWeight: attributes.buttonFontWeight,
                                 fontSize: `${attributes.buttonFontSize}px`,
                                 display: 'inline-block',
-                                transition: 'all 0.3s ease'
+                                transition: 'all 0.3s ease',
+                                border: 'none',
+                                cursor: 'pointer'
                             }}
                         >
                             {attributes.buttonText}
-                        </a>
+                        </button>
                     </div>
                    </div>
                 </div>
             </header>
+            
+            <div id="bevision-lead-popup" className="bevision-lead-popup" style={{ display: 'none' }}>
+                <button className="popup-close">&times;</button>
+                <div className="popup-content">
+                    <h2 className="popup-title">Request a demo</h2>
+                    <p className="popup-subtitle">Please enter your name and number, we will contact you shortly</p>
+                    
+                    <form id="lead-form" className="popup-form">
+                        <input type="hidden" id="lead_form_nonce" name="lead_form_nonce" value="" />
+                        <div className="form-group">
+                            <input type="text" id="name" name="name" placeholder="Your name" required />
+                        </div>
+                        <div className="form-group">
+                            <input type="text" id="company" name="company" placeholder="Company" required />
+                        </div>
+                        <div className="form-group">
+                            <input type="tel" id="phone" name="phone" placeholder="Phone number" required />
+                        </div>
+                        <div className="form-group">
+                            <input type="email" id="email" name="email" placeholder="Email" required />
+                        </div>
+                        <div className="form-buttons">
+                            <button 
+                                type="submit"
+                                className="submit-button"
+                                style={{
+                                    backgroundColor: '#6c5ce7',
+                                    color: '#ffffff'
+                                }}
+                            >
+                                Request
+                            </button>
+                            <button 
+                                type="button"
+                                className="cancel-button"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                    <div id="success-message" className="success-message" style={{ display: 'none' }}>
+                        Thank you for your submission! We will contact you shortly.
+                    </div>
+                </div>
+            </div>
+            <div id="popup-overlay" className="popup-overlay" style={{ display: 'none' }}></div>
+            </>
         );
     }
 });

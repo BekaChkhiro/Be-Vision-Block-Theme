@@ -22,3 +22,6 @@ import './blocks/content/cross-sell-basket';
 import './blocks/content/testimonial-block';
 import './blocks/content/media-description-block';
 import './blocks/content/blog-inner-content';
+import './blocks/content/blog-quote-block';
+import './blocks/content/text-with-image-block';
+import './blocks/content/lead-popup';
