@@ -4,6 +4,7 @@ import './styles/tailwind.css';
 import './blocks/layout/hero-section';
 import './blocks/layout/header-section';
 import './blocks/layout/footer';
+import './blocks/layout/blog-hero-section';
 
 // Content Blocks
 import './blocks/content/partners';
@@ -18,3 +19,4 @@ import './blocks/content/category-analysis';
 import './blocks/content/posts-tab';
 import './blocks/content/contact-us';
 import './blocks/content/cross-sell-basket';
+import './blocks/content/testimonial-block';

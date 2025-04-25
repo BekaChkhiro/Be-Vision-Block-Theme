@@ -175,6 +175,9 @@
 .mt-0 {
     margin-top: 0px;
 }
+.\!block {
+    display: block !important;
+}
 .block {
     display: block;
 }
@@ -334,6 +337,9 @@
 }
 .uppercase {
     text-transform: uppercase;
+}
+.italic {
+    font-style: italic;
 }
 .text-gray-800 {
     --tw-text-opacity: 1;

@@ -239,15 +239,15 @@ registerBlockType('bevision/hero-section', {
                         }}
                     </TabPanel>
                 </InspectorControls>
-                <div {...blockProps} style={styles.container}>
-                    <div className="hero-content" style={styles.heroContent}>
+                <div {...blockProps} style={styles.container()}>
+                    <div className="hero-content" style={styles.heroContent()}>
                         {backgroundImage && (
                             <div style={{
-                                ...styles.backgroundImage,
+                                ...styles.backgroundImage(),
                                 backgroundImage: `url(${backgroundImage.url})`
                             }} />
                         )}
-                        <div className="hero-text" style={styles.heroText}>
+                        <div className="hero-text" style={styles.heroText()}>
                             <RichText
                                 tagName="span"
                                 className="subtitle"
@@ -293,15 +293,15 @@ registerBlockType('bevision/hero-section', {
         } = attributes;
         
         return (
-            <div style={styles.container}>
-                <div className="hero-content" style={styles.heroContent}>
+            <div style={styles.container()}>
+                <div className="hero-content" style={styles.heroContent()}>
                     {backgroundImage && (
                         <div style={{
-                            ...styles.backgroundImage,
+                            ...styles.backgroundImage(),
                             backgroundImage: `url(${backgroundImage.url})`
                         }} />
                     )}
-                    <div className="hero-text" style={styles.heroText}>
+                    <div className="hero-text" style={styles.heroText()}>
                         <span className="subtitle" style={styles.subtitle(subtitleColor, subtitleFontSize)}>
                             {subtitle}
                         </span>
