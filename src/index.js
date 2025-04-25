@@ -20,3 +20,5 @@ import './blocks/content/posts-tab';
 import './blocks/content/contact-us';
 import './blocks/content/cross-sell-basket';
 import './blocks/content/testimonial-block';
+import './blocks/content/media-description-block';
+import './blocks/content/blog-inner-content';

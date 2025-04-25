@@ -1,0 +1,45 @@
+.wp-block-bevision-blog-inner-content {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.wp-block-bevision-blog-inner-content .blog-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.2;
+    color: #323377;
+}
+
+.wp-block-bevision-blog-inner-content .blog-description {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    color: #666;
+    font-weight: 500;
+}
+
+.wp-block-bevision-blog-inner-content .blog-content {
+    margin-bottom: 20px;
+}
+
+.wp-block-bevision-blog-inner-content .blog-paragraph {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .wp-block-bevision-blog-inner-content .blog-title {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+    
+    .wp-block-bevision-blog-inner-content .blog-paragraph {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+}
