@@ -106,8 +106,14 @@ const blockStyle = `
     }
     
     @media (max-width: 768px) {
+        .cross-sell-basket {
+            padding: 2rem 1rem;
+        }
+        
         .cross-sell-basket .container {
             flex-direction: column;
+            gap: 2rem;
+            padding: 0 1rem;
         }
         
         .cross-sell-basket__content,
@@ -116,8 +122,32 @@ const blockStyle = `
             flex: none;
         }
         
-        .cross-sell-basket__image {
-            margin-top: 2rem;
+        .cross-sell-basket__header {
+            margin: 20px 0px 0px;
+        }
+        
+        .cross-sell-basket__main-title {
+            font-size: 24px;
+        }
+        
+        .cross-sell-basket__title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .cross-sell-basket__title h2 {
+            font-size: 24px;
+        }
+        
+        .cross-sell-basket__paragraph {
+            font-size: 16px;
+            margin-bottom: 1rem;
+        }
+        
+        .cross-sell-basket__icon svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
         }
     }
 `;

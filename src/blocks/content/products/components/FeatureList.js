@@ -38,7 +38,7 @@ const styles = {
     }
 };
 
-const FeatureList = ({ features, isEditing = false, onUpdate, onAdd, onRemove }) => {
+const FeatureList = ({ features, isEditing = false, onUpdate, onAdd, onRemove, className = '' }) => {
     if (isEditing) {
         return (
             <div>
@@ -83,7 +83,7 @@ const FeatureList = ({ features, isEditing = false, onUpdate, onAdd, onRemove })
     }
 
     return (
-        <ul style={styles.featuresList}>
+        <ul style={styles.featuresList} className={`products-feature-list ${className}`}>
             {features.map((feature, index) => (
                 <li key={index} style={styles.featureItem}>
                     <span style={styles.checkmark}>✓</span>

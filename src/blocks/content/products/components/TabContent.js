@@ -70,8 +70,8 @@ const TabContent = ({
 }) => {
     if (isEditing) {
         return (
-            <div style={styles.productsGrid}>
-                <div style={styles.productItem}>
+            <div style={styles.productsGrid} className="products-grid">
+                <div style={styles.productItem} className="products-content-left">
                     <TextControl
                         label={
                             <span style={{ 
@@ -117,27 +117,28 @@ const TabContent = ({
                     onSelect={onSelectImage}
                     onRemove={onRemoveImage}
                     isEditing={true}
+                    className="products-content-right"
                 />
             </div>
         );
     }
 
     return (
-        <div style={styles.productsGrid}>
-            <div style={styles.productItem}>
-                <h4 style={styles.subtitle}>{tab.subtitle}</h4>
-                <h3 style={styles.title}>{tab.title}</h3>
-                <FeatureList features={tab.features} />
-                <div style={styles.buttonGroup}>
-                    <button style={{...styles.button, ...styles.primaryButton}}>
+        <div style={styles.productsGrid} className="products-grid">
+            <div style={styles.productItem} className="products-content-left">
+                <h4 style={styles.subtitle} className="products-subtitle">{tab.subtitle}</h4>
+                <h3 style={styles.title} className="products-title">{tab.title}</h3>
+                <FeatureList features={tab.features} className="products-feature-list" />
+                <div style={styles.buttonGroup} className="products-button-group">
+                    <button style={{...styles.button, ...styles.primaryButton}} className="products-button products-button-primary">
                         Learn more
                     </button>
-                    <button style={{...styles.button, ...styles.secondaryButton}}>
+                    <button style={{...styles.button, ...styles.secondaryButton}} className="products-button products-button-secondary">
                         Book a call
                     </button>
                 </div>
             </div>
-            <ProductImage image={tab.image} />
+            <ProductImage image={tab.image} className="products-content-right" />
         </div>
     );
 };

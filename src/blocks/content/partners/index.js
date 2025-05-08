@@ -13,10 +13,11 @@ const styles = {
     },
     titleContainer: {
         textAlign: 'center',
-        marginBottom: '20px',
+        marginBottom: '40px',
         display: 'flex',
         justifyContent: 'center',
-        gap: '10px'
+        gap: '10px',
+        flexWrap: 'wrap' // Allow wrapping on mobile
     },
     titlePart1: {
         color: 'var(--Violet, #6653C6)',
@@ -66,6 +67,29 @@ const styles = {
         border: '2px dashed #ccc',
         borderRadius: '4px',
         cursor: 'pointer'
+    },
+    // Mobile-specific styles
+    mobileSection: {
+        padding: '40px 0'
+    },
+    mobileTitleContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '5px',
+        marginBottom: '30px'
+    },
+    mobileTitle: {
+        fontSize: '16px',
+        textAlign: 'center',
+        display: 'block'
+    },
+    mobileSubtitle: {
+        fontSize: '16px',
+        marginBottom: '30px'
+    },
+    mobileGrid: {
+        gap: '30px',
+        justifyContent: 'space-around'
     }
 };
 
@@ -213,12 +237,10 @@ registerBlockType('bevision/partners', {
     },
 
     save: ({ attributes }) => {
-        const blockProps = useBlockProps.save();
-
         return (
-            <div {...blockProps} style={styles.section}>
-                <div style={styles.container}>
-                    <div style={styles.titleContainer}>
+            <div className="partners-section partners-block" style={styles.section}>
+                <div className="partners-container" style={styles.container}>
+                    <div className="partners-title-container" style={styles.titleContainer}>
                         <a 
                             href={attributes.titlePart1Link}
                             className="partners-title-link"
@@ -244,10 +266,11 @@ registerBlockType('bevision/partners', {
                         style={styles.subtitle}
                         value={attributes.subtitle}
                     />
-                    <div style={styles.grid}>
+                    <div className="partners-grid" style={styles.grid}>
                         {attributes.logos.map((logo, index) => (
-                            <div key={index}>
+                            <div key={index} className="partner-logo-container">
                                 <img 
+                                    className="partner-logo"
                                     style={styles.logo} 
                                     src={logo.url} 
                                     alt={logo.alt}

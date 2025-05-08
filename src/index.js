@@ -4,7 +4,6 @@ import './styles/tailwind.css';
 import './blocks/layout/hero-section';
 import './blocks/layout/header-section';
 import './blocks/layout/footer';
-import './blocks/layout/blog-hero-section';
 
 // Content Blocks
 import './blocks/content/partners';
@@ -25,3 +24,5 @@ import './blocks/content/blog-inner-content';
 import './blocks/content/blog-quote-block';
 import './blocks/content/text-with-image-block';
 import './blocks/content/lead-popup';
+import './blocks/content/case-study-section';
+import './blocks/content/stats-showcase';

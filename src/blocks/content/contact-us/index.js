@@ -18,21 +18,44 @@ const styles = {
         justifyContent: 'space-between',
         position: 'relative',
         padding: '80px 60px',
-        zIndex: '2'
+        zIndex: '2',
+        '@media (max-width: 768px)': {
+            flexDirection: 'column',
+            padding: '60px 30px',
+            textAlign: 'center',
+            gap: '30px'
+        }
+    },
+    textContainer: {
+        '@media (max-width: 768px)': {
+            marginBottom: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+        }
     },
     heading: {
         color: '#2FCA02', // Green color for "CONTACT US"
         fontSize: '18px',
         fontWeight: '500',
         margin: '0px 0px 5px',
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        '@media (max-width: 768px)': {
+            fontSize: '16px',
+            marginBottom: '10px'
+        }
     },
     title: {
         color: '#FFFFFF', // White color for main text
         fontSize: '42px',
         fontWeight: '700',
         margin: '0px',
-        lineHeight: '1.2'
+        lineHeight: '1.2',
+        '@media (max-width: 768px)': {
+            fontSize: '32px',
+            marginBottom: '30px',
+            textAlign: 'center'
+        }
     },
     button: {
         backgroundColor: '#2FCA02', // Green button
@@ -45,7 +68,13 @@ const styles = {
         display: 'inline-block',
         cursor: 'pointer',
         border: 'none',
-        transition: 'background-color 0.3s ease'
+        transition: 'background-color 0.3s ease',
+        '@media (max-width: 768px)': {
+            width: '100%',
+            maxWidth: '300px',
+            textAlign: 'center',
+            padding: '14px 20px'
+        }
     },
     backgroundDots: {
         position: 'absolute',
@@ -56,7 +85,11 @@ const styles = {
         opacity: '0.3',
         zIndex: '1',
         backgroundSize: 'cover',
-        backgroundPosition: 'center'
+        backgroundPosition: 'center',
+        '@media (max-width: 768px)': {
+            width: '40%',
+            right: '-10px'
+        }
     },
     backgroundCircle: {
         position: 'absolute',
@@ -69,7 +102,12 @@ const styles = {
         zIndex: '1',
         backgroundSize: 'contain',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        '@media (max-width: 768px)': {
+            width: '200px',
+            height: '200px',
+            top: '80%'
+        }
     }
 };
 
@@ -201,7 +239,7 @@ registerBlockType('bevision/contact-us', {
                     <div style={dotsStyle}></div>
                     <div style={circleStyle}></div>
                     <div style={styles.container}>
-                        <div>
+                        <div style={styles.textContainer}>
                             <RichText
                                 tagName="h3"
                                 className="contact-us-heading"
@@ -254,7 +292,7 @@ registerBlockType('bevision/contact-us', {
                 <div style={dotsStyle}></div>
                 <div style={circleStyle}></div>
                 <div style={styles.container}>
-                    <div>
+                    <div style={styles.textContainer}>
                         <RichText.Content
                             tagName="h3"
                             className="contact-us-heading"

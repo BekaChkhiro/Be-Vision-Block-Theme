@@ -81,6 +81,9 @@ const blockStyle = `
     @media (max-width: 768px) {
         .product-hero-section .container {
             flex-direction: column;
+            text-align: center;
+            padding: 40px 20px;
+            gap: 2rem;
         }
         
         .product-hero-section__content,
@@ -89,8 +92,40 @@ const blockStyle = `
             flex: none;
         }
         
+        .product-hero-section__title {
+            font-size: 36px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        
+        .product-hero-section__description {
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .product-hero-section__cta-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .product-hero-section__cta {
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+        }
+        
         .product-hero-section__image {
-            order: -1;
+            order: 1;
+            margin-top: 20px;
+        }
+        
+        .product-hero-section__image img {
+            max-width: 90%;
+            margin: 0 auto;
         }
     }
 `;
@@ -223,9 +258,11 @@ registerBlockType('bevision/product-hero-section', {
                             <div className="product-hero-section__description">
                                 {attributes.description}
                             </div>
-                            <a href={attributes.ctaUrl} className="product-hero-section__cta">
-                                {attributes.ctaText}
-                            </a>
+                            <div className="product-hero-section__cta-wrapper">
+                                <a href={attributes.ctaUrl} className="product-hero-section__cta">
+                                    {attributes.ctaText}
+                                </a>
+                            </div>
                         </div>
                         <div className="product-hero-section__image">
                             {attributes.imageUrl && (

@@ -41,11 +41,11 @@ const styles = {
     }
 };
 
-const ProductImage = ({ image, onSelect, onRemove, isEditing = false }) => {
+const ProductImage = ({ image, onSelect, onRemove, isEditing = false, className = '' }) => {
     if (isEditing) {
         return (
             <MediaUploadCheck>
-                <div style={{ ...styles.imageContainer, position: 'relative' }}>
+                <div style={{ ...styles.imageContainer, position: 'relative' }} className={className}>
                     {image ? (
                         <>
                             <div style={{
@@ -114,7 +114,7 @@ const ProductImage = ({ image, onSelect, onRemove, isEditing = false }) => {
     }
 
     return (
-        <div style={styles.imageContainer}>
+        <div style={styles.imageContainer} className={className}>
             {image && (
                 <div style={{
                     width: '100%',

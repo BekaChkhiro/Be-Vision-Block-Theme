@@ -59,7 +59,7 @@ export const styles = {
     fontStyle: 'normal',
     fontWeight: 750,
     lineHeight: isMobile ? '1.2' : '50px',
-    marginBottom: isMobile ? '20px' : '40px',
+    marginBottom: isMobile ? '16px' : '40px',
     marginTop: '0px'
   }),
   description: (color, fontSize, isMobile = getResponsiveStyles()) => ({
@@ -68,14 +68,15 @@ export const styles = {
     fontStyle: 'normal',
     fontWeight: 400,
     lineHeight: 'normal',
-    marginBottom: isMobile ? '25px' : '40px'
+    marginBottom: isMobile ? '18px' : '40px'
   }),
   button: (bgColor, textColor, fontSize, isMobile = getResponsiveStyles()) => ({
     backgroundColor: bgColor,
     color: textColor,
     display: 'flex',
-    height: isMobile ? '45px' : '50px',
-    padding: isMobile ? '8px 30px' : '10px 40px',
+    width: isMobile ? '100%' : 'auto',
+    height: isMobile ? '48px' : '50px',
+    padding: isMobile ? '0 0' : '10px 40px',
     justifyContent: 'center',
     alignItems: 'center',
     gap: '10px',
@@ -86,6 +87,6 @@ export const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     boxShadow: '0 4px 6px rgba(74, 222, 128, 0.2)',
-    margin: isMobile ? '0 auto' : 'initial'
+    margin: isMobile ? '0 auto 22px auto' : 'initial'
   })
 };

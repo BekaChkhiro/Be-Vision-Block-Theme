@@ -326,17 +326,11 @@ registerBlockType('bevision/client-testimonials', {
                     onChange={onChangeTitle}
                     placeholder={__('Enter title', 'bevision')}
                 />
-                {testimonials.length >= 4 ? (
-                    <div style={styles.carousel}>
-                        <div style={styles.carouselInner}>
-                            {testimonials.map((testimonial, index) => renderTestimonialCard(testimonial, index))}
-                        </div>
-                    </div>
-                ) : (
-                    <div style={styles.grid}>
+                <div style={styles.carousel}>
+                    <div style={styles.carouselInner}>
                         {testimonials.map((testimonial, index) => renderTestimonialCard(testimonial, index))}
                     </div>
-                )}
+                </div>
                 <div style={styles.controls}>
                     <button 
                         onClick={addTestimonial}
@@ -353,52 +347,35 @@ registerBlockType('bevision/client-testimonials', {
         const { title, subtitle, testimonials } = attributes;
 
         return (
-            <div style={styles.clientTestimonials}>
+            <div className="wp-block-bevision-client-testimonials" style={styles.clientTestimonials}>
                 <p style={styles.subtitle}>{subtitle}</p>
                 <h2 style={styles.title}>{title}</h2>
-                {testimonials.length >= 4 ? (
-                    <div style={styles.carousel}>
-                        <div style={styles.carouselInner}>
-                            {testimonials.map((testimonial, index) => (
-                                <div key={index} style={styles.testimonialCard}>
-                                    {testimonial.companyLogo && (
-                                        <img src={testimonial.companyLogo} alt="" style={styles.companyLogo} />
-                                    )}
-                                    <p style={styles.content}>{testimonial.content}</p>
-                                    <div style={styles.author}>
-                                        {testimonial.authorImage && (
-                                            <img src={testimonial.authorImage} alt="" style={styles.authorImage} />
-                                        )}
-                                        <div style={styles.authorInfo}>
-                                            <h4 style={styles.authorName}>{testimonial.authorName}</h4>
-                                            <p style={styles.authorPosition}>{testimonial.authorPosition}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div style={styles.grid}>
+                <div style={styles.carousel}>
+                    <div className="carousel-inner" style={styles.carouselInner}>
                         {testimonials.map((testimonial, index) => (
-                            <div key={index} style={styles.testimonialCard}>
+                            <div key={index} className="testimonial-card" style={styles.testimonialCard}>
                                 {testimonial.companyLogo && (
-                                    <img src={testimonial.companyLogo} alt="" style={styles.companyLogo} />
+                                    <img className="company-logo" src={testimonial.companyLogo} alt="" style={styles.companyLogo} />
                                 )}
-                                <p style={styles.content}>{testimonial.content}</p>
-                                <div style={styles.author}>
+                                <p className="content" style={styles.content}>{testimonial.content}</p>
+                                <div className="author" style={styles.author}>
                                     {testimonial.authorImage && (
-                                        <img src={testimonial.authorImage} alt="" style={styles.authorImage} />
+                                        <img className="author-image" src={testimonial.authorImage} alt="" style={styles.authorImage} />
                                     )}
-                                    <div style={styles.authorInfo}>
-                                        <h4 style={styles.authorName}>{testimonial.authorName}</h4>
-                                        <p style={styles.authorPosition}>{testimonial.authorPosition}</p>
+                                    <div className="author-info" style={styles.authorInfo}>
+                                        <h4 className="author-name" style={styles.authorName}>{testimonial.authorName}</h4>
+                                        <p className="author-position" style={styles.authorPosition}>{testimonial.authorPosition}</p>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                )}
+                    <ul className="carousel-dots">
+                        {testimonials.map((_, index) => (
+                            <li key={index} className={`carousel-dot ${index === 0 ? 'active' : ''}`} data-index={index}></li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         );
     }

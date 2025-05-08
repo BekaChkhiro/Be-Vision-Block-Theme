@@ -14,11 +14,9 @@ const blockStyle = `
     }
 
     .category-analysis__image {
-        diosplay: flex;
+        display: flex;
         align-items: center;
         justify-content: start;
-    }
-
     }
 
     .category-analysis__image img {
@@ -76,6 +74,8 @@ const blockStyle = `
     @media (max-width: 768px) {
         .category-analysis .container {
             flex-direction: column;
+            gap: 2rem;
+            padding: 0 1rem;
         }
         
         .category-analysis__content,
@@ -85,7 +85,24 @@ const blockStyle = `
         }
         
         .category-analysis__image {
-            margin-bottom: 2rem;
+            order: 1;
+        }
+        
+        .category-analysis__content {
+            order: 0;
+        }
+        
+        .category-analysis__title {
+            font-size: 20px;
+        }
+        
+        .category-analysis__paragraph {
+            font-size: 16px;
+        }
+        
+        .category-analysis__icon svg {
+            width: 24px;
+            height: 24px;
         }
     }
 `;

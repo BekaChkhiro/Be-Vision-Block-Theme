@@ -89,14 +89,55 @@ const blockStyle = `
     }
     
     @media (max-width: 768px) {
+        .dashboard-features {
+            padding: 3rem 0;
+        }
+        
         .dashboard-features .container {
             flex-direction: column;
+            gap: 2rem;
         }
         
         .dashboard-features__content,
         .dashboard-features__image {
             width: 100%;
             flex: none;
+        }
+        
+        .dashboard-features__icon {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-features__icon img {
+            margin-bottom: 0.5rem;
+            margin-right: 0;
+        }
+        
+        .dashboard-features__title {
+            font-size: 28px;
+            margin-bottom: 1rem;
+        }
+        
+        .dashboard-features__description {
+            font-size: 16px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-features__list-item {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .dashboard-features__image {
+            min-height: auto;
+            margin-top: 1rem;
+        }
+        
+        .dashboard-features__image img {
+            width: 100%;
+            margin: 0 auto;
         }
     }
 `;

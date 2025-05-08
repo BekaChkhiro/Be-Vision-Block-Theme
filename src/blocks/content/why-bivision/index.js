@@ -7,6 +7,7 @@ import { Fragment } from '@wordpress/element';
 const blockStyle = `
     .wp-block-bevision-why-bivision {
         display: block;
+        margin-top: 60px;
     }
 
     .why-bivision {
@@ -63,6 +64,8 @@ const blockStyle = `
     .why-bivision__media-column img {
         width: 100%;
         height: auto;
+        max-height: 440px; /* Reduced height of the photo */
+        object-fit: cover;
         border-radius: 8px;
     }
 
@@ -110,22 +113,26 @@ const blockStyle = `
     }
 
     .why-bivision__stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-direction: row;
         gap: 1rem;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        width: 100%;
     }
 
     .why-bivision__stats .stat-item {
         background: #2a215f;
-        padding: 20px;
+        padding: 16px;
         border-radius: 12px;
         text-align: left;
         position: relative;
-        height: 164px;
         display: flex;
         flex-direction: column;
         justify-content: end;
-        gap: 10px;
+        gap: 8px;
+        flex: 1;
+        width: calc(33.333% - 0.667rem);
     }
 
     .why-bivision__stats .stat-item img {
@@ -210,8 +217,66 @@ const blockStyle = `
     }
 
     @media (max-width: 768px) {
+        .why-bivision {
+            padding: 2rem 0;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
         .why-bivision .container {
             flex-direction: column;
+            gap: 1.5rem;
+            padding: 0 1rem;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .why-bivision__titles {
+            margin-bottom: 40px;
+        }
+        
+        .why-bivision__media-column img {
+            max-height: 300px;
+        }
+        
+        .why-bivision__text-content {
+            padding: 30px;
+        }
+        
+        .why-bivision__content {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .why-bivision__stats-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .why-bivision__stats {
+            flex-wrap: wrap;
+            gap: 1rem;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .why-bivision__stats .stat-item {
+            width: 100%;
+            flex: 1 0 100%;
+            box-sizing: border-box;
+        }
+        
+        .why-bivision__stats .stat-item h3 {
+            font-size: 36px;
+        }
+        
+        .why-bivision__stats .stat-item p {
+            font-size: 14px;
         }
     }
 `;
@@ -383,12 +448,7 @@ registerBlockType('bevision/why-bivision', {
             });
         };
 
-        const onSelectDashboardsIcon = (media) => {
-            setAttributes({
-                dashboardsIconId: media.id,
-                dashboardsIconUrl: media.url
-            });
-        };
+
 
         return (
             <Fragment>
@@ -644,37 +704,7 @@ registerBlockType('bevision/why-bivision', {
                                                 placeholder={__('Label', 'bevision')}
                                             />
                                         </div>
-                                        <div className="stat-item">
-                                            <MediaUpload
-                                                onSelect={onSelectDashboardsIcon}
-                                                allowedTypes={['image']}
-                                                value={attributes.dashboardsIconId}
-                                                render={({ open }) => (
-                                                    <Button
-                                                        onClick={open}
-                                                        className="editor-post-featured-image__toggle"
-                                                        style={{ marginBottom: '1rem' }}
-                                                    >
-                                                        {attributes.dashboardsIconUrl ? 
-                                                            <img src={attributes.dashboardsIconUrl} alt="" style={{ maxWidth: '40px' }} /> :
-                                                            __('Upload Icon', 'bevision')
-                                                        }
-                                                    </Button>
-                                                )}
-                                            />
-                                            <RichText
-                                                tagName="h3"
-                                                value={attributes.dashboardsCount}
-                                                onChange={(dashboardsCount) => setAttributes({ dashboardsCount })}
-                                                placeholder={__('Dashboards count', 'bevision')}
-                                            />
-                                            <RichText
-                                                tagName="p"
-                                                value={attributes.dashboardsLabel}
-                                                onChange={(dashboardsLabel) => setAttributes({ dashboardsLabel })}
-                                                placeholder={__('Label', 'bevision')}
-                                            />
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -776,19 +806,7 @@ registerBlockType('bevision/why-bivision', {
                                                 value={attributes.npsLabel}
                                             />
                                         </div>
-                                        <div className="stat-item">
-                                            {attributes.dashboardsIconUrl && (
-                                                <img src={attributes.dashboardsIconUrl} alt="" />
-                                            )}
-                                            <RichText.Content
-                                                tagName="h3"
-                                                value={attributes.dashboardsCount}
-                                            />
-                                            <RichText.Content
-                                                tagName="p"
-                                                value={attributes.dashboardsLabel}
-                                            />
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>

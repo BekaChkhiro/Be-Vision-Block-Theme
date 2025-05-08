@@ -4,6 +4,38 @@ import { RichText, MediaUpload, InnerBlocks } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 
 const blockStyle = `
+    /* Mobile start exploring button */
+    .mobile-start-exploring {
+        display: block;
+        width: 100%;
+        padding: 15px 0;
+        background-color: #2FCA02;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: 30px;
+        box-shadow: 0 4px 8px rgba(47, 202, 2, 0.15);
+        transition: background-color 0.3s;
+    }
+    
+    /* Hide on desktop, show on mobile */
+    .mobile-button-container {
+        display: none;
+        margin-top: 20px;
+        padding: 0 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .mobile-button-container {
+            display: block;
+            margin-top: 30px;
+            width: 100%;
+        }
+    }
+
     .analytics-hero__container {
         max-width: 1320px;
         margin: 60px auto 70px;
@@ -48,7 +80,15 @@ const blockStyle = `
         margin: 0 0 57px;
     }
 
-    .analytics-hero__button .wp-element-button {
+    /* Desktop CTA button */
+    .analytics-hero__content .wp-block-button,
+    .analytics-hero__cta .wp-block-button {
+        margin-bottom: 0;
+        display: inline-block;
+    }
+    
+    .analytics-hero__button .wp-element-button,
+    .analytics-hero__content .wp-element-button {
         padding: 15px 40px !important;
         justify-content: center !important;
         align-items: center !important;
@@ -61,6 +101,36 @@ const blockStyle = `
         transition: transform 0.2s ease !important;
         font-size: 16px !important;
         cursor: pointer !important;
+    }
+    
+    /* Hide mobile CTA on desktop */
+    .analytics-hero__cta-mobile {
+        display: none;
+    }
+    
+    /* Mobile button styles */
+    .analytics-hero__mobile-button {
+        display: none;
+        width: 100%;
+        padding: 15px 40px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 10px;
+        background: var(--Malina, #2FCA02);
+        color: white;
+        text-decoration: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    /* Make sure inner blocks content is visible */
+    .analytics-hero__cta-mobile .wp-block-button {
+        display: block;
+        width: 100%;
     }
 
     .analytics-hero__button.wp-element-button:hover {
@@ -97,24 +167,164 @@ const blockStyle = `
         background: rgba(255, 255, 255, 0.15);
         border-color: rgba(255, 255, 255, 0.4);
     }
+    
+    /* Dashboard admin UI styles */
+    .analytics-hero__mobile-dashboards {
+        margin-top: 30px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 20px;
+    }
+    
+    .analytics-hero__dashboard-title {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #333;
+    }
+    
+    .analytics-hero__dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    
+    .analytics-hero__dashboard-item {
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .analytics-hero__dashboard-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    .analytics-hero__dashboard-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.7) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 3px !important;
+        padding: 2px 8px !important;
+        font-size: 11px !important;
+    }
+    
+    .analytics-hero__dashboard-add {
+        width: 100%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f8f8 !important;
+        border: 1px dashed #ccc !important;
+        color: #555 !important;
+        font-size: 14px !important;
+    }
+    
+    /* Frontend mobile dashboard grid */
+    .analytics-hero__mobile-dashboard-grid {
+        display: none;
+    }
+    
+    /* Hide the desktop CTA in mobile view */
+    .analytics-hero__cta {
+        display: block;
+    }
 
     @media (max-width: 768px) {
         .analytics-hero {
-            padding: 40px 0;
+            padding: 0;
         }
 
         .analytics-hero__container {
             flex-direction: column;
-            text-align: center;
+            text-align: left;
+            padding: 30px 20px 80px; /* Added extra padding at bottom */
+            margin: 0;
+            border-radius: 0;
+            gap: 30px;
+            background: linear-gradient(97deg, rgba(47, 202, 2, 0.10) 3.08%, rgba(102, 83, 198, 0.10) 96.79%);
+            position: relative; /* For absolute positioning of mobile CTA */
         }
 
         .analytics-hero__content {
             flex: 0 0 100%;
+            padding: 0 20px;
         }
 
+        .analytics-hero__subtitle {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .analytics-hero__title {
+            font-size: 30px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: #221A4C;
+            font-weight: 750;
+        }
+
+        .analytics-hero__description {
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 30px;
+            color: #8399AF;
+            font-weight: 400;
+        }
+
+        /* Style the image container for mobile */
         .analytics-hero__image {
             flex: 0 0 100%;
             padding: 0 20px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Style the image display for mobile */
+        .analytics-hero__desktop-img {
+            width: 100%;
+            height: auto;
+            margin: 0 0 20px;
+            border-radius: 10px;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Hide the mobile dashboard grid since we're using main image */
+        .analytics-hero__mobile-dashboard-grid {
+            display: none;
+        }
+        
+        /* Hide the desktop CTA in mobile view */
+        .analytics-hero__cta {
+            display: none;
+        }
+
+
+        
+        .analytics-hero__cta-mobile .wp-block-button {
+            width: 100%;
+        }
+        
+        .analytics-hero__cta-mobile .wp-element-button {
+            width: 100%;
+            display: block;
+            padding: 16px 20px !important;
+            text-align: center;
+            border-radius: 10px !important;
+            background: #2FCA02 !important;
+            color: white !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            text-transform: none !important;
+            box-shadow: 0 4px 10px rgba(47, 202, 2, 0.2) !important;
         }
     }
 `;
@@ -143,10 +353,14 @@ registerBlockType('bevision/analytics-hero', {
         },
         imageId: {
             type: 'number'
+        },
+        dashboardImages: {
+            type: 'array',
+            default: []
         }
     },
     edit: ({ attributes, setAttributes }) => {
-        const { subtitle, title, description, imageUrl } = attributes;
+        const { subtitle, title, description, imageUrl, dashboardImages } = attributes;
 
         return (
             <div className="analytics-hero">
@@ -198,40 +412,92 @@ registerBlockType('bevision/analytics-hero', {
                         </div>
                     </div>
                     <div className="analytics-hero__image">
-                        <MediaUpload
-                            onSelect={(media) => {
-                                setAttributes({
-                                    imageUrl: media.url,
-                                    imageId: media.id
-                                });
-                            }}
-                            type="image"
-                            value={attributes.imageId}
-                            render={({ open }) => (
-                                imageUrl ? (
-                                    <img
-                                        src={imageUrl}
-                                        onClick={open}
-                                        style={{ cursor: 'pointer' }}
-                                        alt={__('Hero image', 'bevision')}
+                        {/* Desktop image */}
+                        <div className="analytics-hero__desktop-image">
+                            <MediaUpload
+                                onSelect={(media) => {
+                                    setAttributes({
+                                        imageUrl: media.url,
+                                        imageId: media.id
+                                    });
+                                }}
+                                type="image"
+                                value={attributes.imageId}
+                                render={({ open }) => (
+                                    imageUrl ? (
+                                        <img
+                                            src={imageUrl}
+                                            onClick={open}
+                                            style={{ cursor: 'pointer' }}
+                                            alt={__('Hero image', 'bevision')}
+                                        />
+                                    ) : (
+                                        <Button
+                                            className="analytics-hero__image-button"
+                                            onClick={open}
+                                        >
+                                            {__('Upload Desktop Image', 'bevision')}
+                                        </Button>
+                                    )
+                                )}
+                            />
+                        </div>
+                        
+                        {/* Mobile dashboard images */}
+                        <div className="analytics-hero__mobile-dashboards">
+                            <h4 className="analytics-hero__dashboard-title">{__('Mobile Dashboard Images (up to 6)', 'bevision')}</h4>
+                            <div className="analytics-hero__dashboard-grid">
+                                {dashboardImages.map((image, index) => (
+                                    <div key={index} className="analytics-hero__dashboard-item">
+                                        <img 
+                                            src={image.url} 
+                                            alt={__('Dashboard', 'bevision')} 
+                                        />
+                                        <Button 
+                                            isSmall 
+                                            className="analytics-hero__dashboard-remove" 
+                                            onClick={() => {
+                                                const newImages = [...dashboardImages];
+                                                newImages.splice(index, 1);
+                                                setAttributes({ dashboardImages: newImages });
+                                            }}
+                                        >
+                                            {__('Remove', 'bevision')}
+                                        </Button>
+                                    </div>
+                                ))}
+                                
+                                {dashboardImages.length < 6 && (
+                                    <MediaUpload
+                                        onSelect={(media) => {
+                                            const newImage = {
+                                                id: media.id,
+                                                url: media.url
+                                            };
+                                            setAttributes({
+                                                dashboardImages: [...dashboardImages, newImage]
+                                            });
+                                        }}
+                                        type="image"
+                                        render={({ open }) => (
+                                            <Button 
+                                                className="analytics-hero__dashboard-add" 
+                                                onClick={open}
+                                            >
+                                                {__('+ Add Dashboard Image', 'bevision')}
+                                            </Button>
+                                        )}
                                     />
-                                ) : (
-                                    <Button
-                                        className="analytics-hero__image-button"
-                                        onClick={open}
-                                    >
-                                        {__('Upload Image', 'bevision')}
-                                    </Button>
-                                )
-                            )}
-                        />
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         );
     },
     save: ({ attributes }) => {
-        const { subtitle, title, description, imageUrl } = attributes;
+        const { subtitle, title, description, imageUrl, dashboardImages } = attributes;
 
         return (
             <div className="analytics-hero">
@@ -258,12 +524,34 @@ registerBlockType('bevision/analytics-hero', {
                         </div>
                     </div>
                     <div className="analytics-hero__image">
+                        {/* Desktop image */}
                         {imageUrl && (
                             <img
+                                className="analytics-hero__desktop-img"
                                 src={imageUrl}
                                 alt={__('Hero image', 'bevision')}
                             />
                         )}
+                        
+                        {/* Mobile dashboard images */}
+                        {dashboardImages && dashboardImages.length > 0 && (
+                            <div className="analytics-hero__mobile-dashboard-grid">
+                                {dashboardImages.map((image, index) => (
+                                    <div key={index} className="analytics-hero__dashboard-item">
+                                        <img 
+                                            src={image.url} 
+                                            alt={__('Dashboard', 'bevision')} 
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {/* Mobile-only button for smaller screens */}
+                    <div className="mobile-button-container">
+                        <a href="#" className="mobile-start-exploring">
+                            {__('Start exploring', 'bevision')}
+                        </a>
                     </div>
                 </div>
             </div>

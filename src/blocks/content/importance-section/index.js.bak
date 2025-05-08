@@ -7,16 +7,15 @@ import { __ } from '@wordpress/i18n';
 const blockStyle = `
     .importance-section {
         color: #fff;
+        padding: 4rem 0;
     }
 
     .importance-section .container {
         background-color: #f5fcf1;
         max-width: 1320px;
-        width: 100%;
         margin: 0 auto;
         padding: 60px;
         border-radius: 20px;
-        box-sizing: border-box;
     }
 
     .importance-section__header {
@@ -151,54 +150,14 @@ const blockStyle = `
     }
     
     @media (max-width: 768px) {
-        .importance-section {
-            padding: 0 15px;
-        }
-            
-        .importance-section .container {
-            padding: 30px 15px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .importance-section__header {
-            margin-bottom: 30px;
-        }
-
-        .importance-section__title {
-            font-size: 24px;
-        }
-
         .importance-section__content-wrapper {
             flex-direction: column;
-            gap: 1.5rem;
         }
         
         .importance-section__content,
         .importance-section__image {
             width: 100%;
             flex: none;
-        }
-
-        .accordion-title {
-            font-size: 20px;
-        }
-
-        .accordion-item.active .accordion-title {
-            font-size: 20px;
-        }
-
-        .accordion-item {
-            margin-bottom: 16px;
-            padding-left: 15px;
-        }
-
-        .importance-section__image img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
         }
     }
 `;
@@ -241,26 +200,26 @@ registerBlockType('bevision/importance-section', {
         },
         subtitle: {
             type: 'string',
-            default: 'Importance of BeVision'
+            default: 'IMPORTANCE'
         },
         title: {
             type: 'string',
-            default: 'Why BeVision is Important'
+            default: 'Why is it so important?'
         },
         accordionItems: {
             type: 'array',
             default: [
                 {
-                    title: 'Mission Statement',
-                    content: 'Our mission is to provide innovative solutions that meet the needs of our clients and exceed their expectations.'
+                    title: 'Listen to your business heartbeat',
+                    content: 'Our business intelligence consulting team delves into operational processes, data workflows, and organization structures to identify the BI system\'s goals and use cases.'
                 },
                 {
-                    title: 'Vision',
-                    content: 'We strive to be a leader in the industry by delivering exceptional quality and service that sets a standard for our competitors.'
+                    title: 'Better decisions for your business',
+                    content: 'Make informed decisions based on comprehensive data analysis and insights.'
                 },
                 {
-                    title: 'Core Values',
-                    content: 'We are guided by our core values of integrity, excellence, innovation, and customer-centricity in everything we do.'
+                    title: 'Fast and smooth deployment',
+                    content: 'Quick implementation ensuring minimal disruption to your business operations.'
                 }
             ]
         }
@@ -300,70 +259,6 @@ registerBlockType('bevision/importance-section', {
 
         return (
             <>
-                <InspectorControls>
-                    <PanelBody
-                        title="Image Settings"
-                        initialOpen={true}
-                    >
-                        <PanelRow>
-                            <div style={{ width: '100%' }}>
-                                <p><strong>Section Image</strong></p>
-                                <MediaUploadCheck>
-                                    <MediaUpload
-                                        onSelect={onSelectImage}
-                                        allowedTypes={['image']}
-                                        value={attributes.imageId}
-                                        render={({ open }) => (
-                                            <>
-                                                {attributes.imageUrl ? (
-                                                    <div className="inspector-image-container" style={{ marginBottom: '10px' }}>
-                                                        <img 
-                                                            src={attributes.imageUrl} 
-                                                            alt="" 
-                                                            style={{ 
-                                                                maxWidth: '100%', 
-                                                                height: 'auto',
-                                                                marginBottom: '8px'
-                                                            }} 
-                                                        />
-                                                        <div>
-                                                            <Button
-                                                                onClick={open}
-                                                                variant="secondary"
-                                                                isSmall
-                                                                style={{ marginRight: '8px' }}
-                                                            >
-                                                                Replace Image
-                                                            </Button>
-                                                            <Button
-                                                                onClick={removeImage}
-                                                                variant="link"
-                                                                isDestructive
-                                                                isSmall
-                                                            >
-                                                                Remove
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <Button
-                                                        onClick={open}
-                                                        variant="secondary"
-                                                        className="editor-media-placeholder__button"
-                                                        icon="upload"
-                                                        style={{ width: '100%' }}
-                                                    >
-                                                        Upload Image
-                                                    </Button>
-                                                )}
-                                            </>
-                                        )}
-                                    />
-                                </MediaUploadCheck>
-                            </div>
-                        </PanelRow>
-                    </PanelBody>
-                </InspectorControls>
                 <style>{blockStyle}</style>
                 <div {...blockProps}>
                     <div className="container">

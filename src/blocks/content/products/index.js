@@ -6,7 +6,7 @@ import TabContent from './components/TabContent';
 
 const styles = {
     productsSection: {
-        padding: '70px 0px 120px',
+        padding: '10px 0px 120px',
         color: '#333',
         position: 'relative',
         overflow: 'hidden'
@@ -44,7 +44,7 @@ const styles = {
         fontStyle: 'normal',
         fontWeight: 750,
         lineHeight: 'normal',
-        margin: '0px 0px 60px'
+        margin: '0px 0px 30px'
     }
 };
 
@@ -576,7 +576,7 @@ registerBlockType('bevision/products', {
 
         return (
             <div {...blockProps}>
-                <div style={styles.productsSection}>
+                <div style={styles.productsSection} className="products-section">
                     <div style={styles.glowEffect}></div>
                     <div style={styles.container}>
                         <h2 style={styles.sectionTitle}>PRODUCTS</h2>
@@ -607,11 +607,44 @@ registerBlockType('bevision/products', {
                                     const tabsNav = document.querySelector('.products-tabs-nav');
                                     if (!tabsNav) return;
 
+                                    // Make sure first 4 tabs are always in first row on mobile
+                                    const ensureFirstFourTabsInRow = () => {
+                                        if (window.innerWidth <= 767) {
+                                            const tabItems = tabsNav.querySelectorAll('.products-tab-item');
+                                            // Force first 4 items to have exact 25% - 6px width
+                                            for (let i = 0; i < Math.min(4, tabItems.length); i++) {
+                                                tabItems[i].style.flex = '0 0 calc(25% - 6px)';
+                                            }
+                                        }
+                                    };
+                                    
+                                    // Call it on load and resize
+                                    ensureFirstFourTabsInRow();
+                                    window.addEventListener('resize', ensureFirstFourTabsInRow);
+                                    
                                     const tabItems = tabsNav.querySelectorAll('.products-tab-item');
                                     const tabContents = document.querySelectorAll('.products-tab-content');
 
                                     const style = document.createElement('style');
-                                    style.innerHTML = '.products-tab-item:hover { color: #6653C6 !important; background: #ecf0f8 !important; }';
+                                    style.innerHTML = '.products-tab-item:hover { color: #6653C6 !important; background: #ecf0f8 !important; }' +
+                                    '.products-tabs-nav { display: flex; justify-content: center; gap: 10px; list-style: none; padding: 0; margin-bottom: 60px; }' +
+                                    '@media screen and (max-width: 767px) {' +
+                                    '  .products-tabs-nav { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 0 10px 10px; margin-bottom: 20px; }' +
+                                    '  .products-tab-item { flex: 0 0 calc(25% - 6px); white-space: nowrap; font-size: 12px !important; padding: 6px 5px !important; margin: 0 0 8px; text-align: center; overflow: hidden; text-overflow: ellipsis; }' +
+                                    '  .products-tab-item:nth-child(-n+4) { margin-bottom: 8px; }' +
+                                    '  .products-grid { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0 15px; }' +
+                                    '  .products-content-left { width: 100% !important; order: 2; }' +
+                                    '  .products-content-right { width: 100% !important; order: 1; margin-bottom: 0; height: 220px !important; border-radius: 12px !important; }' +
+                                    '  .products-subtitle { font-size: 14px !important; }' +
+                                    '  .products-title { font-size: 20px !important; margin-bottom: 16px !important; }' +
+                                    '  .products-feature-list { margin-bottom: 20px; }' +
+                                    '  .products-feature-list li { font-size: 14px !important; margin-bottom: 8px !important; line-height: 1.4 !important; padding-left: 24px !important; background-position: 0 4px !important; }' +
+                                    '  .products-button-group { display: flex; flex-direction: row !important; gap: 10px !important; justify-content: space-between; }' +
+                                    '  .products-button { flex: 1; padding: 12px 14px !important; font-size: 13px !important; text-align: center; border-radius: 6px !important; white-space: nowrap; }' +
+                                    '  .products-section { padding: 0 0 40px !important; }' +
+                                    '  .products-section h2 { font-size: 12px !important; margin-bottom: 4px !important; }' +
+                                    '  .products-section h3 { font-size: 24px !important; margin-bottom: 20px !important; }' +
+                                    '};';
                                     document.head.appendChild(style);
 
                                     function setActiveTab(tabId) {
