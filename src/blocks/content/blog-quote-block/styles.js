@@ -11,7 +11,7 @@ export const styles = {
     background: '#fff',
     border: '2px solid #6E56CF',
     borderRadius: '16px',
-    maxWidth: '1440px',
+    maxWidth: '1250px',
     margin: '0 auto',
     padding: isMobile ? '32px 12px' : '40px 32px',
     boxSizing: 'border-box',

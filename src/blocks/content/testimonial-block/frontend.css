@@ -1,18 +1,29 @@
 .bevision-testimonial-block {
   display: flex;
-  gap: 40px;
+  gap: 60px;
   align-items: stretch;
   background: transparent;
-  padding: 40px 0;
-  max-width: 1440px;
+  padding:  70px 0px 60px 0px;
+  max-width: 1250px;
   margin: 0 auto;
 }
+
+.bevision-testimonial-block__intro {
+  flex: 1.2;
+  color: #2e2367;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
 .bevision-testimonial-block__testimonial {
   flex: 1;
   background: transparent;
   border: 2px solid #7e6eea;
   border-radius: 24px;
-  padding: 40px 32px;
+  padding: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,12 +34,13 @@
 }
 .bevision-testimonial-block__testimonial blockquote,
 .bevision-testimonial-block__testimonial .quote-text {
-  font-size: 1.1rem;
-  color: #392d6e;
-  font-weight: 500;
+  color: #221A4C;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+  margin-bottom: 40px;
   text-align: center;
-  line-height: 1.5;
-  margin: 0 auto 24px auto;
   letter-spacing: 0;
   max-width: 90%;
   display: block;
@@ -52,15 +64,17 @@
   font-weight: 400;
 }
 
-/* Left column styling */
-.bevision-testimonial-block > div:first-child h2 {
+/* Intro section styling */
+.bevision-testimonial-block__intro .intro-title,
+.bevision-testimonial-block__intro h2 {
   font-size: 1.5rem;
   font-weight: 700;
   color: #2e2367;
   margin-bottom: 1rem;
 }
 
-.bevision-testimonial-block > div:first-child p {
+.bevision-testimonial-block__intro .intro-paragraph,
+.bevision-testimonial-block__intro p {
   font-size: 0.95rem;
   color: #2e2367;
   margin-bottom: 1rem;
@@ -71,8 +85,13 @@
   .bevision-testimonial-block {
     flex-direction: column;
     gap: 24px;
-    padding: 24px 0;
+    padding: 24px 20px;
   }
+  
+  .bevision-testimonial-block__intro {
+    padding-right: 0;
+  }
+  
   .bevision-testimonial-block__testimonial {
     padding: 24px 16px;
     min-height: 220px;
@@ -92,3 +111,68 @@
     font-size: 0.75rem;
   }
 }
+
+@media (max-width: 768px) {
+ .bevision-testimonial-block h2 {
+   font-size: 28px !important;
+ }
+ .bevision-testimonial-block {
+    margin: 0  !important;
+    padding: 60px 20px !important;
+    gap: 40px !important;
+ }
+}
+
+/* Layout reversal styles */
+.bevision-testimonial-block.layout-reversed {
+  flex-direction: row-reverse;
+}
+
+.bevision-testimonial-block.layout-reversed .bevision-testimonial-block__intro {
+  padding-left: 24px;
+  padding-right: 0;
+}
+
+.bevision-testimonial-block.layout-reversed .bevision-testimonial-block__testimonial {
+  margin-right: 0;
+}
+
+@media (max-width: 900px) {
+  .bevision-testimonial-block.layout-reversed {
+    flex-direction: column;
+  }
+  
+  .bevision-testimonial-block.layout-reversed .bevision-testimonial-block__intro {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .bevision-testimonial-block.layout-reversed .bevision-testimonial-block__testimonial {
+    margin-right: 0;
+  }
+}
+
+/* Ensure consistent testimonial content styling */
+.testimonial-card .content,
+.testimonial-card p,
+.wp-block-bevision-client-testimonials .content,
+.wp-block-bevision-client-testimonials .testimonial-card p {
+    color: #221A4C !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+    font-weight: 400 !important;
+    margin-bottom: 40px !important;
+}
+
+/* Additional specificity for saved testimonial content */
+.wp-block-bevision-client-testimonials .carousel-inner .testimonial-card .content {
+    color: #221A4C !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+    font-weight: 400 !important;
+    margin-bottom: 40px !important;
+}
+
+

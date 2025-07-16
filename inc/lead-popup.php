@@ -18,33 +18,33 @@ function bevision_render_lead_popup() {
     ?>
     <div id="bevision-lead-popup" class="bevision-lead-popup" style="display: none;">
         <div class="popup-header">
-            <h2 class="popup-title">Request a demo</h2>
+            <h2 class="popup-title">მოითხოვეთ დემო</h2>
             <button class="popup-close">&times;</button>
         </div>
         <div class="popup-content">
-            <p class="popup-subtitle">Please enter your name and number, we will contact you shortly</p>
+            <p class="popup-subtitle">გთხოვთ შეიყვანოთ თქვენი სახელი და ნომერი, ჩვენ დაგიკავშირდებით მალე</p>
             
             <form id="lead-form" class="popup-form">
                 <input type="hidden" id="lead_form_nonce" name="lead_form_nonce" value="<?php echo esc_attr($nonce); ?>" />
                 <div class="form-group">
-                    <input type="text" id="name" name="name" placeholder="Your name" required />
+                    <input type="text" id="name" name="name" placeholder="თქვენი სახელი" required />
                 </div>
                 <div class="form-group">
-                    <input type="text" id="company" name="company" placeholder="Company" required />
+                    <input type="text" id="company" name="company" placeholder="კომპანია" required />
                 </div>
                 <div class="form-group">
-                    <input type="tel" id="phone" name="phone" placeholder="Phone number" required />
+                    <input type="tel" id="phone" name="phone" placeholder="ტელეფონის ნომერი" required />
                 </div>
                 <div class="form-group">
-                    <input type="email" id="email" name="email" placeholder="Email" required />
+                    <input type="email" id="email" name="email" placeholder="ელ-ფოსტა" required />
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="submit-button">Request</button>
-                    <button type="button" class="cancel-button">Cancel</button>
+                    <button type="submit" class="submit-button">მოთხოვნა</button>
+                    <button type="button" class="cancel-button">გაუქმება</button>
                 </div>
             </form>
             <div id="success-message" class="success-message" style="display: none;">
-                Thank you for your submission! We will contact you shortly.
+                მადლობას გიხდით თქვენი შეტყობინებისთვის! ჩვენ დაგიკავშირდებით მალე.
             </div>
         </div>
     </div>
@@ -303,7 +303,7 @@ function bevision_lead_popup_scripts() {
                 const submitButton = leadForm.querySelector('.submit-button');
                 if (submitButton) {
                     submitButton.disabled = true;
-                    submitButton.innerHTML = 'Sending...';
+                    submitButton.innerHTML = 'იგზავნება...';
                 }
                 
                 // Send data to server using WordPress AJAX
@@ -328,7 +328,7 @@ function bevision_lead_popup_scripts() {
                                 successMessage.style.display = 'none';
                                 if (submitButton) {
                                     submitButton.disabled = false;
-                                    submitButton.innerHTML = 'Request';
+                                    submitButton.innerHTML = 'მოთხოვნა';
                                 }
                             }, 300);
                         }, 3000);
@@ -337,16 +337,16 @@ function bevision_lead_popup_scripts() {
                         alert(data.data.message || 'An error occurred. Please try again later.');
                         if (submitButton) {
                             submitButton.disabled = false;
-                            submitButton.innerHTML = 'Request';
+                            submitButton.innerHTML = 'მოთხოვნა';
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error submitting lead form:', error);
-                    alert('An error occurred. Please try again later.');
+                    alert('დაფიქსირდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.');
                     if (submitButton) {
                         submitButton.disabled = false;
-                        submitButton.innerHTML = 'Request';
+                        submitButton.innerHTML = 'მოთხოვნა';
                     }
                 });
             });

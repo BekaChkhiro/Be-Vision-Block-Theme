@@ -7,7 +7,7 @@ const Header = ({ attributes, setAttributes, updateMenuItem }) => {
     return (
         <header style={{ backgroundColor: attributes.backgroundColor }}>
             <div className="header-container" style={{
-                maxWidth: '1440px',
+                maxWidth: '1250px',
                 margin: '0 auto',
                 padding: '25px 0px',
                 display: 'flex',

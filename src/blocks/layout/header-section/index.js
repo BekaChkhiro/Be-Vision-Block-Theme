@@ -1,5 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
+import { store as coreDataStore } from '@wordpress/core-data';
 
 // Import components
 import Header from './components/Header';
@@ -25,11 +27,11 @@ registerBlockType('bevision/header-section', {
         },
         buttonPaddingV: {
             type: 'number',
-            default: 12
+            default: 10
         },
         buttonPaddingH: {
             type: 'number',
-            default: 24
+            default: 40
         },
         buttonBorderRadius: {
             type: 'number',
@@ -37,7 +39,7 @@ registerBlockType('bevision/header-section', {
         },
         buttonFontSize: {
             type: 'number',
-            default: 16
+            default: 18
         },
         buttonFontWeight: {
             type: 'string',
@@ -63,6 +65,17 @@ registerBlockType('bevision/header-section', {
                 { text: 'About us', url: '#', description: 'Proin nec tortor nec justo consequat luctus' }
             ]
         },
+        mobileMenuItems: {
+            type: 'array',
+            default: [
+                { text: 'Products', url: '#', hasSubmenu: false, submenu: [] },
+                { text: 'Services', url: '#', hasSubmenu: true, submenu: [
+                    { url: '#', title: 'Business Consulting', description: 'Strategic business advisory services' },
+                    { url: '#', title: 'Software Development', description: 'Custom software solutions and development services' }
+                ]},
+                { text: 'About Us', url: '#', hasSubmenu: false, submenu: [] }
+            ]
+        },
         submenuEnabled: {
             type: 'boolean',
             default: false
@@ -83,6 +96,13 @@ registerBlockType('bevision/header-section', {
             type: 'string',
             default: '#'
         },
+        languages: {
+            type: 'array',
+            default: [
+                { code: 'GE', name: 'GE', flag: '/wp-content/themes/BeVision/assets/images/ge-flag.svg', url: '#' },
+                { code: 'EN', name: 'EN', flag: '/wp-content/themes/BeVision/assets/images/en-flag.svg', url: '#' }
+            ]
+        },
         buttonText: {
             type: 'string',
             default: 'Request a demo'
@@ -102,6 +122,22 @@ registerBlockType('bevision/header-section', {
         descriptionColor: {
             type: 'string',
             default: '#666'
+        },
+        useWordPressMenu: {
+            type: 'boolean',
+            default: false
+        },
+        selectedMenuId: {
+            type: 'number',
+            default: 0
+        },
+        useMobileWordPressMenu: {
+            type: 'boolean',
+            default: false
+        },
+        selectedMobileMenuId: {
+            type: 'number',
+            default: 0
         }
     },
     edit: ({ attributes, setAttributes }) => {

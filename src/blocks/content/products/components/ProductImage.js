@@ -63,17 +63,21 @@ const ProductImage = ({ image, onSelect, onRemove, isEditing = false, className 
                                     render={({ open }) => (
                                         <Button 
                                             onClick={open}
-                                            icon="update"
                                             style={styles.imageButton}
-                                        />
+                                            aria-label="Change image"
+                                        >
+                                            <span className="dashicons dashicons-update" style={{ fontSize: '18px', color: '#6653C6' }} />
+                                        </Button>
                                     )}
                                 />
                                 <Button 
                                     isDestructive
-                                    icon="no-alt"
                                     onClick={() => onRemove()}
                                     style={styles.imageButton}
-                                />
+                                    aria-label="Remove image"
+                                >
+                                    <span className="dashicons dashicons-no-alt" style={{ fontSize: '18px', color: '#d63638' }} />
+                                </Button>
                             </div>
                         </>
                     ) : (

@@ -97,33 +97,32 @@ document.addEventListener("DOMContentLoaded", function() {
         const headerActions = document.createElement('div');
         headerActions.style.display = 'flex';
         headerActions.style.alignItems = 'center';
-        headerActions.style.gap = '15px';
+        headerActions.style.justifyContent = 'flex-end';
+        headerActions.style.gap = '0';
         
-        // Language selector
+        // Language selector with dropdown
         const langSelector = document.createElement('div');
-        langSelector.style.display = 'flex';
-        langSelector.style.alignItems = 'center';
-        langSelector.style.gap = '5px';
+        langSelector.className = 'language-selector hover-dropdown';
+        langSelector.style.position = 'relative';
+        langSelector.style.cursor = 'pointer';
+        langSelector.style.marginRight = '15px';
         
-        // Get desktop language selector
-        const desktopLangFlag = document.querySelector('.language-selector img');
-        const desktopLangText = document.querySelector('.language-selector span');
+        // Get desktop language selector elements
+        const desktopLangSelector = document.querySelector('.language-selector');
+        const desktopDropdown = document.querySelector('#desktop-language-dropdown');
+        const desktopLangText = document.querySelector('.language-selector .language-current span:not(.arrow-down)');
         
-        const langFlag = document.createElement('img');
-        if (desktopLangFlag) {
-            // Use the same language flag as desktop version
-            langFlag.src = desktopLangFlag.src;
-            langFlag.alt = desktopLangFlag.alt || 'Language';
-            langFlag.style.width = desktopLangFlag.style.width || '24px';
-            langFlag.style.height = desktopLangFlag.style.height || '24px';
-        } else {
-            // Fallback if desktop language flag not found
-            langFlag.src = '/wp-content/themes/BeVision/assets/images/ge-flag.svg';
-            langFlag.alt = 'Language';
-            langFlag.style.width = '24px';
-            langFlag.style.height = '24px';
-        }
+        // Create language current container
+        const langCurrent = document.createElement('div');
+        langCurrent.className = 'language-current';
+        langCurrent.style.display = 'flex';
+        langCurrent.style.alignItems = 'center';
+        langCurrent.style.gap = '0.5rem';
+        langCurrent.style.fontSize = '20px';
+        langCurrent.style.fontWeight = '600';
+        langCurrent.style.color = '#333';
         
+        // Add language text
         const langText = document.createElement('span');
         if (desktopLangText) {
             // Use the same language text as desktop version
@@ -133,8 +132,102 @@ document.addEventListener("DOMContentLoaded", function() {
             langText.textContent = 'GE';
         }
         
-        langSelector.appendChild(langFlag);
-        langSelector.appendChild(langText);
+        // Add arrow down
+        const arrowDown = document.createElement('span');
+        arrowDown.className = 'arrow-down';
+        
+        langCurrent.appendChild(langText);
+        langCurrent.appendChild(arrowDown);
+        langSelector.appendChild(langCurrent);
+        
+        // Create dropdown menu
+        const langDropdown = document.createElement('div');
+        langDropdown.className = 'language-dropdown';
+        langDropdown.id = 'mobile-menu-language-dropdown';
+        langDropdown.style.position = 'absolute';
+        langDropdown.style.top = '100%';
+        langDropdown.style.right = '0';
+        langDropdown.style.background = 'white';
+        langDropdown.style.border = '1px solid #eee';
+        langDropdown.style.borderRadius = '4px';
+        langDropdown.style.boxShadow = '0 2px 10px rgba(0,0,0,0.05)';
+        langDropdown.style.display = 'none';
+        langDropdown.style.zIndex = '1000';
+        langDropdown.style.minWidth = '120px';
+        langDropdown.style.marginTop = '5px';
+        
+        // Clone language options from desktop dropdown if available
+        if (desktopDropdown) {
+            const desktopOptions = desktopDropdown.querySelectorAll('.language-option');
+            desktopOptions.forEach(option => {
+                const langOption = option.cloneNode(true);
+                langOption.style.padding = '8px 16px';
+                langOption.style.display = 'flex';
+                langOption.style.alignItems = 'center';
+                langOption.style.gap = '8px';
+                langOption.style.transition = 'background 0.2s';
+                langOption.style.fontSize = '20px';
+                langOption.style.fontWeight = '600';
+                langOption.style.color = '#333';
+                langOption.addEventListener('mouseover', function() {
+                    this.style.background = '#f5f5f5';
+                });
+                langOption.addEventListener('mouseout', function() {
+                    this.style.background = '';
+                });
+                langDropdown.appendChild(langOption);
+            });
+        } else {
+            // Fallback if desktop dropdown not found
+            const languages = [
+                { code: 'GE', name: 'GE', url: '#' },
+                { code: 'EN', name: 'EN', url: '#' }
+            ];
+            
+            languages.forEach(lang => {
+                const langOption = document.createElement('a');
+                langOption.href = lang.url;
+                langOption.className = 'language-option';
+                langOption.setAttribute('data-lang-code', lang.code);
+                langOption.style.padding = '8px 16px';
+                langOption.style.display = 'flex';
+                langOption.style.alignItems = 'center';
+                langOption.style.gap = '8px';
+                langOption.style.transition = 'background 0.2s';
+                langOption.style.fontSize = '20px';
+                langOption.style.fontWeight = '600';
+                langOption.style.color = '#333';
+                
+                const optionText = document.createElement('span');
+                optionText.textContent = lang.name;
+                
+                langOption.appendChild(optionText);
+                langOption.addEventListener('mouseover', function() {
+                    this.style.background = '#f5f5f5';
+                });
+                langOption.addEventListener('mouseout', function() {
+                    this.style.background = '';
+                });
+                langDropdown.appendChild(langOption);
+            });
+        }
+        
+        langSelector.appendChild(langDropdown);
+        
+        // Toggle dropdown on click
+        langSelector.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = langDropdown.style.display === 'block';
+            langDropdown.style.display = isOpen ? 'none' : 'block';
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!langSelector.contains(e.target)) {
+                langDropdown.style.display = 'none';
+            }
+        });
+        
         headerActions.appendChild(langSelector);
         
         // Close button
@@ -199,6 +292,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Add demo button
         const demoButton = document.createElement('button');
         demoButton.textContent = 'Request a demo';
+        demoButton.className = 'demo-button';
         demoButton.style.backgroundColor = '#6c5ce7';
         demoButton.style.color = '#ffffff';
         demoButton.style.border = 'none';
@@ -233,14 +327,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         // Add click event for demo button
-        demoButton.addEventListener('click', function() {
+        demoButton.addEventListener('click', function(e) {
+            e.preventDefault();
             const popupElement = document.getElementById('bevision-lead-popup');
             const overlayElement = document.getElementById('popup-overlay');
             
             if (popupElement && overlayElement) {
                 popupElement.style.display = 'block';
                 overlayElement.style.display = 'block';
-                mobileMenu.style.display = 'none';
+                mobileMenu.classList.add('hidden');
+                document.body.classList.remove('mobile-menu-open');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
             }
         });
     }

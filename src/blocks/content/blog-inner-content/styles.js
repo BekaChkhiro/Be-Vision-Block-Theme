@@ -3,7 +3,7 @@ export const styles = {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        maxWidth: '1440px',
+        maxWidth: '1250px',
         margin: '0 auto',
         padding: '0',
     }),
@@ -25,7 +25,7 @@ export const styles = {
         fontSize: '16px',
         lineHeight: '1.7',
         marginBottom: '20px',
-        color: '#333',
+        color: '#221A4C',
     }),
     
     // Responsive styles

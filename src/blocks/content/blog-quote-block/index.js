@@ -1,6 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, RichText, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, ColorPalette, RangeControl, Button } from '@wordpress/components';
+import { PanelBody, ColorPalette, RangeControl, Button, TextControl, TextareaControl } from '@wordpress/components';
 import { styles } from './styles';
 import './frontend.css';
 
@@ -83,8 +83,43 @@ registerBlockType('bevision/blog-quote-block', {
 
         return (
             <>
+                <style>
+                    {`
+                        .author-image-clickable:hover + .author-image-edit-overlay,
+                        .author-image-edit-overlay:hover {
+                            opacity: 1 !important;
+                        }
+                        .author-image-clickable:hover {
+                            filter: brightness(0.8);
+                        }
+                    `}
+                </style>
                 <InspectorControls>
-                    <PanelBody title="Appearance Settings" initialOpen={true}>
+                    <PanelBody title="Content Settings" initialOpen={true}>
+                        <TextareaControl
+                            label="Quote Text"
+                            value={quote}
+                            onChange={(value) => setAttributes({ quote: value })}
+                            rows={4}
+                            help="Edit the main quote text"
+                        />
+                        
+                        <TextControl
+                            label="Author Name"
+                            value={authorName}
+                            onChange={(value) => setAttributes({ authorName: value })}
+                            help="Edit the author's name"
+                        />
+                        
+                        <TextControl
+                            label="Author Title"
+                            value={authorTitle}
+                            onChange={(value) => setAttributes({ authorTitle: value })}
+                            help="Edit the author's title or position"
+                        />
+                    </PanelBody>
+                    
+                    <PanelBody title="Appearance Settings" initialOpen={false}>
                         <div>
                             <p><strong>Background Color</strong></p>
                             <ColorPalette
@@ -168,29 +203,32 @@ registerBlockType('bevision/blog-quote-block', {
                             <p><strong>Author Image</strong></p>
                             <MediaUploadCheck>
                                 <MediaUpload
-                                    onSelect={(media) => setAttributes({
-                                        authorImage: {
-                                            url: media.url,
+                                    onSelect={(media) => {
+                                        // Make sure we have all required properties
+                                        const imageData = {
+                                            url: media.url || '',
                                             alt: media.alt || '',
-                                            id: media.id
-                                        }
-                                    })}
+                                            id: media.id || null
+                                        };
+                                        setAttributes({ authorImage: imageData });
+                                    }}
                                     allowedTypes={['image']}
                                     value={authorImage?.id}
                                     render={({ open }) => (
                                         <div>
                                             {authorImage?.url ? (
-                                                <div style={{ marginBottom: '10px' }}>
+                                                <div style={{ marginBottom: '15px' }}>
                                                     <img
                                                         src={authorImage.url}
-                                                        alt={authorImage.alt}
+                                                        alt={authorImage.alt || ""}
                                                         style={{ 
                                                             width: '70px', 
                                                             height: '70px', 
                                                             objectFit: 'cover',
                                                             borderRadius: '50%',
                                                             border: '2px solid #fff',
-                                                            boxShadow: '0px 2px 8px rgba(0,0,0,0.08)'
+                                                            boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+                                                            display: 'block'
                                                         }}
                                                     />
                                                 </div>
@@ -249,24 +287,121 @@ registerBlockType('bevision/blog-quote-block', {
                     </div>
                     <div style={styles.authorContainer()}>
                         <div style={styles.authorImageContainer()}>
-                            {authorImage?.url ? (
-                                <img
-                                    src={authorImage.url}
-                                    alt={authorImage.alt}
-                                    style={styles.authorImage()}
+                            <MediaUploadCheck>
+                                <MediaUpload
+                                    onSelect={(media) => {
+                                        const imageData = {
+                                            url: media.url || '',
+                                            alt: media.alt || '',
+                                            id: media.id || null
+                                        };
+                                        setAttributes({ authorImage: imageData });
+                                    }}
+                                    allowedTypes={['image']}
+                                    value={authorImage?.id}
+                                    render={({ open }) => (
+                                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                            {authorImage?.url ? (
+                                                <>
+                                                    <img
+                                                        src={authorImage.url}
+                                                        alt={authorImage.alt || ""}
+                                                        style={{
+                                                            ...styles.authorImage(),
+                                                            display: 'block',
+                                                            maxWidth: '100%',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={open}
+                                                        className="author-image-clickable"
+                                                    />
+                                                    {/* Edit overlay */}
+                                                    <div 
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '50%',
+                                                            left: '50%',
+                                                            transform: 'translate(-50%, -50%)',
+                                                            backgroundColor: 'rgba(0,0,0,0.7)',
+                                                            color: 'white',
+                                                            padding: '4px 8px',
+                                                            borderRadius: '4px',
+                                                            fontSize: '10px',
+                                                            opacity: '0',
+                                                            transition: 'opacity 0.3s ease',
+                                                            pointerEvents: 'none',
+                                                            zIndex: '2'
+                                                        }}
+                                                        className="author-image-edit-overlay"
+                                                    >
+                                                        Click to change
+                                                    </div>
+                                                    {/* Remove button */}
+                                                    <Button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setAttributes({
+                                                                authorImage: {
+                                                                    url: '',
+                                                                    alt: '',
+                                                                    id: null
+                                                                }
+                                                            });
+                                                        }}
+                                                        className="button is-small"
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '2px',
+                                                            right: '2px',
+                                                            backgroundColor: '#fff',
+                                                            border: 'none',
+                                                            borderRadius: '50%',
+                                                            padding: '2px 4px',
+                                                            cursor: 'pointer',
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                                            zIndex: '3',
+                                                            fontSize: '10px',
+                                                            lineHeight: '1',
+                                                            minWidth: 'auto',
+                                                            minHeight: 'auto'
+                                                        }}
+                                                        title="Remove author image"
+                                                    >
+                                                        ✕
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <div 
+                                                    style={{
+                                                        ...styles.authorImagePlaceholder(),
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#f0f0f0',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        cursor: 'pointer',
+                                                        border: '2px dashed #ccc',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                    onClick={open}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.backgroundColor = '#e8e8e8';
+                                                        e.target.style.borderColor = '#999';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.backgroundColor = '#f0f0f0';
+                                                        e.target.style.borderColor = '#ccc';
+                                                    }}
+                                                >
+                                                    <span style={{color: '#666', fontSize: '10px', textAlign: 'center'}}>
+                                                        📷<br/>Click to add
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 />
-                            ) : (
-                                <div style={{
-                                    ...styles.authorImagePlaceholder(),
-                                    borderRadius: '50%',
-                                    backgroundColor: '#f0f0f0',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }}>
-                                    <span style={{color: '#666', fontSize: '12px'}}>ფოტო</span>
-                                </div>
-                            )}
+                            </MediaUploadCheck>
                         </div>
                         <div style={styles.authorInfo()}>
                             <RichText
@@ -325,7 +460,16 @@ registerBlockType('bevision/blog-quote-block', {
                 <div className="author-container">
                     {authorImage?.url && (
                         <div className="author-image-container">
-                            <img src={authorImage.url} alt={authorImage.alt} />
+                            <img 
+                                src={authorImage.url} 
+                                alt={authorImage.alt || ""} 
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: '50%'
+                                }}
+                            />
                         </div>
                     )}
                     <div className="author-info">

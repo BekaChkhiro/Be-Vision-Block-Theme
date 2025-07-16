@@ -21,7 +21,7 @@ const Navigation = ({ menuItems, submenuEnabled, updateMenuItem }) => {
                                 color: '#333', 
                                 textDecoration: 'none',
                                 fontWeight: 'bold',
-                                fontSize: '18px',
+                                fontSize: '20px',
                                 marginBottom: '5px'
                             }}
                         />
@@ -42,7 +42,7 @@ const Navigation = ({ menuItems, submenuEnabled, updateMenuItem }) => {
                         tagName="a"
                         value={item.text}
                         onChange={(text) => updateMenuItem(index, 'text', text)}
-                        style={{ color: '#333', textDecoration: 'none' }}
+                        style={{ color: '#333', textDecoration: 'none', fontSize: '20px' }}
                     />
                 )
             ))}

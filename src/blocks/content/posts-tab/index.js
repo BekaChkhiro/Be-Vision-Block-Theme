@@ -11,7 +11,7 @@ const blockStyle = {
         overflow: 'hidden'
     },
     container: {
-        maxWidth: '1200px',
+        maxWidth: '1250px',
         margin: '0 auto',
         padding: '0 15px',
     },
@@ -99,6 +99,10 @@ registerBlockType('bevision/blog-posts-filter', {
             type: 'array',
             default: []
         },
+        allCategories: {
+            type: 'array',
+            default: []
+        },
         currentTab: {
             type: 'string',
             default: 'all'
@@ -110,12 +114,32 @@ registerBlockType('bevision/blog-posts-filter', {
         maxPosts: {
             type: 'number',
             default: 12
+        },
+        allCategoriesLabel: {
+            type: 'string',
+            default: 'All'
+        },
+        loadMoreLabel: {
+            type: 'string',
+            default: 'მეტის ნახვა'
+        },
+        loadingLabel: {
+            type: 'string',
+            default: 'პოსტების ჩატვირთვა...'
+        },
+        noPostsFoundLabel: {
+            type: 'string',
+            default: 'პოსტები ვერ მოიძებნა'
+        },
+        errorLabel: {
+            type: 'string',
+            default: 'პოსტების ჩატვირთვა ვერ მოხერხდა. გთხოვთ სცადოთ თავიდან.'
         }
     },
 
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps();
-        const { categories, currentTab, postsPerPage, maxPosts } = attributes;
+        const { categories, allCategories, currentTab, postsPerPage, maxPosts } = attributes;
         
         const [availableCategories, setAvailableCategories] = useState([]);
         const [posts, setPosts] = useState([]);
@@ -133,10 +157,15 @@ registerBlockType('bevision/blog-posts-filter', {
                     slug: cat.slug
                 }));
                 
-                setAvailableCategories([
-                    { id: 'all', name: 'All', slug: 'all' },
+                const allCatsWithAll = [
+                    { id: 'all', name: attributes.allCategoriesLabel || 'All', slug: 'all' },
                     ...formattedCategories
-                ]);
+                ];
+                
+                setAvailableCategories(allCatsWithAll);
+                
+                // Save all categories to block attributes
+                setAttributes({ allCategories: allCatsWithAll });
                 
                 // If no categories are selected yet, add all categories
                 if (categories.length === 0) {
@@ -150,24 +179,29 @@ registerBlockType('bevision/blog-posts-filter', {
             });
         }, []);
 
-        // Fetch posts based on current tab
+        // Fetch posts based on the current tab
         useEffect(() => {
             if (currentTab) {
+                setPosts([]);
                 setLoading(true);
                 setPage(1);
-                
-                let apiPath = `/wp/v2/posts?_embed&per_page=${postsPerPage}`;
-                if (currentTab !== 'all') {
-                    apiPath += `&categories=${currentTab}`;
-                }
-                
-                apiFetch({ path: apiPath }).then((result) => {
-                    setPosts(result);
-                    setLoading(false);
-                    setHasMore(result.length === postsPerPage);
-                });
+                setHasMore(true);
+                fetchPosts();
             }
-        }, [currentTab, postsPerPage]);
+        }, [currentTab]);
+
+        const fetchPosts = () => {
+            let apiPath = `/wp/v2/posts?_embed&per_page=${postsPerPage}`;
+            if (currentTab !== 'all') {
+                apiPath += `&categories=${currentTab}`;
+            }
+            
+            apiFetch({ path: apiPath }).then((result) => {
+                setPosts(result);
+                setLoading(false);
+                setHasMore(result.length === postsPerPage);
+            });
+        };
 
         // Handler for loading more posts
         const loadMorePosts = () => {
@@ -196,29 +230,6 @@ registerBlockType('bevision/blog-posts-filter', {
             });
         };
 
-        // Add category to the filter tabs
-        const addCategory = (categoryId) => {
-            const categoryToAdd = availableCategories.find(cat => cat.id === categoryId);
-            if (categoryToAdd && !categories.some(cat => cat.id === categoryId)) {
-                setAttributes({ 
-                    categories: [...categories, categoryToAdd] 
-                });
-            }
-        };
-
-        // Remove category from filter tabs
-        const removeCategory = (categoryId) => {
-            if (categories.length <= 1) return; // Keep at least one category
-            
-            const newCategories = categories.filter(cat => cat.id !== categoryId);
-            setAttributes({ categories: newCategories });
-            
-            // If current tab is removed, switch to first available
-            if (currentTab === categoryId) {
-                setAttributes({ currentTab: newCategories[0].id });
-            }
-        };
-
         return (
             <>
                 <InspectorControls>
@@ -233,7 +244,14 @@ registerBlockType('bevision/blog-posts-filter', {
                                         .filter(cat => !categories.some(c => c.id === cat.id))
                                         .map(cat => ({ label: cat.name, value: cat.id }))
                                 ]}
-                                onChange={addCategory}
+                                onChange={(categoryId) => {
+                                    const categoryToAdd = availableCategories.find(cat => cat.id === categoryId);
+                                    if (categoryToAdd && !categories.some(cat => cat.id === categoryId)) {
+                                        setAttributes({ 
+                                            categories: [...categories, categoryToAdd] 
+                                        });
+                                    }
+                                }}
                             />
                         </div>
                         
@@ -253,7 +271,17 @@ registerBlockType('bevision/blog-posts-filter', {
                                     <Button 
                                         isDestructive
                                         isSmall
-                                        onClick={() => removeCategory(category.id)}
+                                        onClick={() => {
+                                            if (categories.length <= 1) return; // Keep at least one category
+                                            
+                                            const newCategories = categories.filter(cat => cat.id !== category.id);
+                                            setAttributes({ categories: newCategories });
+                                            
+                                            // If current tab is removed, switch to first available
+                                            if (currentTab === category.id) {
+                                                setAttributes({ currentTab: newCategories[0].id });
+                                            }
+                                        }}
                                         disabled={categories.length <= 1}
                                     >
                                         Remove
@@ -264,6 +292,54 @@ registerBlockType('bevision/blog-posts-filter', {
                     </PanelBody>
                     
                     <PanelBody title="Posts Settings" initialOpen={true}>
+                        <div style={{ marginBottom: '15px' }}>
+                            <SelectControl
+                                label="Add Category"
+                                value=""
+                                options={[
+                                    { label: 'Select a category to add', value: '' },
+                                    ...availableCategories
+                                            .filter(cat => !categories.some(c => c.id === cat.id))
+                                            .map(cat => ({ label: cat.name, value: cat.id }))
+                                ]}
+                                onChange={(categoryId) => {
+                                    const categoryToAdd = availableCategories.find(cat => cat.id === categoryId);
+                                    if (categoryToAdd && !categories.some(cat => cat.id === categoryId)) {
+                                        setAttributes({ 
+                                            categories: [...categories, categoryToAdd] 
+                                        });
+                                    }
+                                }}
+                            />
+                        </div>
+                        
+                        <div style={{ marginBottom: '15px' }}>
+                            <h3>Selected Categories</h3>
+                            {categories.map((category) => (
+                                <div key={category.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                    <span>{category.name}</span>
+                                    <Button 
+                                        isDestructive
+                                        isSmall
+                                        onClick={() => {
+                                            if (categories.length <= 1) return; // Keep at least one category
+                                            
+                                            const newCategories = categories.filter(cat => cat.id !== category.id);
+                                            setAttributes({ categories: newCategories });
+                                            
+                                            // If current tab is removed, switch to first available
+                                            if (currentTab === category.id) {
+                                                setAttributes({ currentTab: newCategories[0].id });
+                                            }
+                                        }}
+                                        disabled={categories.length <= 1}
+                                    >
+                                        Remove
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                        
                         <RangeControl
                             label="Posts Per Page"
                             value={postsPerPage}
@@ -276,8 +352,48 @@ registerBlockType('bevision/blog-posts-filter', {
                             label="Maximum Posts"
                             value={maxPosts}
                             onChange={(value) => setAttributes({ maxPosts: value })}
-                            min={4}
+                            min={1}
                             max={100}
+                        />
+                    </PanelBody>
+                    
+                    <PanelBody title="Text Settings" initialOpen={false}>
+                        <TextControl
+                            label="'All Categories' Label"
+                            value={attributes.allCategoriesLabel}
+                            onChange={(value) => {
+                                setAttributes({ allCategoriesLabel: value });
+                                // Update available categories list with new label
+                                const updatedCategories = [...availableCategories];
+                                if (updatedCategories.length > 0 && updatedCategories[0].id === 'all') {
+                                    updatedCategories[0].name = value;
+                                    setAvailableCategories(updatedCategories);
+                                }
+                            }}
+                        />
+                        
+                        <TextControl
+                            label="'Load More' Button Text"
+                            value={attributes.loadMoreLabel}
+                            onChange={(value) => setAttributes({ loadMoreLabel: value })}
+                        />
+                        
+                        <TextControl
+                            label="Loading Text"
+                            value={attributes.loadingLabel}
+                            onChange={(value) => setAttributes({ loadingLabel: value })}
+                        />
+                        
+                        <TextControl
+                            label="No Posts Found Text"
+                            value={attributes.noPostsFoundLabel}
+                            onChange={(value) => setAttributes({ noPostsFoundLabel: value })}
+                        />
+                        
+                        <TextControl
+                            label="Error Message"
+                            value={attributes.errorLabel}
+                            onChange={(value) => setAttributes({ errorLabel: value })}
                         />
                     </PanelBody>
                 </InspectorControls>
@@ -287,16 +403,16 @@ registerBlockType('bevision/blog-posts-filter', {
                         <div style={blockStyle.container}>
                             {/* Category Tabs */}
                             <div style={blockStyle.tabsContainer}>
-                                {categories.map((category) => (
+                                {availableCategories.map((cat) => (
                                     <button
-                                        key={category.id}
+                                        key={cat.id}
                                         style={{
                                             ...blockStyle.tab,
-                                            ...(currentTab === category.id ? blockStyle.activeTab : {})
+                                            ...(cat.id === currentTab ? blockStyle.activeTab : {})
                                         }}
-                                        onClick={() => setAttributes({ currentTab: category.id })}
+                                        onClick={() => setAttributes({ currentTab: cat.id })}
                                     >
-                                        {category.name}
+                                        {cat.name}
                                     </button>
                                 ))}
                             </div>
@@ -336,7 +452,7 @@ registerBlockType('bevision/blog-posts-filter', {
                                                 onClick={loadMorePosts}
                                                 disabled={loadingMore}
                                             >
-                                                {loadingMore ? 'Loading...' : 'Load more'}
+                                                {loadingMore ? attributes.loadingLabel : attributes.loadMoreLabel}
                                             </button>
                                         </div>
                                     )}
@@ -350,7 +466,18 @@ registerBlockType('bevision/blog-posts-filter', {
     },
 
     save: ({ attributes }) => {
-        const { postsPerPage, maxPosts, categories, currentTab } = attributes;
+        const { 
+            postsPerPage, 
+            maxPosts, 
+            categories, 
+            allCategories, 
+            currentTab,
+            allCategoriesLabel,
+            loadMoreLabel,
+            loadingLabel,
+            noPostsFoundLabel,
+            errorLabel
+        } = attributes;
         const blockProps = useBlockProps.save();
 
         return (
@@ -358,8 +485,13 @@ registerBlockType('bevision/blog-posts-filter', {
                 <div className="blog-posts-filter" 
                     data-posts-per-page={postsPerPage}
                     data-max-posts={maxPosts}
-                    data-categories={JSON.stringify(categories)}
+                    data-categories={JSON.stringify(allCategories)}
                     data-current-tab={currentTab}
+                    data-all-categories-label={allCategoriesLabel}
+                    data-load-more-label={loadMoreLabel}
+                    data-loading-label={loadingLabel}
+                    data-no-posts-label={noPostsFoundLabel}
+                    data-error-label={errorLabel}
                 >
                     <div className="posts-tabs-container">
                         {/* თაბები დინამიურად ჩაიტვირთება */}

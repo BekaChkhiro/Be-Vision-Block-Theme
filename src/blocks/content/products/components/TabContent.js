@@ -7,15 +7,15 @@ const styles = {
         display: 'grid',
         gridTemplateColumns: '55% 45%',
         gap: '48px',
-        alignItems: 'center'
+        alignItems: 'top'
     },
     productItem: {
         padding: '0'
     },
     subtitle: {
         color: '#7B61FF',
-        fontSize: '16px',
-        fontWeight: '750',
+        fontSize: '18px',
+        fontWeight: '600',
         margin: '0px 0px 5px'
     },
     title: {
@@ -41,8 +41,9 @@ const styles = {
     primaryButton: {
         backgroundColor: '#6653C6',
         color: '#fff',
-        padding: '16.5px 40px',
-        fontSize: '16px',
+        padding: '15px 40px',
+        fontSize: '18px',
+        fontWeight: '600',
         '&:hover': {
             backgroundColor: '#6B4FFF'
         }
@@ -50,8 +51,9 @@ const styles = {
     secondaryButton: {
         backgroundColor: '#2FCA02',
         color: '#fff',
-        padding: '16.5px 40px',
-        fontSize: '16px',
+        padding: '15px 40px',
+        fontSize: '18px',
+        fontWeight: '600',
         '&:hover': {
             backgroundColor: '#3CC954'
         }
@@ -66,7 +68,9 @@ const TabContent = ({
     onAddFeature,
     onRemoveFeature,
     onSelectImage,
-    onRemoveImage
+    onRemoveImage,
+    primaryButtonText = 'გაიგე მეტი',
+    secondaryButtonText = 'მოითხოვე დემო'
 }) => {
     if (isEditing) {
         return (
@@ -131,10 +135,10 @@ const TabContent = ({
                 <FeatureList features={tab.features} className="products-feature-list" />
                 <div style={styles.buttonGroup} className="products-button-group">
                     <button style={{...styles.button, ...styles.primaryButton}} className="products-button products-button-primary">
-                        Learn more
+                        {primaryButtonText}
                     </button>
                     <button style={{...styles.button, ...styles.secondaryButton}} className="products-button products-button-secondary">
-                        Book a call
+                        {secondaryButtonText}
                     </button>
                 </div>
             </div>

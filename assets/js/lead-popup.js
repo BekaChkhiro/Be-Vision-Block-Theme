@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    console.log('Lead popup script loaded');
-    console.log('Header button:', headerDemoButton);
-    console.log('Popup element:', popup);
+ 
     
     // Function to open popup
     function openPopup() {

@@ -1,12 +1,13 @@
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, RichText } from '@wordpress/block-editor';
 import { PanelBody, Button, TextControl, TabPanel } from '@wordpress/components';
 import TabNavigation from './components/TabNavigation';
 import TabContent from './components/TabContent';
 
 const styles = {
     productsSection: {
-        padding: '10px 0px 120px',
+        margin: '0px 0px 60px',
+        padding: '70px 0 60px 0', // Vertical padding only
         color: '#333',
         position: 'relative',
         overflow: 'hidden'
@@ -22,29 +23,29 @@ const styles = {
         zIndex: 1
     },
     container: {
-        maxWidth: '1440px',
+        maxWidth: '1250px',
         margin: '0 auto',
-        padding: '0 15px',
+        padding: '0 60px', // Desktop padding - increased for better spacing
         position: 'relative',
         zIndex: 2
     },
     sectionTitle: {
         color: '#6653C6',
         textAlign: 'center',
-        fontSize: '14px',
+        fontSize: '18px',
         fontStyle: 'normal',
-        fontWeight: 750,
+        fontWeight: 600,
         lineHeight: 'normal',
         margin: '0px 0px 5px'
     },
     sectionSubtitle: {
         color: 'var(--Dark-Blue, #221A4C)',
         textAlign: 'center',
-        fontSize: '30px',
+        fontSize: '24px',
         fontStyle: 'normal',
-        fontWeight: 750,
+        fontWeight: 600,
         lineHeight: 'normal',
-        margin: '0px 0px 30px'
+        margin: '0px 0px 60px'
     }
 };
 
@@ -53,6 +54,18 @@ registerBlockType('bevision/products', {
     icon: 'grid-view',
     category: 'design',
     attributes: {
+        sectionTitle: {
+            type: 'string',
+            source: 'html',
+            selector: '.products-section-title',
+            default: 'PRODUCTS'
+        },
+        sectionSubtitle: {
+            type: 'string',
+            source: 'html',
+            selector: '.products-section-subtitle',
+            default: 'What we offer'
+        },
         tabs: {
             type: 'array',
             default: [
@@ -80,7 +93,7 @@ registerBlockType('bevision/products', {
 
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps();
-        const { tabs, activeTab } = attributes;
+        const { sectionTitle, sectionSubtitle, tabs, activeTab } = attributes;
 
         const addNewTab = () => {
             const newTab = {
@@ -92,6 +105,26 @@ registerBlockType('bevision/products', {
                 image: ''
             };
             setAttributes({ tabs: [...tabs, newTab] });
+        };
+
+        const duplicateTab = (tabId) => {
+            const tabToDuplicate = tabs.find(tab => tab.id === tabId);
+            if (!tabToDuplicate) return;
+            const newTab = {
+                ...tabToDuplicate,
+                id: `tab${tabs.length + 1}`,
+                name: `${tabToDuplicate.name}`
+            };
+            setAttributes({ tabs: [...tabs, newTab] });
+        };
+
+        const removeTab = (tabId) => {
+            const newTabs = tabs.filter(tab => tab.id !== tabId);
+            let newActiveTab = activeTab;
+            if (activeTab === tabId && newTabs.length > 0) {
+                newActiveTab = newTabs[0].id;
+            }
+            setAttributes({ tabs: newTabs, activeTab: newActiveTab });
         };
 
         const updateTab = (tabId, field, value) => {
@@ -142,6 +175,90 @@ registerBlockType('bevision/products', {
             <>
                 <InspectorControls>
                     <div style={{ padding: '16px' }}>
+                        <div style={{ 
+                            background: '#fff',
+                            padding: '16px',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                            marginBottom: '24px'
+                        }}>
+                            <h2 style={{ 
+                                margin: '0 0 16px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                color: '#1e1e1e'
+                            }}>
+                                Section Settings
+                            </h2>
+                            
+                            <div style={{ marginBottom: '20px' }}>
+                                <h3 style={{ 
+                                    margin: '0 0 12px',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: '#1e1e1e'
+                                }}>
+                                    Default Tab
+                                </h3>
+                                <div style={{ marginBottom: '8px' }}>
+                                    <select 
+                                        value={activeTab}
+                                        onChange={(e) => setAttributes({ activeTab: e.target.value })}
+                                        style={{
+                                            width: '100%',
+                                            padding: '8px',
+                                            borderRadius: '4px',
+                                            border: '1px solid #8d96a0'
+                                        }}
+                                    >
+                                        {tabs.map(tab => (
+                                            <option key={tab.id} value={tab.id}>
+                                                {tab.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginBottom: '12px' }}>
+                                <TextControl
+                                    label={
+                                        <span style={{ 
+                                            fontSize: '12px', 
+                                            fontWeight: '500',
+                                            color: '#1e1e1e',
+                                            marginBottom: '4px',
+                                            display: 'block'
+                                        }}>
+                                            Section Title
+                                        </span>
+                                    }
+                                    value={sectionTitle}
+                                    onChange={(value) => setAttributes({ sectionTitle: value })}
+                                    style={{ margin: 0 }}
+                                />
+                            </div>
+                            
+                            <div style={{ marginBottom: '0' }}>
+                                <TextControl
+                                    label={
+                                        <span style={{ 
+                                            fontSize: '12px', 
+                                            fontWeight: '500',
+                                            color: '#1e1e1e',
+                                            marginBottom: '4px',
+                                            display: 'block'
+                                        }}>
+                                            Section Subtitle
+                                        </span>
+                                    }
+                                    value={sectionSubtitle}
+                                    onChange={(value) => setAttributes({ sectionSubtitle: value })}
+                                    style={{ margin: 0 }}
+                                />
+                            </div>
+                        </div>
+
                         <div style={{ 
                             background: '#fff',
                             padding: '16px',
@@ -213,7 +330,7 @@ registerBlockType('bevision/products', {
                                             transition: 'all 0.2s ease'
                                         }}
                                     >
-                                        {tab.name || `Tab ${index + 1}`}
+                                        {tab.name || `Tab ${tabIndex + 1}`}
                                     </Button>
                                 ))}
                             </div>
@@ -256,7 +373,7 @@ registerBlockType('bevision/products', {
                                                     </span>
                                                 }
                                                 value={tab.name}
-                                                onChange={(value) => updateTab(tabIndex, 'name', value)}
+                                                onChange={(value) => updateTab(tab.id, 'name', value)}
                                                 style={{ margin: 0 }}
                                             />
                                         </div>
@@ -274,7 +391,7 @@ registerBlockType('bevision/products', {
                                                     </span>
                                                 }
                                                 value={tab.subtitle}
-                                                onChange={(value) => updateTab(tabIndex, 'subtitle', value)}
+                                                onChange={(value) => updateTab(tab.id, 'subtitle', value)}
                                                 style={{ margin: 0 }}
                                             />
                                         </div>
@@ -292,7 +409,7 @@ registerBlockType('bevision/products', {
                                                     </span>
                                                 }
                                                 value={tab.title}
-                                                onChange={(value) => updateTab(tabIndex, 'title', value)}
+                                                onChange={(value) => updateTab(tab.id, 'title', value)}
                                                 style={{ margin: 0 }}
                                             />
                                         </div>
@@ -341,14 +458,14 @@ registerBlockType('bevision/products', {
                                                 }} />
                                                 <TextControl
                                                     value={feature}
-                                                    onChange={(value) => updateFeature(tabIndex, featureIndex, value)}
+                                                    onChange={(value) => updateFeature(tab.id, featureIndex, value)}
                                                     style={{ margin: 0, flex: 1 }}
                                                     placeholder="Enter feature text"
                                                 />
                                                 <Button 
                                                     isDestructive
                                                     icon="no-alt"
-                                                    onClick={() => removeFeature(tabIndex, featureIndex)}
+                                                    onClick={() => removeFeature(tab.id, featureIndex)}
                                                     style={{
                                                         padding: '0',
                                                         minWidth: '28px',
@@ -362,7 +479,7 @@ registerBlockType('bevision/products', {
                                     <Button
                                         isSecondary
                                         icon="plus"
-                                        onClick={() => addFeature(tabIndex)}
+                                        onClick={() => addFeature(tab.id)}
                                         style={{ 
                                             width: '100%', 
                                             justifyContent: 'center', 
@@ -428,45 +545,45 @@ registerBlockType('bevision/products', {
                                                             display: 'flex',
                                                             gap: '4px'
                                                         }}>
-                                                            <MediaUpload
-                                                                onSelect={(media) => updateTab(tabIndex, 'image', media.url)}
-                                                                allowedTypes={['image']}
-                                                                value={tab.image}
-                                                                render={({ open }) => (
-                                                                    <Button 
-                                                                        onClick={open}
-                                                                        icon="update"
-                                                                        style={{
-                                                                            padding: '0',
-                                                                            width: '28px',
-                                                                            height: '28px',
-                                                                            background: 'rgba(255,255,255,0.9)',
-                                                                            border: 'none',
-                                                                            borderRadius: '4px',
-                                                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                            />
-                                                            <Button 
-                                                                isDestructive
-                                                                icon="no-alt"
-                                                                onClick={() => updateTab(tabIndex, 'image', '')}
-                                                                style={{
-                                                                    padding: '0',
-                                                                    width: '28px',
-                                                                    height: '28px',
-                                                                    background: 'rgba(255,255,255,0.9)',
-                                                                    borderRadius: '4px',
-                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                                                                }}
-                                                            />
+                                                <MediaUpload
+                                                    onSelect={(media) => updateTab(tab.id, 'image', media.url)}
+                                                    allowedTypes={['image']}
+                                                    value={tab.image}
+                                                    render={({ open }) => (
+                                                        <Button 
+                                                            onClick={open}
+                                                            icon="update"
+                                                            style={{
+                                                                padding: '0',
+                                                                width: '28px',
+                                                                height: '28px',
+                                                                background: 'rgba(255,255,255,0.9)',
+                                                                border: 'none',
+                                                                borderRadius: '4px',
+                                                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                                <Button 
+                                                    isDestructive
+                                                    icon="no-alt"
+                                                    onClick={() => updateTab(tab.id, 'image', '')}
+                                                    style={{
+                                                        padding: '0',
+                                                        width: '28px',
+                                                        height: '28px',
+                                                        background: 'rgba(255,255,255,0.9)',
+                                                        borderRadius: '4px',
+                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                                                    }}
+                                                />
                                                         </div>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <MediaUpload
-                                                    onSelect={(media) => updateTab(tabIndex, 'image', media.url)}
+                                                    onSelect={(media) => updateTab(tab.id, 'image', media.url)}
                                                     allowedTypes={['image']}
                                                     value={tab.image}
                                                     render={({ open }) => (
@@ -505,7 +622,7 @@ registerBlockType('bevision/products', {
                                 }}>
                                     <Button 
                                         icon="admin-page"
-                                        onClick={() => duplicateTab(tabIndex)}
+                                        onClick={() => duplicateTab(tab.id)}
                                         style={{ 
                                             flex: 1,
                                             justifyContent: 'center',
@@ -519,7 +636,7 @@ registerBlockType('bevision/products', {
                                     <Button 
                                         isDestructive
                                         icon="trash"
-                                        onClick={() => removeTab(tabIndex)}
+                                        onClick={() => removeTab(tab.id)}
                                         style={{ 
                                             flex: 1,
                                             justifyContent: 'center',
@@ -540,8 +657,22 @@ registerBlockType('bevision/products', {
                     <div style={styles.productsSection}>
                         <div style={styles.glowEffect}></div>
                         <div style={styles.container}>
-                            <h2 style={styles.sectionTitle}>PRODUCTS</h2>
-                            <h3 style={styles.sectionSubtitle}>What we offer</h3>
+                            <RichText
+                                tagName="h2"
+                                className="products-section-title"
+                                value={sectionTitle}
+                                onChange={(value) => setAttributes({ sectionTitle: value })}
+                                style={styles.sectionTitle}
+                                placeholder="Enter section title"
+                            />
+                            <RichText
+                                tagName="h3"
+                                className="products-section-subtitle"
+                                value={sectionSubtitle}
+                                onChange={(value) => setAttributes({ sectionSubtitle: value })}
+                                style={styles.sectionSubtitle}
+                                placeholder="Enter section subtitle"
+                            />
                             
                             <TabNavigation
                                 tabs={tabs}
@@ -579,8 +710,18 @@ registerBlockType('bevision/products', {
                 <div style={styles.productsSection} className="products-section">
                     <div style={styles.glowEffect}></div>
                     <div style={styles.container}>
-                        <h2 style={styles.sectionTitle}>PRODUCTS</h2>
-                        <h3 style={styles.sectionSubtitle}>What we offer</h3>
+                        <RichText.Content
+                            tagName="h2"
+                            className="products-section-title"
+                            value={attributes.sectionTitle}
+                            style={styles.sectionTitle}
+                        />
+                        <RichText.Content
+                            tagName="h3"
+                            className="products-section-subtitle"
+                            value={attributes.sectionSubtitle}
+                            style={styles.sectionSubtitle}
+                        />
                         
                         <TabNavigation
                             tabs={tabs}
@@ -623,27 +764,30 @@ registerBlockType('bevision/products', {
                                     window.addEventListener('resize', ensureFirstFourTabsInRow);
                                     
                                     const tabItems = tabsNav.querySelectorAll('.products-tab-item');
-                                    const tabContents = document.querySelectorAll('.products-tab-content');
+                                    const tabContents = document.querySelectorAll('.products-tab-content'); 
 
                                     const style = document.createElement('style');
                                     style.innerHTML = '.products-tab-item:hover { color: #6653C6 !important; background: #ecf0f8 !important; }' +
                                     '.products-tabs-nav { display: flex; justify-content: center; gap: 10px; list-style: none; padding: 0; margin-bottom: 60px; }' +
+                                    '@media screen and (max-width: 1024px) and (min-width: 768px) {' +
+                                    '  .products-section { padding: 60px 40px !important; }' +
+                                    '}' +
                                     '@media screen and (max-width: 767px) {' +
-                                    '  .products-tabs-nav { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 0 10px 10px; margin-bottom: 20px; }' +
-                                    '  .products-tab-item { flex: 0 0 calc(25% - 6px); white-space: nowrap; font-size: 12px !important; padding: 6px 5px !important; margin: 0 0 8px; text-align: center; overflow: hidden; text-overflow: ellipsis; }' +
+                                    '  .products-tabs-nav { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 0 10px 10px; margin-bottom: 20px !important; width: auto; overflow: visible !important; }' +
+                                    '  .products-tab-item { flex: 0 0 auto; width: calc(25% - 8px); white-space: normal !important; font-size: 16px !important; padding: 8px 5px !important; margin: 0 0 8px; text-align: center; overflow: visible !important; text-overflow: unset !important; }' +
                                     '  .products-tab-item:nth-child(-n+4) { margin-bottom: 8px; }' +
-                                    '  .products-grid { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0 15px; }' +
+                                    '  .products-grid { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0; }' +
                                     '  .products-content-left { width: 100% !important; order: 2; }' +
                                     '  .products-content-right { width: 100% !important; order: 1; margin-bottom: 0; height: 220px !important; border-radius: 12px !important; }' +
-                                    '  .products-subtitle { font-size: 14px !important; }' +
-                                    '  .products-title { font-size: 20px !important; margin-bottom: 16px !important; }' +
+                                    '  .products-subtitle { font-size: 20px !important; font-weight: 600 !important; text-align: center !important;}' +
+                                    '  .products-title { font-size: 24px !important; font-weight: 600 !important; margin-bottom: 16px !important; }' +
                                     '  .products-feature-list { margin-bottom: 20px; }' +
-                                    '  .products-feature-list li { font-size: 14px !important; margin-bottom: 8px !important; line-height: 1.4 !important; padding-left: 24px !important; background-position: 0 4px !important; }' +
-                                    '  .products-button-group { display: flex; flex-direction: row !important; gap: 10px !important; justify-content: space-between; }' +
-                                    '  .products-button { flex: 1; padding: 12px 14px !important; font-size: 13px !important; text-align: center; border-radius: 6px !important; white-space: nowrap; }' +
-                                    '  .products-section { padding: 0 0 40px !important; }' +
-                                    '  .products-section h2 { font-size: 12px !important; margin-bottom: 4px !important; }' +
-                                    '  .products-section h3 { font-size: 24px !important; margin-bottom: 20px !important; }' +
+                                    '  .products-feature-list li { font-size: 20px !important; margin-bottom: 8px !important; line-height: 1.4 !important; padding-left: 24px !important; background-position: 0 4px !important; }' +
+                                    '  .products-button-group { display: flex; flex-direction: row !important; gap: 20px !important; justify-content: space-between; margin-bottom:20px; margin-top:20px !important; }' +
+                                    '  .products-button { flex: 1; padding: 15px 30px !important; font-size: 16px !important; font-weight: 600 !important; text-align: center; border-radius: 6px !important; white-space: nowrap; }' +
+                                    '  .products-section { padding: 60px 20px !important; margin: 0 !important; }' +
+                                    '  .products-section h2 { font-size: 20px !important; }' +
+                                    '  .products-section h3 { font-size: 28px !important; margin-bottom: 20px !important;text-align: center; }' +
                                     '};';
                                     document.head.appendChild(style);
 

@@ -9,9 +9,13 @@ const styles = {
         padding: 0,
         marginBottom: '60px'
     },
+    navContainer: {
+        position: 'relative',
+        marginBottom: '30px'
+    },
     navItem: {
         color: '#221A4C',
-        fontSize: '20px',
+        fontSize: '24px',
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         padding: '12px 24px',
@@ -31,22 +35,24 @@ const styles = {
 };
 
 const TabNavigation = ({ tabs, activeTab, onTabChange }) => (
-    <ul style={styles.navigation} className="products-tabs-nav">
-        {tabs.map((tab) => (
-            <li
-                key={tab.id}
-                style={{
-                    ...styles.navItem,
-                    ...(activeTab === tab.id ? styles.navItemActive : {})
-                }}
-                data-tab={tab.id}
-                className="products-tab-item"
-                onClick={() => onTabChange(tab.id)}
-            >
-                {tab.name}
-            </li>
-        ))}
-    </ul>
+    <div style={styles.navContainer} className="products-tabs-container">
+        <ul style={styles.navigation} className="products-tabs-nav">
+            {tabs.map((tab) => (
+                <li
+                    key={tab.id}
+                    style={{
+                        ...styles.navItem,
+                        ...(activeTab === tab.id ? styles.navItemActive : {})
+                    }}
+                    data-tab={tab.id}
+                    className="products-tab-item"
+                    onClick={() => onTabChange(tab.id)}
+                >
+                    {tab.name}
+                </li>
+            ))}
+        </ul>
+    </div>
 );
 
 export default TabNavigation;

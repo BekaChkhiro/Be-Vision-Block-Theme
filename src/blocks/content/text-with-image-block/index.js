@@ -29,6 +29,46 @@ registerBlockType('bevision/text-with-image-block', {
       type: 'string',
       default: '',
     },
+    isImageFirst: {
+      type: 'boolean',
+      default: false,
+    },
+    authorName: {
+      type: 'string',
+      source: 'html',
+      selector: '.author-name',
+      default: ''
+    },
+    authorTitle: {
+      type: 'string',
+      source: 'html',
+      selector: '.author-title',
+      default: ''
+    },
+    authorImage: {
+      type: 'object',
+      default: {
+        url: '',
+        alt: '',
+        id: null
+      }
+    },
+    authorNameColor: {
+      type: 'string',
+      default: '#2D2A5F'
+    },
+    authorTitleColor: {
+      type: 'string',
+      default: '#8399AF'
+    },
+    authorNameFontSize: {
+      type: 'number',
+      default: 18
+    },
+    authorTitleFontSize: {
+      type: 'number',
+      default: 14
+    }
   },
   edit: Edit,
   save,

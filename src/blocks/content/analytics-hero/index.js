@@ -1,51 +1,60 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
-import { RichText, MediaUpload, InnerBlocks } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
+import { RichText, MediaUpload, URLInputButton } from '@wordpress/block-editor';
+import { Button, TextControl } from '@wordpress/components';
+import Section from '../../../components/Section';
 
 const blockStyle = `
     /* Mobile start exploring button */
     .mobile-start-exploring {
-        display: block;
+        display: flex;
+         align-items: center;
+    justify-content: center;
         width: 100%;
-        padding: 15px 0;
+        padding: 15px 40px;
+        height: 51px;
         background-color: #2FCA02;
         color: white;
         border-radius: 10px;
         text-decoration: none;
-        text-align: center;
-        font-size: 16px;
-        font-weight: 500;
-        margin-top: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 0; /* Removed margin */
         box-shadow: 0 4px 8px rgba(47, 202, 2, 0.15);
         transition: background-color 0.3s;
+       
     }
     
     /* Hide on desktop, show on mobile */
     .mobile-button-container {
         display: none;
-        margin-top: 20px;
+        margin-top: 0; /* Removed margin */
         padding: 0 20px;
     }
     
     @media (max-width: 768px) {
         .mobile-button-container {
             display: block;
-            margin-top: 30px;
+            margin-top: 0; /* Removed margin */
             width: 100%;
+        }
+
+        .mobile-start-exploring {
+         padding: 0;
         }
     }
 
     .analytics-hero__container {
-        max-width: 1320px;
-        margin: 60px auto 70px;
-        padding: 60px;
+        margin: 60px 0 60px;
+        padding: 60px !important;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 60px;
         border-radius: 20px;
+        overflow: hidden;
         background: linear-gradient(97deg, rgba(47, 202, 2, 0.10) 3.08%, rgba(102, 83, 198, 0.10) 96.79%);
+        width: 100%!important;
+        box-sizing: border-box;
     }
 
     .analytics-hero__content {
@@ -54,11 +63,20 @@ const blockStyle = `
 
     .analytics-hero__subtitle {
         color: var(--Malina, #2FCA02);
-        font-size: 24px;
+        font-size: 18px;
         font-style: normal;
-        font-weight: 750;
+        font-weight: 600;
         line-height: normal;
         margin: 0 0 10px;
+    }
+    
+    .analytics-hero__main-title {
+        color: var(--Dark-Blue, #221A4C);
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        margin: 0 0 20px; 
     }
 
     .analytics-hero__title {
@@ -66,7 +84,7 @@ const blockStyle = `
         font-family: "Helvetica Neue LT GEO";
         font-size: 40px;
         font-style: normal;
-        font-weight: 750;
+        font-weight: 600;
         line-height: normal;
         margin: 0 0 20px;
     }
@@ -90,6 +108,7 @@ const blockStyle = `
     .analytics-hero__button .wp-element-button,
     .analytics-hero__content .wp-element-button {
         padding: 15px 40px !important;
+        height: 51px !important;
         justify-content: center !important;
         align-items: center !important;
         gap: 10px !important;
@@ -99,7 +118,8 @@ const blockStyle = `
         text-decoration: none !important;
         border: none !important;
         transition: transform 0.2s ease !important;
-        font-size: 16px !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
         cursor: pointer !important;
     }
     
@@ -113,6 +133,7 @@ const blockStyle = `
         display: none;
         width: 100%;
         padding: 15px 40px;
+        height: 51px;
         justify-content: center;
         align-items: center;
         gap: 10px;
@@ -121,10 +142,11 @@ const blockStyle = `
         color: white;
         text-decoration: none;
         border: none;
-        font-size: 16px;
+        font-size: 18px;
+        font-weight: bold;
         cursor: pointer;
         text-align: center;
-        margin-top: 20px;
+        margin-top: 0; /* Removed margin */
     }
     
     /* Make sure inner blocks content is visible */
@@ -166,6 +188,24 @@ const blockStyle = `
     .analytics-hero__image-button:hover {
         background: rgba(255, 255, 255, 0.15);
         border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .analytics-hero__image-controls {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    .analytics-hero__image-container:hover .analytics-hero__image-controls {
+        opacity: 1;
+    }
+    
+    .analytics-hero__image-controls .components-button {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+        min-height: auto !important;
+        border-radius: 3px !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
     
     /* Dashboard admin UI styles */
@@ -239,32 +279,36 @@ const blockStyle = `
             padding: 0;
         }
 
+        
+        
         .analytics-hero__container {
             flex-direction: column;
             text-align: left;
-            padding: 30px 20px 80px; /* Added extra padding at bottom */
-            margin: 0;
-            border-radius: 0;
-            gap: 30px;
+            padding: 20px !important;
+            margin: 60px auto; /* Changed to auto for centering */
+            border-radius: 20px; /* Added border-radius as requested */
+            gap: 0px;
             background: linear-gradient(97deg, rgba(47, 202, 2, 0.10) 3.08%, rgba(102, 83, 198, 0.10) 96.79%);
             position: relative; /* For absolute positioning of mobile CTA */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .analytics-hero__content {
             flex: 0 0 100%;
-            padding: 0 20px;
+            padding: 0;
         }
 
         .analytics-hero__subtitle {
-            font-size: 18px;
+            font-size: 20px !important;
             margin-bottom: 8px;
             display: block;
         }
 
         .analytics-hero__title {
-            font-size: 30px;
+            font-size: 28px !important;
             line-height: 1.2;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             color: #221A4C;
             font-weight: 750;
         }
@@ -280,8 +324,9 @@ const blockStyle = `
         /* Style the image container for mobile */
         .analytics-hero__image {
             flex: 0 0 100%;
-            padding: 0 20px;
+            padding: 0;
             margin-top: 10px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -316,13 +361,14 @@ const blockStyle = `
         .analytics-hero__cta-mobile .wp-element-button {
             width: 100%;
             display: block;
-            padding: 16px 20px !important;
+            padding: 15px 40px !important;
+            height: 51px !important;
             text-align: center;
             border-radius: 10px !important;
-            background: #2FCA02 !important;
+            background: var(--Malina, #2FCA02) !important;
             color: white !important;
-            font-size: 16px !important;
-            font-weight: 500 !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
             text-transform: none !important;
             box-shadow: 0 4px 10px rgba(47, 202, 2, 0.2) !important;
         }
@@ -337,22 +383,35 @@ registerBlockType('bevision/analytics-hero', {
     attributes: {
         subtitle: {
             type: 'string',
-            default: 'Bihub.ge'
+            default: ''
+        },
+        mainTitle: {
+            type: 'string',
+            default: ''
         },
         title: {
             type: 'string',
-            default: 'The first open platform for public data analytics'
+            default: ''
         },
         description: {
             type: 'string',
-            default: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.'
+            default: ''
         },
         imageUrl: {
             type: 'string',
             default: ''
         },
         imageId: {
-            type: 'number'
+            type: 'number',
+            default: 0
+        },
+        buttonUrl: {
+            type: 'string',
+            default: ''
+        },
+        buttonText: {
+            type: 'string',
+            default: 'Start exploring'
         },
         dashboardImages: {
             type: 'array',
@@ -360,26 +419,50 @@ registerBlockType('bevision/analytics-hero', {
         }
     },
     edit: ({ attributes, setAttributes }) => {
-        const { subtitle, title, description, imageUrl, dashboardImages } = attributes;
+        const { subtitle, mainTitle, title, description, imageUrl, imageId, buttonUrl, buttonText, dashboardImages } = attributes;
 
         return (
-            <div className="analytics-hero">
+            <Section 
+                className="analytics-hero w-full"
+                paddingDesktop="0"
+                paddingLaptop="0"
+                paddingTablet="0"
+                paddingMobile="0"
+            >
                 <style>{blockStyle}</style>
-                <div className="analytics-hero__container">
+                <div 
+                    className="analytics-hero__container"
+                    style={{
+                        padding: '60px',
+                        '@media (max-width: 1024px)': {
+                            padding: '40px'
+                        },
+                        '@media (max-width: 768px)': {
+                            padding: '20px'
+                        }
+                    }}
+                >
                     <div className="analytics-hero__content">
                         <RichText
                             tagName="h3"
                             className="analytics-hero__subtitle"
                             value={subtitle}
                             onChange={(subtitle) => setAttributes({ subtitle })}
-                            placeholder={__('Enter subtitle...', 'bevision')}
+                            placeholder={__('Subtitle', 'bevision')}
                         />
                         <RichText
                             tagName="h1"
+                            className="analytics-hero__main-title"
+                            value={mainTitle}
+                            onChange={(mainTitle) => setAttributes({ mainTitle })}
+                            placeholder={__('Main Title', 'bevision')}
+                        />
+                        <RichText
+                            tagName="h2"
                             className="analytics-hero__title"
                             value={title}
                             onChange={(title) => setAttributes({ title })}
-                            placeholder={__('Enter title...', 'bevision')}
+                            placeholder={__('Title', 'bevision')}
                         />
                         <RichText
                             tagName="p"
@@ -389,26 +472,29 @@ registerBlockType('bevision/analytics-hero', {
                             placeholder={__('Enter description...', 'bevision')}
                         />
                         <div className="analytics-hero__cta">
-                            <InnerBlocks
-                                template={[
-                                    ['core/button', { 
-                                        text: 'Start exploring',
-                                        className: 'analytics-hero__button wp-element-button',
-                                        backgroundColor: 'transparent',
-                                        style: {
-                                            spacing: {
-                                                padding: {
-                                                    top: "10px",
-                                                    bottom: "10px",
-                                                    left: "40px",
-                                                    right: "40px"
-                                                }
-                                            }
-                                        }
-                                    }]
-                                ]}
-                                templateLock="all"
-                            />
+                            <div className="analytics-hero__button-wrapper">
+                                <a 
+                                    href="#" 
+                                    onClick={(e) => e.preventDefault()}
+                                    className="analytics-hero__button wp-element-button"
+                                >
+                                    {buttonText}
+                                </a>
+                            </div>
+                            <div className="analytics-hero__button-url-control">
+                                <TextControl
+                                    label={__('Button URL', 'bevision')}
+                                    value={buttonUrl}
+                                    onChange={(buttonUrl) => setAttributes({ buttonUrl })}
+                                    placeholder={__('Enter URL for button', 'bevision')}
+                                />
+                                <TextControl
+                                    label={__('Button Text', 'bevision')}
+                                    value={buttonText}
+                                    onChange={(buttonText) => setAttributes({ buttonText })}
+                                    placeholder={__('Enter button text', 'bevision')}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="analytics-hero__image">
@@ -425,12 +511,45 @@ registerBlockType('bevision/analytics-hero', {
                                 value={attributes.imageId}
                                 render={({ open }) => (
                                     imageUrl ? (
-                                        <img
-                                            src={imageUrl}
-                                            onClick={open}
-                                            style={{ cursor: 'pointer' }}
-                                            alt={__('Hero image', 'bevision')}
-                                        />
+                                        <div className="analytics-hero__image-container" style={{ position: 'relative' }}>
+                                            <img
+                                                src={imageUrl}
+                                                onClick={open}
+                                                style={{ cursor: 'pointer', width: '100%', height: 'auto' }}
+                                                alt={__('Hero image', 'bevision')}
+                                            />
+                                            <div className="analytics-hero__image-controls" style={{ 
+                                                position: 'absolute', 
+                                                top: '10px', 
+                                                right: '10px', 
+                                                display: 'flex', 
+                                                gap: '5px' 
+                                            }}>
+                                                <Button
+                                                    onClick={open}
+                                                    variant="secondary"
+                                                    isSmall
+                                                    style={{ 
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                                        color: '#333'
+                                                    }}
+                                                >
+                                                    {__('Replace', 'bevision')}
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setAttributes({ imageUrl: '', imageId: 0 })}
+                                                    variant="secondary"
+                                                    isDestructive
+                                                    isSmall
+                                                    style={{ 
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                                        color: '#dc3545'
+                                                    }}
+                                                >
+                                                    {__('Remove', 'bevision')}
+                                                </Button>
+                                            </div>
+                                        </div>
                                     ) : (
                                         <Button
                                             className="analytics-hero__image-button"
@@ -493,16 +612,33 @@ registerBlockType('bevision/analytics-hero', {
                         </div>
                     </div>
                 </div>
-            </div>
+            </Section>
         );
     },
     save: ({ attributes }) => {
-        const { subtitle, title, description, imageUrl, dashboardImages } = attributes;
+        const { subtitle, mainTitle, title, description, imageUrl, buttonUrl, buttonText, dashboardImages } = attributes;
 
         return (
-            <div className="analytics-hero">
+            <Section 
+                className="analytics-hero w-full"
+                paddingDesktop="0"
+                paddingLaptop="0"
+                paddingTablet="0"
+                paddingMobile="0"
+            >
                 <style>{blockStyle}</style>
-                <div className="analytics-hero__container">
+                <div 
+                    className="analytics-hero__container"
+                    style={{
+                        padding: '60px',
+                        '@media (max-width: 1024px)': {
+                            padding: '40px'
+                        },
+                        '@media (max-width: 768px)': {
+                            padding: '20px'
+                        }
+                    }}
+                >
                     <div className="analytics-hero__content">
                         <RichText.Content
                             tagName="h3"
@@ -511,6 +647,11 @@ registerBlockType('bevision/analytics-hero', {
                         />
                         <RichText.Content
                             tagName="h1"
+                            className="analytics-hero__main-title"
+                            value={mainTitle}
+                        />
+                        <RichText.Content
+                            tagName="h2"
                             className="analytics-hero__title"
                             value={title}
                         />
@@ -520,7 +661,16 @@ registerBlockType('bevision/analytics-hero', {
                             value={description}
                         />
                         <div className="analytics-hero__cta">
-                            <InnerBlocks.Content />
+                            <div className="analytics-hero__button-wrapper">
+                                <a 
+                                    href={buttonUrl || '#'} 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="analytics-hero__button wp-element-button"
+                                >
+                                    {buttonText}
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div className="analytics-hero__image">
@@ -549,12 +699,17 @@ registerBlockType('bevision/analytics-hero', {
                     </div>
                     {/* Mobile-only button for smaller screens */}
                     <div className="mobile-button-container">
-                        <a href="#" className="mobile-start-exploring">
-                            {__('Start exploring', 'bevision')}
+                        <a 
+                            href={buttonUrl || '#'} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mobile-start-exploring"
+                        >
+                            {buttonText}
                         </a>
                     </div>
                 </div>
-            </div>
+            </Section>
         );
     }
 });

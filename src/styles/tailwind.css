@@ -4,6 +4,75 @@
 
 /* Custom styles can go here */
 
+/* Remove default padding from pages and containers */
+body, main, .wp-site-blocks, .entry-content, .wp-block-group {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Ensure no horizontal padding on main page containers */
+.wp-block-group, .wp-block-columns, .wp-block-column {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Reset container padding globally */
+.container, [class*="container"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Scroll behavior for anchor navigation - handles header overlap */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Default header offset */
+}
+
+/* Alternative approach for sections with IDs */
+section[id], div[id], h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+    scroll-margin-top: 100px; /* Default header offset */
+}
+
+/* For WordPress blocks or elements that might be scroll targets */
+.wp-block[id], .wp-block-group[id] {
+    scroll-margin-top: 100px;
+}
+
+/* Mobile responsive scroll offsets */
+@media (max-width: 768px) {
+    html {
+        scroll-padding-top: 80px; /* Smaller offset for mobile */
+    }
+    
+    section[id], div[id], h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+        scroll-margin-top: 80px;
+    }
+    
+    .wp-block[id], .wp-block-group[id] {
+        scroll-margin-top: 80px;
+    }
+}
+
+/* Large screens might need more offset */
+@media (min-width: 1200px) {
+    html {
+        scroll-padding-top: 120px;
+    }
+    
+    section[id], div[id], h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+        scroll-margin-top: 120px;
+    }
+    
+    .wp-block[id], .wp-block-group[id] {
+        scroll-margin-top: 120px;
+    }
+}
+
+/* Ensure smooth scrolling for all browsers */
+* {
+    scroll-behavior: smooth;
+}
+
 /* Posts Tab Styles */
 .blog-posts-filter {
     padding: 60px 0;
@@ -20,7 +89,7 @@
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 20px;
+    padding: 0;
     @apply flex justify-center flex-wrap gap-4 mb-10;
 }
 
@@ -59,7 +128,7 @@
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 20px;
+    padding: 0;
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-10;
 }
 
@@ -266,5 +335,51 @@
     .load-more-button {
         padding: 14px 30px;
         font-size: 15px;
+    }
+}
+
+/* Fix WordPress admin bar to stay at top on mobile even when burger menu is open */
+#wpadminbar {
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 99999 !important;
+}
+
+/* Ensure admin bar stays above mobile menu */
+@media screen and (max-width: 782px) {
+    #wpadminbar {
+        position: fixed !important;
+        top: 0 !important;
+        z-index: 99999 !important;
+    }
+}
+
+/* Footer address margin fix */
+.footer-address > *:first-child {
+    margin-top: 5px;
+}
+
+/* Products container responsive styles */
+.products-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Products image styles */
+.products-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+}
+
+/* Mobile: Set container width to 90% */
+@media (max-width: 768px) {
+    .products-container {
+        width: 100%;
+        max-width: none;
+        padding: 0;
     }
 }

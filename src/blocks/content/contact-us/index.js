@@ -1,15 +1,17 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, RichText, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Button } from '@wordpress/components';
+import { PanelBody, TextControl, Button, SelectControl } from '@wordpress/components';
+import './frontend.css';
 
 const styles = {
     section: {
         backgroundColor: '#221A4C', // Dark purple background from the image
         position: 'relative',
         overflow: 'hidden',
-        maxWidth: '1440px',
+        maxWidth: '1250px',
         margin: '0 auto',
         borderRadius: '20px',
+        marginBottom: '60px',
     },
     container: {
         display: 'flex',
@@ -37,7 +39,7 @@ const styles = {
     heading: {
         color: '#2FCA02', // Green color for "CONTACT US"
         fontSize: '18px',
-        fontWeight: '500',
+        fontWeight: '600',
         margin: '0px 0px 5px',
         textTransform: 'uppercase',
         '@media (max-width: 768px)': {
@@ -47,8 +49,8 @@ const styles = {
     },
     title: {
         color: '#FFFFFF', // White color for main text
-        fontSize: '42px',
-        fontWeight: '700',
+        fontSize: '40px',
+        fontWeight: '600',
         margin: '0px',
         lineHeight: '1.2',
         '@media (max-width: 768px)': {
@@ -59,10 +61,10 @@ const styles = {
     },
     button: {
         backgroundColor: '#2FCA02', // Green button
-        color: '#1D1B3F', // Dark text
-        padding: '16px 32px',
+        color: '#FFFFFF', // White text
+        padding: '15px 40px',
         fontSize: '18px',
-        fontWeight: '600',
+        fontWeight: 'bold',
         borderRadius: '8px',
         textDecoration: 'none',
         display: 'inline-block',
@@ -73,7 +75,7 @@ const styles = {
             width: '100%',
             maxWidth: '300px',
             textAlign: 'center',
-            padding: '14px 20px'
+            padding: '15px 40px'
         }
     },
     backgroundDots: {
@@ -134,6 +136,10 @@ registerBlockType('bevision/contact-us', {
             selector: '.contact-us-button',
             default: 'Contact us'
         },
+        buttonActionType: {
+            type: 'string',
+            default: 'popup'
+        },
         buttonUrl: {
             type: 'string',
             default: '#'
@@ -168,12 +174,23 @@ registerBlockType('bevision/contact-us', {
             <>
                 <InspectorControls>
                     <PanelBody title="Button Settings">
-                        <TextControl
-                            label="Button URL"
-                            value={attributes.buttonUrl}
-                            onChange={(buttonUrl) => setAttributes({ buttonUrl })}
-                            help="Enter the URL for the contact button"
+                        <SelectControl
+                            label="Button Action Type"
+                            value={attributes.buttonActionType}
+                            options={[
+                                { label: 'Open Popup', value: 'popup' },
+                                { label: 'Custom URL', value: 'url' }
+                            ]}
+                            onChange={(buttonActionType) => setAttributes({ buttonActionType })}
                         />
+                        {attributes.buttonActionType === 'url' && (
+                            <TextControl
+                                label="Button URL"
+                                value={attributes.buttonUrl}
+                                onChange={(buttonUrl) => setAttributes({ buttonUrl })}
+                                help="Enter the URL for the contact button"
+                            />
+                        )}
                     </PanelBody>
                     <PanelBody title="Background Settings">
                         <div style={{ marginBottom: '1rem' }}>
@@ -274,48 +291,72 @@ registerBlockType('bevision/contact-us', {
     save: ({ attributes }) => {
         const blockProps = useBlockProps.save();
         
-        const dotsStyle = {
-            ...styles.backgroundDots,
-            backgroundImage: attributes.backgroundDotsUrl ? `url(${attributes.backgroundDotsUrl})` : 'radial-gradient(circle, #6653C6 2px, transparent 2px)',
-            backgroundSize: attributes.backgroundDotsUrl ? 'cover' : '20px 20px'
-        };
-
-        const circleStyle = {
-            ...styles.backgroundCircle,
-            backgroundImage: attributes.backgroundCircleUrl ? `url(${attributes.backgroundCircleUrl})` : 'none',
-            backgroundColor: attributes.backgroundCircleUrl ? 'transparent' : 'rgba(102, 83, 198, 0.3)',
-            borderRadius: attributes.backgroundCircleUrl ? '0' : '50%'
-        };
+        // Build the background image styles
+        const dotsBackgroundImage = attributes.backgroundDotsUrl ? 
+            `url(${attributes.backgroundDotsUrl})` : 
+            'radial-gradient(circle, #6653C6 2px, transparent 2px)';
+        
+        const circleBackgroundImage = attributes.backgroundCircleUrl ? 
+            `url(${attributes.backgroundCircleUrl})` : 
+            'none';
+        
+        const circleBorderRadius = attributes.backgroundCircleUrl ? '0' : '50%';
+        const circleBackgroundColor = attributes.backgroundCircleUrl ? 'transparent' : 'rgba(102, 83, 198, 0.3)';
 
         return (
-            <div {...blockProps} style={styles.section}>
-                <div style={dotsStyle}></div>
-                <div style={circleStyle}></div>
-                <div style={styles.container}>
-                    <div style={styles.textContainer}>
+            <div {...blockProps}>
+                <div 
+                    className="background-dots" 
+                    style={{
+                        backgroundImage: dotsBackgroundImage,
+                        backgroundSize: attributes.backgroundDotsUrl ? 'cover' : '20px 20px'
+                    }}
+                ></div>
+                <div 
+                    className="background-circle" 
+                    style={{
+                        backgroundImage: circleBackgroundImage,
+                        backgroundColor: circleBackgroundColor,
+                        borderRadius: circleBorderRadius
+                    }}
+                ></div>
+                <div className="contact-container">
+                    <div className="text-container">
                         <RichText.Content
                             tagName="h3"
                             className="contact-us-heading"
-                            style={styles.heading}
                             value={attributes.heading}
                         />
                         <RichText.Content
                             tagName="h2"
                             className="contact-us-title"
-                            style={styles.title}
                             value={attributes.title}
                         />
                     </div>
-                    <a 
-                        href={attributes.buttonUrl}
-                        style={styles.button}
-                    >
-                        <RichText.Content
-                            tagName="span"
-                            className="contact-us-button"
-                            value={attributes.buttonText}
-                        />
-                    </a>
+                    {attributes.buttonActionType === 'popup' ? (
+                        <a 
+                            href="javascript:void(0)"
+                            className="contact-button"
+                            onClick="openPopup('bevision-new-popup')"
+                        >
+                            <RichText.Content
+                                tagName="span"
+                                className="contact-us-button"
+                                value={attributes.buttonText}
+                            />
+                        </a>
+                    ) : (
+                        <a 
+                            href={attributes.buttonUrl}
+                            className="contact-button"
+                        >
+                            <RichText.Content
+                                tagName="span"
+                                className="contact-us-button"
+                                value={attributes.buttonText}
+                            />
+                        </a>
+                    )}
                 </div>
             </div>
         );

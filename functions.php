@@ -40,7 +40,33 @@ add_action('wp_footer', function() {
 require_once get_template_directory() . '/inc/class-bevision-fonts.php';
 require_once get_template_directory() . '/inc/blocks.php';
 require_once get_template_directory() . '/inc/lead-form-handler.php';
-require_once get_template_directory() . '/inc/lead-popup.php';
+// Lead popup (new version only)
+require_once get_template_directory() . '/inc/lead-popup-new.php';
+// Custom post types
+require_once get_template_directory() . '/inc/custom-post-types.php';
+// Testimonial fields for posts
+require_once get_template_directory() . '/inc/testimonial-fields.php';
+// Product rendering
+require_once get_template_directory() . '/inc/product-render.php';
+// Product template and default blocks
+require_once get_template_directory() . '/inc/product-template.php';
+// Template loader for products
+require_once get_template_directory() . '/inc/template-loader.php';
+// Admin documentation page
+require_once get_template_directory() . '/inc/admin-documentation.php';
+
+// Add popup override script to ensure old popup functionality is disabled
+function bevision_add_popup_overrides() {
+    wp_enqueue_script(
+        'bevision-popup-overrides',
+        get_template_directory_uri() . '/assets/js/popup-overrides.js',
+        array('jquery'),
+        time() . rand(1000, 9999),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'bevision_add_popup_overrides', 999);
+require_once get_template_directory() . '/inc/menu-rendering.php';
 
 // Add cache clearing functionality
 function bevision_clear_all_caches() {
@@ -117,6 +143,12 @@ function bevision_setup() {
     add_theme_support('title-tag');
     add_theme_support('automatic-feed-links');
     add_editor_style('build/index.css');
+    
+    // Register navigation menus
+    register_nav_menus(array(
+        'primary' => __('Primary Menu', 'bevision'),
+        'mobile' => __('Mobile Menu', 'bevision'),
+    ));
 
     // Flush rewrite rules to ensure REST API works
     flush_rewrite_rules();
@@ -401,6 +433,59 @@ function bevision_enqueue_assets() {
         'nonce' => wp_create_nonce('bevision_lead_form')
     ));
     
+    // Language dropdown styles
+    wp_enqueue_style(
+        'bevision-language-dropdown',
+        get_template_directory_uri() . '/assets/css/language-dropdown.css',
+        array(),
+        $assets_version
+    );
+    
+    // Add inline CSS for language dropdown to ensure hover functionality works
+    wp_add_inline_style('bevision-language-dropdown', '
+        .language-selector:hover .language-dropdown,
+        .language-selector-mobile:hover .language-dropdown,
+        .hover-dropdown:hover .language-dropdown {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 9999 !important;
+        }
+        .language-dropdown {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            background-color: white !important;
+            border: 1px solid #eaeaea !important;
+            border-radius: 4px !important;
+            min-width: 60px !important;
+            margin-top: 5px !important;
+        }
+        .language-selector,
+        .language-selector-mobile {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+    ');
+    
+    // Mobile menu and submenu script
+    wp_enqueue_script(
+        'mobile-menu-js',
+        get_template_directory_uri() . '/assets/js/mobile-menu-new.js',
+        array('jquery'),
+        $assets_version,
+        true
+    );
+    
+    // Language dropdown script
+    wp_enqueue_script(
+        'language-dropdown-js',
+        get_template_directory_uri() . '/assets/js/language-dropdown.js',
+        array('jquery'),
+        $assets_version,
+        true
+    );
+    
     // Client Testimonials Carousel Script
     wp_enqueue_script(
         'bevision-testimonial-carousel',
@@ -575,3 +660,137 @@ function bevision_duplicate_post_link($actions, $post) {
 }
 add_filter('post_row_actions', 'bevision_duplicate_post_link', 10, 2);
 add_filter('page_row_actions', 'bevision_duplicate_post_link', 10, 2);
+
+/**
+ * Enable description field in WordPress menu editor
+ */
+function bevision_show_menu_description_field() {
+    ?>  
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Check for menu screen
+            if ($('body').hasClass('nav-menus-php')) {
+                // Force the description field to show
+                $('.field-description').show();
+                
+                // Also try to make it visible via screen options if necessary
+                $('.hide-column-tog').each(function() {
+                    if ($(this).val() === 'description') {
+                        $(this).prop('checked', true);
+                    }
+                });
+            }
+        });
+    </script>  
+    <?php
+}
+add_action('admin_footer', 'bevision_show_menu_description_field');
+
+// Automatically set product description as menu item description when adding or updating menu items
+function bevision_set_product_menu_description($menu_id, $menu_item_db_id, $menu_item_args) {
+    // Check if this menu item is a bevision_product
+    if (isset($menu_item_args['menu-item-object']) && $menu_item_args['menu-item-object'] === 'bevision_product') {
+        // Get the product ID
+        $product_id = $menu_item_args['menu-item-object-id'];
+        
+        // Get product description from custom meta field
+        $description = get_post_meta($product_id, '_bevision_product_description', true);
+        
+        // If no custom description, try to get excerpt
+        if (empty($description)) {
+            $product = get_post($product_id);
+            $description = $product->post_excerpt;
+            
+            // If no excerpt, try to get the content and trim it
+            if (empty($description)) {
+                $description = wp_trim_words($product->post_content, 20, '...');
+            }
+        }
+        
+        // If we have a description, update the menu item description
+        if (!empty($description)) {
+            update_post_meta($menu_item_db_id, '_menu_item_description', $description);
+        }
+    }
+}
+add_action('wp_update_nav_menu_item', 'bevision_set_product_menu_description', 10, 3);
+
+// Update all product menu item descriptions in the admin navigation menu page
+function bevision_update_all_product_menu_descriptions() {
+    // Check if we're on the nav-menus.php admin page
+    $screen = get_current_screen();
+    if (!is_object($screen) || $screen->base !== 'nav-menus') {
+        return;
+    }
+    
+    // Get all menu locations
+    $locations = get_nav_menu_locations();
+    foreach ($locations as $location => $menu_id) {
+        if ($menu_id <= 0) continue;
+        
+        // Get all items in this menu
+        $menu_items = wp_get_nav_menu_items($menu_id);
+        if (!$menu_items) continue;
+        
+        foreach ($menu_items as $menu_item) {
+            // Check if this is a product
+            if ($menu_item->object === 'bevision_product') {
+                $product_id = $menu_item->object_id;
+                
+                // Get product description from custom meta field
+                $description = get_post_meta($product_id, '_bevision_product_description', true);
+                
+                // If no custom description, try to get excerpt
+                if (empty($description)) {
+                    $product = get_post($product_id);
+                    if ($product) {
+                        $description = $product->post_excerpt;
+                        
+                        // If no excerpt, try to get the content and trim it
+                        if (empty($description)) {
+                            $description = wp_trim_words($product->post_content, 20, '...');
+                        }
+                    }
+                }
+                
+                // If we have a description, update the menu item description
+                if (!empty($description)) {
+                    update_post_meta($menu_item->ID, '_menu_item_description', $description);
+                }
+            }
+        }
+    }
+}
+add_action('admin_init', 'bevision_update_all_product_menu_descriptions');
+
+// Add JavaScript to make menu description field visible in admin
+function bevision_enqueue_menu_admin_script() {
+    $screen = get_current_screen();
+    if (is_object($screen) && $screen->base === 'nav-menus') {
+        echo "<script type='text/javascript'>
+            jQuery(document).ready(function($) {
+                // Make description field visible for all menu items
+                $('.field-description').css('display', 'block');
+                
+                // Run when new items are added to the menu
+                $('body').on('DOMNodeInserted', '.menu-item', function() {
+                    setTimeout(function() {
+                        $('.field-description').css('display', 'block');
+                    }, 200);
+                });
+                
+                // Show descriptions for all menu items
+                $('.hide-column-tog').prop('checked', true).trigger('change');
+            });
+        </script>";
+    }
+}
+add_action('admin_footer', 'bevision_enqueue_menu_admin_script');
+
+// Force show description field in Screen Options
+function bevision_force_nav_menu_description() {
+    $user = wp_get_current_user();
+    update_user_meta($user->ID, 'managenav-menuscolumnshidden', array());
+}
+add_action('admin_init', 'bevision_force_nav_menu_description');
+

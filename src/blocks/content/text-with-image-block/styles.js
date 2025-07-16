@@ -12,7 +12,7 @@ export const styles = {
     flexDirection: isMobile ? 'column' : 'row',
     alignItems: 'center',
     gap: isMobile ? '32px' : '64px',
-    maxWidth: '1440px',
+    maxWidth: '1250px',
     margin: '0 auto',
     padding: '64px 0px',
     boxSizing: 'border-box',

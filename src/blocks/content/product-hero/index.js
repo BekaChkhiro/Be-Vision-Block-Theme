@@ -1,30 +1,45 @@
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
+import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText, InspectorControls } from '@wordpress/block-editor';
+import { Button, PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 
 const blockStyle = `
     .product-hero-section .container {
-        max-width: 1320px;
+        max-width: 1250px;
         background-color: #f8f7ff;
         margin: 0 auto;
         padding: 60px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-between;!important
         gap: 4rem;
+        box-sizing: border-box;
         border-radius: 20px;
     }
 
+.product-hero-section {
+margin-bottom: 70px !important;
+}
+
     .product-hero-section__content {
         flex: 0 0 50%;
+        
     }
 
+    .product-hero-section__main-title {
+        color: var(--Dark-Blue, #221A4C);
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 50px;
+        margin: 0px 0px 20px;
+    }
+    
     .product-hero-section__title {
-        color: #221A4C;
-        font-size: 50px;
+        color: var(--Dark-Blue, #221A4C);
+        font-size: 40px;
+        font-style: normal;
         font-weight: 750;
         line-height: 50px;
-        font-style: normal;
         margin: 0px 0px 40px;
     }
 
@@ -40,9 +55,9 @@ const blockStyle = `
         display: inline-block;
         background-color: #6C5CE7;
         color: #fff;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
-        padding: 12px 24px;
+        padding: 15px 40px;
         border-radius: 6px;
         text-decoration: none;
         transition: background-color 0.3s ease;
@@ -59,7 +74,8 @@ const blockStyle = `
         min-height: 300px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: end;
+       
     }
 
     .product-hero-section__image img {
@@ -77,13 +93,40 @@ const blockStyle = `
         background: #fff;
         border-radius: 10px;
     }
+
+    .product-hero-section__image .image-overlay:hover {
+        opacity: 1 !important;
+    }
+
+    .product-hero-section__image .image-overlay .components-button {
+        height: auto;
+        width: auto;
+        border: none;
+        padding: 8px 16px;
+        margin: 0 5px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+    }
     
     @media (max-width: 768px) {
+    
+    
+    
+        .product-hero-section { 
+            margin-bottom: 0px !important;
+        }
+
         .product-hero-section .container {
             flex-direction: column;
             text-align: center;
             padding: 40px 20px;
-            gap: 2rem;
+            gap: 40px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 0 auto;
+            border-radius: 10px;
         }
         
         .product-hero-section__content,
@@ -92,9 +135,15 @@ const blockStyle = `
             flex: none;
         }
         
+        .product-hero-section__main-title {
+            font-size: 30px;
+            line-height: 40px;
+            margin-bottom: 10px;
+        }
+        
         .product-hero-section__title {
-            font-size: 36px;
-            line-height: 1.2;
+            font-size: 30px;
+            line-height: 40px;
             margin-bottom: 20px;
         }
         
@@ -142,6 +191,10 @@ registerBlockType('bevision/product-hero-section', {
         imageId: {
             type: 'number'
         },
+        mainTitle: {
+            type: 'string',
+            default: ''
+        },
         title: {
             type: 'string',
             default: 'Discover Our Products'
@@ -173,16 +226,105 @@ registerBlockType('bevision/product-hero-section', {
 
         return (
             <>
+                <InspectorControls>
+                    <PanelBody title="Content Settings" initialOpen={true}>
+                        <TextControl
+                            label="Main Title"
+                            value={attributes.mainTitle}
+                            onChange={(mainTitle) => setAttributes({ mainTitle })}
+                            placeholder="Enter main title..."
+                        />
+                        <TextControl
+                            label="Title"
+                            value={attributes.title}
+                            onChange={(title) => setAttributes({ title })}
+                            placeholder="Enter title..."
+                        />
+                        <TextareaControl
+                            label="Description"
+                            value={attributes.description}
+                            onChange={(description) => setAttributes({ description })}
+                            placeholder="Enter description..."
+                            rows={4}
+                        />
+                        <TextControl
+                            label="CTA Button Text"
+                            value={attributes.ctaText}
+                            onChange={(ctaText) => setAttributes({ ctaText })}
+                            placeholder="Enter button text..."
+                        />
+                        <TextControl
+                            label="CTA URL"
+                            value={attributes.ctaUrl}
+                            onChange={(ctaUrl) => setAttributes({ ctaUrl })}
+                            placeholder="Enter URL (e.g., #, /contact, https://example.com)"
+                        />
+                    </PanelBody>
+                    <PanelBody title="Image Settings" initialOpen={false}>
+                        <div style={{ marginBottom: '16px' }}>
+                            {attributes.imageUrl ? (
+                                <div>
+                                    <img 
+                                        src={attributes.imageUrl} 
+                                        alt="Preview" 
+                                        style={{ width: '100%', height: 'auto', marginBottom: '8px' }}
+                                    />
+                                    <Button 
+                                        variant="secondary" 
+                                        onClick={() => setAttributes({ imageUrl: '', imageId: null })}
+                                        isDestructive
+                                    >
+                                        Remove Image
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div style={{ 
+                                    border: '1px dashed #ccc', 
+                                    padding: '20px', 
+                                    textAlign: 'center',
+                                    marginBottom: '8px'
+                                }}>
+                                    <p>No image selected</p>
+                                </div>
+                            )}
+                            <MediaUploadCheck>
+                                <MediaUpload
+                                    onSelect={onSelectImage}
+                                    allowedTypes={['image']}
+                                    value={attributes.imageId}
+                                    render={({ open }) => (
+                                        <Button 
+                                            onClick={open} 
+                                            variant="primary"
+                                            style={{ marginTop: '8px' }}
+                                        >
+                                            {attributes.imageUrl ? 'Replace Image' : 'Upload Image'}
+                                        </Button>
+                                    )}
+                                />
+                            </MediaUploadCheck>
+                        </div>
+                    </PanelBody>
+                </InspectorControls>
                 <style>{blockStyle}</style>
                 <div {...blockProps}>
                     <div className="container">
                         <div className="product-hero-section__content">
                             <RichText
                                 tagName="h1"
+                                className="product-hero-section__main-title"
+                                value={attributes.mainTitle}
+                                onChange={(mainTitle) => setAttributes({ mainTitle })}
+                                placeholder="Enter main title here..."
+                                allowedFormats={['core/bold', 'core/italic']}
+                            />
+                            <RichText
+                                tagName="h2"
                                 className="product-hero-section__title"
                                 value={attributes.title}
                                 onChange={(title) => setAttributes({ title })}
-                                placeholder="Enter title"
+                                placeholder="Enter title here..."
+                                allowedFormats={['core/bold', 'core/italic']}
                             />
                             <RichText
                                 tagName="div"
@@ -190,6 +332,7 @@ registerBlockType('bevision/product-hero-section', {
                                 value={attributes.description}
                                 onChange={(description) => setAttributes({ description })}
                                 placeholder="Enter description"
+                                allowedFormats={['core/bold', 'core/italic', 'core/strikethrough']}
                             />
                             <div className="product-hero-section__cta-wrapper">
                                 <RichText
@@ -198,16 +341,9 @@ registerBlockType('bevision/product-hero-section', {
                                     value={attributes.ctaText}
                                     onChange={(ctaText) => setAttributes({ ctaText })}
                                     placeholder="Enter button text"
+                                    allowedFormats={['core/bold', 'core/italic']}
                                 />
-                                <div style={{ marginTop: '10px' }}>
-                                    <label>Button URL: </label>
-                                    <input
-                                        type="text"
-                                        value={attributes.ctaUrl}
-                                        onChange={(e) => setAttributes({ ctaUrl: e.target.value })}
-                                        style={{ width: '100%' }}
-                                    />
-                                </div>
+
                             </div>
                         </div>
                         <div className="product-hero-section__image">
@@ -218,12 +354,51 @@ registerBlockType('bevision/product-hero-section', {
                                     value={attributes.imageId}
                                     render={({ open }) => (
                                         attributes.imageUrl ? (
-                                            <img
-                                                src={attributes.imageUrl}
-                                                onClick={open}
-                                                style={{ cursor: 'pointer' }}
-                                                alt="Click to change image"
-                                            />
+                                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                                                <img
+                                                    src={attributes.imageUrl}
+                                                    onClick={open}
+                                                    style={{ cursor: 'pointer', maxWidth: '100%', height: 'auto' }}
+                                                    alt="Click to change image"
+                                                />
+                                                <div 
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '10px',
+                                                        opacity: 0,
+                                                        transition: 'opacity 0.3s ease',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    className="image-overlay"
+                                                    onMouseEnter={(e) => e.target.style.opacity = 1}
+                                                    onMouseLeave={(e) => e.target.style.opacity = 0}
+                                                >
+                                                    <Button
+                                                        onClick={open}
+                                                        variant="primary"
+                                                        size="small"
+                                                        style={{ backgroundColor: '#6C5CE7' }}
+                                                    >
+                                                        Replace
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => setAttributes({ imageUrl: '', imageId: null })}
+                                                        variant="secondary"
+                                                        size="small"
+                                                        isDestructive
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         ) : (
                                             <Button
                                                 onClick={open}
@@ -252,16 +427,41 @@ registerBlockType('bevision/product-hero-section', {
                 <div {...blockProps}>
                     <div className="container">
                         <div className="product-hero-section__content">
-                            <h1 className="product-hero-section__title">
-                                {attributes.title}
-                            </h1>
-                            <div className="product-hero-section__description">
-                                {attributes.description}
-                            </div>
+                            {attributes.mainTitle && (
+                                <RichText.Content
+                                    tagName="h1"
+                                    className="product-hero-section__main-title"
+                                    value={attributes.mainTitle}
+                                />
+                            )}
+                            <RichText.Content
+                                tagName="h2"
+                                className="product-hero-section__title"
+                                value={attributes.title}
+                            />
+                            <RichText.Content
+                                tagName="div"
+                                className="product-hero-section__description"
+                                value={attributes.description}
+                            />
                             <div className="product-hero-section__cta-wrapper">
-                                <a href={attributes.ctaUrl} className="product-hero-section__cta">
-                                    {attributes.ctaText}
-                                </a>
+                                {attributes.ctaUrl && attributes.ctaUrl !== '#' ? (
+                                    <a 
+                                        href={attributes.ctaUrl}
+                                        className="product-hero-section__cta"
+                                        target={attributes.ctaUrl.startsWith('http') ? '_blank' : '_self'}
+                                        rel={attributes.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                    >
+                                        <RichText.Content value={attributes.ctaText} />
+                                    </a>
+                                ) : (
+                                    <button 
+                                        className="product-hero-section__cta open-lead-popup" 
+                                        data-open-popup="true"
+                                    >
+                                        <RichText.Content value={attributes.ctaText} />
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <div className="product-hero-section__image">

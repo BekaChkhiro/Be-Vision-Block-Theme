@@ -1,7 +1,8 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, RichText, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { PanelBody, ColorPalette, TabPanel, TextControl, RangeControl, Button } from '@wordpress/components';
-import { styles } from './styles';
+import { __ } from '@wordpress/i18n';
+import './frontend.css';
 
 registerBlockType('bevision/case-study-section', {
     title: 'Case Study Section',
@@ -34,11 +35,11 @@ registerBlockType('bevision/case-study-section', {
         },
         titleFontSize: {
             type: 'number',
-            default: 48
+            default: 50
         },
         descriptionFontSize: {
             type: 'number',
-            default: 16
+            default: 18
         },
         backgroundImage: {
             type: 'object',
@@ -55,19 +56,90 @@ registerBlockType('bevision/case-study-section', {
                 alt: '',
                 id: null
             }
+        },
+        logo: {
+            type: 'object',
+            default: {
+                url: '',
+                alt: '',
+                id: null
+            }
         }
     },
-    edit: ({ attributes, setAttributes }) => {
+
+    edit: function(props) {
+        const { attributes, setAttributes } = props;
         const blockProps = useBlockProps();
         const { 
             title, description,
             backgroundColor, titleColor, descriptionColor,
             titleFontSize, descriptionFontSize,
-            backgroundImage, rightImage
+            backgroundImage, rightImage, logo
         } = attributes;
 
+        // Media upload handlers
+        const onSelectBackgroundImage = (media) => {
+            setAttributes({
+                backgroundImage: {
+                    url: media.url,
+                    alt: media.alt || '',
+                    id: media.id
+                }
+            });
+        };
+
+        const onSelectRightImage = (media) => {
+            setAttributes({
+                rightImage: {
+                    url: media.url,
+                    alt: media.alt || '',
+                    id: media.id
+                }
+            });
+        };
+
+        const removeBackgroundImage = () => {
+            setAttributes({
+                backgroundImage: {
+                    url: '',
+                    alt: '',
+                    id: null
+                }
+            });
+        };
+
+        const removeRightImage = () => {
+            setAttributes({
+                rightImage: {
+                    url: '',
+                    alt: '',
+                    id: null
+                }
+            });
+        };
+
+        const onSelectLogo = (media) => {
+            setAttributes({
+                logo: {
+                    url: media.url,
+                    alt: media.alt || '',
+                    id: media.id
+                }
+            });
+        };
+
+        const removeLogo = () => {
+            setAttributes({
+                logo: {
+                    url: '',
+                    alt: '',
+                    id: null
+                }
+            });
+        };
+
         return (
-            <>
+            <div {...blockProps}>
                 <InspectorControls>
                     <TabPanel
                         className="bevision-tab-panel"
@@ -103,56 +175,32 @@ registerBlockType('bevision/case-study-section', {
                                             <p>ფონის სურათი</p>
                                             <MediaUploadCheck>
                                                 <MediaUpload
-                                                    onSelect={(media) => {
-                                                        setAttributes({
-                                                            backgroundImage: {
-                                                                url: media.url,
-                                                                alt: media.alt || '',
-                                                                id: media.id,
-                                                            },
-                                                        });
-                                                    }}
+                                                    onSelect={onSelectBackgroundImage}
                                                     allowedTypes={['image']}
                                                     value={backgroundImage?.id}
                                                     render={({ open }) => (
                                                         <div>
-                                                            {!backgroundImage?.url ? (
-                                                                <Button 
-                                                                    onClick={open}
-                                                                    className="components-button is-primary"
-                                                                >
-                                                                    სურათის არჩევა
-                                                                </Button>
-                                                            ) : (
+                                                            {backgroundImage?.url ? (
                                                                 <div>
                                                                     <img 
                                                                         src={backgroundImage.url} 
-                                                                        alt={backgroundImage.alt} 
-                                                                        style={{ maxWidth: '100%', marginBottom: '10px' }} 
+                                                                        alt={backgroundImage.alt || ''}
+                                                                        style={{ maxWidth: '100%', height: 'auto', marginBottom: '8px' }}
                                                                     />
-                                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                                        <Button 
-                                                                            onClick={open}
-                                                                            className="components-button is-secondary"
-                                                                        >
-                                                                            სურათის შეცვლა
-                                                                        </Button>
-                                                                        <Button 
-                                                                            onClick={() => {
-                                                                                setAttributes({
-                                                                                    backgroundImage: {
-                                                                                        url: '',
-                                                                                        alt: '',
-                                                                                        id: null,
-                                                                                    },
-                                                                                });
-                                                                            }}
-                                                                            className="components-button is-link is-destructive"
-                                                                        >
-                                                                            წაშლა
-                                                                        </Button>
-                                                                    </div>
+                                                                    <Button 
+                                                                        onClick={removeBackgroundImage} 
+                                                                        isDestructive
+                                                                    >
+                                                                        წაშლა
+                                                                    </Button>
                                                                 </div>
+                                                            ) : (
+                                                                <Button 
+                                                                    onClick={open}
+                                                                    variant="secondary"
+                                                                >
+                                                                    ფონის სურათის არჩევა
+                                                                </Button>
                                                             )}
                                                         </div>
                                                     )}
@@ -163,56 +211,76 @@ registerBlockType('bevision/case-study-section', {
                                             <p>მარჯვენა სურათი</p>
                                             <MediaUploadCheck>
                                                 <MediaUpload
-                                                    onSelect={(media) => {
-                                                        setAttributes({
-                                                            rightImage: {
-                                                                url: media.url,
-                                                                alt: media.alt || '',
-                                                                id: media.id,
-                                                            },
-                                                        });
-                                                    }}
+                                                    onSelect={onSelectRightImage}
                                                     allowedTypes={['image']}
                                                     value={rightImage?.id}
                                                     render={({ open }) => (
                                                         <div>
-                                                            {!rightImage?.url ? (
-                                                                <Button 
-                                                                    onClick={open}
-                                                                    className="components-button is-primary"
-                                                                >
-                                                                    სურათის არჩევა
-                                                                </Button>
-                                                            ) : (
+                                                            {rightImage?.url ? (
                                                                 <div>
                                                                     <img 
                                                                         src={rightImage.url} 
-                                                                        alt={rightImage.alt} 
-                                                                        style={{ maxWidth: '100%', marginBottom: '10px' }} 
+                                                                        alt={rightImage.alt || ''}
+                                                                        style={{ maxWidth: '100%', height: 'auto', marginBottom: '8px' }}
                                                                     />
-                                                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                    <Button 
+                                                                        onClick={removeRightImage} 
+                                                                        isDestructive
+                                                                    >
+                                                                        წაშლა
+                                                                    </Button>
+                                                                </div>
+                                                            ) : (
+                                                                <Button 
+                                                                    onClick={open}
+                                                                    variant="secondary"
+                                                                >
+                                                                    სურათის არჩევა
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                />
+                                            </MediaUploadCheck>
+                                        </div>
+                                        <div style={{ marginTop: '20px' }}>
+                                            <p>ლოგო</p>
+                                            <MediaUploadCheck>
+                                                <MediaUpload
+                                                    onSelect={onSelectLogo}
+                                                    allowedTypes={['image']}
+                                                    value={logo?.id}
+                                                    render={({ open }) => (
+                                                        <div>
+                                                            {logo?.url ? (
+                                                                <div>
+                                                                    <img 
+                                                                        src={logo.url} 
+                                                                        alt={logo.alt || ''}
+                                                                        style={{ maxWidth: '100%', height: 'auto', marginBottom: '8px' }}
+                                                                    />
+                                                                    <div style={{ display: 'flex', gap: '8px' }}>
                                                                         <Button 
                                                                             onClick={open}
-                                                                            className="components-button is-secondary"
+                                                                            variant="secondary"
                                                                         >
-                                                                            სურათის შეცვლა
+                                                                            შეცვლა
                                                                         </Button>
                                                                         <Button 
-                                                                            onClick={() => {
-                                                                                setAttributes({
-                                                                                    rightImage: {
-                                                                                        url: '',
-                                                                                        alt: '',
-                                                                                        id: null,
-                                                                                    },
-                                                                                });
-                                                                            }}
-                                                                            className="components-button is-link is-destructive"
+                                                                            onClick={removeLogo} 
+                                                                            isDestructive
                                                                         >
                                                                             წაშლა
                                                                         </Button>
                                                                     </div>
                                                                 </div>
+                                                            ) : (
+                                                                <Button 
+                                                                    onClick={open}
+                                                                    variant="secondary"
+                                                                >
+                                                                    ლოგოს არჩევა
+                                                                </Button>
                                                             )}
                                                         </div>
                                                     )}
@@ -223,198 +291,237 @@ registerBlockType('bevision/case-study-section', {
                                 );
                             } else if (tab.name === 'style') {
                                 return (
-                                    <>
-                                        <PanelBody title="ფერები" initialOpen={true}>
-                                            <div>
-                                                <p>ფონის ფერი</p>
-                                                <ColorPalette
-                                                    value={backgroundColor}
-                                                    onChange={(color) => setAttributes({ backgroundColor: color })}
-                                                />
-                                            </div>
-                                            <div>
-                                                <p>სათაურის ფერი</p>
-                                                <ColorPalette
-                                                    value={titleColor}
-                                                    onChange={(color) => setAttributes({ titleColor: color })}
-                                                />
-                                            </div>
-                                            <div>
-                                                <p>აღწერის ფერი</p>
-                                                <ColorPalette
-                                                    value={descriptionColor}
-                                                    onChange={(color) => setAttributes({ descriptionColor: color })}
-                                                />
-                                            </div>
-                                        </PanelBody>
-                                        <PanelBody title="ტექსტის ზომები" initialOpen={false}>
-                                            <RangeControl
-                                                label="სათაურის ტექსტის ზომა"
-                                                value={titleFontSize}
-                                                onChange={(value) => setAttributes({ titleFontSize: value })}
-                                                min={24}
-                                                max={72}
-                                            />
-                                            <RangeControl
-                                                label="აღწერის ტექსტის ზომა"
-                                                value={descriptionFontSize}
-                                                onChange={(value) => setAttributes({ descriptionFontSize: value })}
-                                                min={14}
-                                                max={24}
-                                            />
-                                        </PanelBody>
-                                    </>
+                                    <PanelBody>
+                                        <p>ფონის ფერი</p>
+                                        <ColorPalette
+                                            value={backgroundColor}
+                                            onChange={(value) => setAttributes({ backgroundColor: value })}
+                                        />
+                                        <p>სათაურის ფერი</p>
+                                        <ColorPalette
+                                            value={titleColor}
+                                            onChange={(value) => setAttributes({ titleColor: value })}
+                                        />
+                                        <p>აღწერის ფერი</p>
+                                        <ColorPalette
+                                            value={descriptionColor}
+                                            onChange={(value) => setAttributes({ descriptionColor: value })}
+                                        />
+                                        <RangeControl
+                                            label="სათაურის ფონტის ზომა"
+                                            value={titleFontSize}
+                                            onChange={(value) => setAttributes({ titleFontSize: value })}
+                                            min={16}
+                                            max={72}
+                                        />
+                                        <RangeControl
+                                            label="აღწერის ფონტის ზომა"
+                                            value={descriptionFontSize}
+                                            onChange={(value) => setAttributes({ descriptionFontSize: value })}
+                                            min={12}
+                                            max={36}
+                                        />
+                                    </PanelBody>
                                 );
                             }
+                            return null;
                         }}
                     </TabPanel>
                 </InspectorControls>
-                <div 
-                    {...blockProps} 
-                    style={{
-                        ...styles.container(), 
-                        backgroundColor, 
-                        backgroundImage: backgroundImage?.url ? `url(${backgroundImage.url})` : 'none', 
-                        backgroundSize: 'cover', 
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="case-study-content" style={styles.heroContent()}>
-                        <div className="left-content" style={styles.leftContent()}>
-                            <RichText
-                                tagName="h1"
-                                value={title}
-                                onChange={(content) => setAttributes({ title: content })}
-                                placeholder="Title text for the case study"
-                                style={{
-                                    ...styles.title(), 
-                                    color: titleColor, 
-                                    fontSize: `${titleFontSize}px`
-                                }}
-                                allowedFormats={['core/bold', 'core/italic']}
-                            />
-                            <RichText
-                                tagName="p"
-                                className="description"
-                                value={description}
-                                onChange={(content) => setAttributes({ description: content })}
-                                placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
-                                style={{
-                                    ...styles.description(), 
-                                    color: descriptionColor, 
-                                    fontSize: `${descriptionFontSize}px`
-                                }}
-                            />
-                        </div>
-                        <div className="right-content" style={styles.rightContent()}>
-                            {rightImage?.url ? (
-                                <div style={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                    <img 
-                                        src={rightImage.url} 
-                                        alt={rightImage.alt} 
-                                        style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '10px'}} 
-                                    />
-                                </div>
-                            ) : (
-                                <div style={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: '10px'}}>
-                                    <p style={{color: '#666', fontStyle: 'italic'}}>აირჩიეთ სურათი მარჯვენა მხარისთვის</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </>
-        );
-    },
-    save: ({ attributes }) => {
-        const { 
-            title, description,
-            backgroundColor, titleColor, descriptionColor,
-            titleFontSize, descriptionFontSize,
-            backgroundImage, rightImage
-        } = attributes;
-        
-        return (
-            <div 
-                style={{
+                
+                <div style={{
                     backgroundColor, 
                     backgroundImage: backgroundImage?.url ? `url(${backgroundImage.url})` : 'none', 
                     backgroundSize: 'cover', 
                     backgroundPosition: 'center', 
                     position: 'relative', 
                     overflow: 'hidden', 
-                    maxWidth: '1440px', 
+                    maxWidth: '1250px', 
                     margin: '0 auto', 
                     borderRadius: '20px'
-                }}
-            >
-                <div className="case-study-content" style={{
-                    margin: '0 auto', 
-                    padding: '60px', 
-                    display: 'flex', 
-                    flexDirection: 'row', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    gap: '40px', 
-                    borderRadius: '20px', 
-                    position: 'relative'
                 }}>
-                    <div className="left-content" style={{
-                        flex: '1', 
-                        maxWidth: '50%', 
-                        textAlign: 'left'
+                    <div className="case-study-content" style={{
+                        margin: '0 auto',
+                        padding: '60px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '43px',
+                        borderRadius: '20px',
+                        position: 'relative'
                     }}>
+                        <div className="left-content" style={{
+                            flex: '1',
+                            maxWidth: '50%',
+                            textAlign: 'left'
+                        }}>
+                            <RichText
+                                tagName="h1"
+                                value={title}
+                                onChange={(value) => setAttributes({ title: value })}
+                                placeholder={__('Title text for the case study', 'bevision')}
+                                style={{
+                                    color: titleColor || '#221A4C',
+                                    fontSize: `${titleFontSize}px`,
+                                    fontWeight: '750',
+                                    lineHeight: '50px',
+                                    marginBottom: '40px',
+                                    marginTop: '0px'
+                                }}
+                            />
+                            <RichText
+                                tagName="p"
+                                className="description"
+                                value={description}
+                                onChange={(value) => setAttributes({ description: value })}
+                                placeholder={__('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.', 'bevision')}
+                                style={{
+                                    color: descriptionColor || '#8399AF',
+                                    fontSize: `${descriptionFontSize}px`,
+                                    fontWeight: '400',
+                                    lineHeight: 'normal',
+                                    marginBottom: '0',
+                                    maxWidth: '100%'
+                                }}
+                            />
+                            {logo?.url && (
+                                <div className="logo-container" style={{
+                                    marginTop: '30px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    position: 'relative'
+                                }}>
+                                    <img 
+                                        src={logo.url} 
+                                        alt={logo.alt || 'Logo'} 
+                                        style={{
+                                            maxWidth: '150px',
+                                            height: 'auto',
+                                            objectFit: 'contain'
+                                        }}
+                                    />
+                                    <div className="logo-controls" style={{
+                                        position: 'absolute',
+                                        top: '-10px',
+                                        right: '-10px',
+                                        display: 'flex',
+                                        gap: '5px',
+                                        opacity: '0',
+                                        transition: 'opacity 0.2s'
+                                    }}>
+                                        <Button
+                                            onClick={() => {
+                                                // This will trigger the media upload
+                                                document.querySelector('[aria-label="ლოგოს არჩევა"], [aria-label="შეცვლა"]')?.click();
+                                            }}
+                                            variant="secondary"
+                                            isSmall
+                                            style={{ 
+                                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                                color: '#333'
+                                            }}
+                                        >
+                                            Replace
+                                        </Button>
+                                        <Button
+                                            onClick={removeLogo}
+                                            variant="secondary"
+                                            isDestructive
+                                            isSmall
+                                            style={{ 
+                                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                                color: '#dc3545'
+                                            }}
+                                        >
+                                            Remove
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="right-content" style={{
+                            flex: '1',
+                            maxWidth: '50%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            {rightImage?.url && (
+                                <div>
+                                    <img 
+                                        src={rightImage.url} 
+                                        alt={rightImage.alt || ''} 
+                                        style={{
+                                            maxWidth: '100%',
+                                            height: 'auto',
+                                            objectFit: 'contain',
+                                            borderRadius: '10px'
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    },
+
+    save: function(props) {
+        const { attributes } = props;
+        const { 
+            title, description,
+            backgroundColor, titleColor, descriptionColor,
+            titleFontSize, descriptionFontSize,
+            backgroundImage, rightImage, logo
+        } = attributes;
+        
+        const blockProps = useBlockProps.save({
+            className: 'wp-block-bevision-case-study-section',
+            style: {
+                backgroundColor,
+                backgroundImage: backgroundImage?.url ? `url(${backgroundImage.url})` : undefined,
+                backgroundSize: backgroundImage?.url ? 'cover' : undefined,
+                backgroundPosition: backgroundImage?.url ? 'center' : undefined
+            }
+        });
+        
+        return (
+            <div {...blockProps}>
+                <div className="case-study-content">
+                    <div className="left-content">
                         <h1 
                             style={{
-                                color: titleColor || '#221A4C', 
-                                fontSize: `${titleFontSize}px` || '50px', 
-                                fontStyle: 'normal', 
-                                fontWeight: 750, 
-                                lineHeight: '50px', 
-                                marginBottom: '40px', 
-                                marginTop: '0px', 
-                                whiteSpace: 'pre-wrap'
+                                color: titleColor || '#221A4C',
+                                fontSize: `${titleFontSize}px`
                             }}
                             dangerouslySetInnerHTML={{ __html: title }}
                         ></h1>
                         <p 
                             className="description" 
                             style={{
-                                color: descriptionColor || '#8399AF', 
-                                fontSize: `${descriptionFontSize}px` || '18px', 
-                                fontStyle: 'normal', 
-                                fontWeight: 400, 
-                                lineHeight: 'normal', 
-                                marginBottom: 0, 
-                                maxWidth: '90%'
+                                color: descriptionColor || '#8399AF',
+                                fontSize: `${descriptionFontSize}px`
                             }}
                             dangerouslySetInnerHTML={{ __html: description }}
                         ></p>
+                        {logo?.url && (
+                            <div className="logo-container">
+                                <img 
+                                    src={logo.url} 
+                                    alt={logo.alt || 'Logo'}
+                                    className="case-study-logo"
+                                />
+                            </div>
+                        )}
                     </div>
-                    <div className="right-content" style={{
-                        flex: '1', 
-                        maxWidth: '50%', 
-                        display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center'
-                    }}>
+                    <div className="right-content">
                         {rightImage?.url && (
-                            <div style={{
-                                width: '100%', 
-                                height: '100%', 
-                                display: 'flex', 
-                                justifyContent: 'center', 
-                                alignItems: 'center'
-                            }}>
+                            <div>
                                 <img 
                                     src={rightImage.url} 
-                                    alt={rightImage.alt} 
-                                    style={{
-                                        maxWidth: '100%', 
-                                        maxHeight: '100%', 
-                                        objectFit: 'contain', 
-                                        borderRadius: '10px'
-                                    }} 
+                                    alt={rightImage.alt || ''}
                                 />
                             </div>
                         )}

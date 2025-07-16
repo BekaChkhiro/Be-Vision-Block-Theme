@@ -1,3 +1,4 @@
+import React from 'react';
 import { TextControl, Button } from '@wordpress/components';
 
 const styles = {
@@ -11,7 +12,7 @@ const styles = {
         paddingLeft: '28px',
         marginBottom: '20px',
         color: '#333',
-        fontSize: '18px',
+        fontSize: 18,
         fontWeight: '400'
     },
     checkmark: {
@@ -19,7 +20,7 @@ const styles = {
         left: 0,
         top: '2px',
         color: '#4CD964',
-        fontSize: '18px'
+        fontSize: 18
     },
     featureControl: {
         display: 'flex',
@@ -82,12 +83,32 @@ const FeatureList = ({ features, isEditing = false, onUpdate, onAdd, onRemove, c
         );
     }
 
+    // Create a style element to enforce icon size
+    React.useEffect(() => {
+        // Add a style element for feature icons
+        const styleEl = document.createElement('style');
+        styleEl.innerHTML = `
+            .products-feature-icon { font-size: 18px !important; }
+            .products-feature-item { font-size: 18px !important; }
+            .products-feature-text { font-size: 18px !important; }
+        `;
+        document.head.appendChild(styleEl);
+        
+        return () => {
+            document.head.removeChild(styleEl);
+        };
+    }, []);
+    
     return (
         <ul style={styles.featuresList} className={`products-feature-list ${className}`}>
             {features.map((feature, index) => (
-                <li key={index} style={styles.featureItem}>
-                    <span style={styles.checkmark}>✓</span>
-                    {feature}
+                <li key={index} style={{...styles.featureItem, fontSize: 18}} className="products-feature-item">
+                    <span 
+                        style={{...styles.checkmark, fontSize: 18}} 
+                        className="products-feature-icon"
+                        size="18px"
+                    >✓</span>
+                    <span className="products-feature-text" style={{fontSize: 18}}>{feature}</span>
                 </li>
             ))}
         </ul>

@@ -10,7 +10,7 @@ export const styles = {
   container: (isMobile = getResponsiveStyles()) => ({
     position: 'relative',
     overflow: 'hidden',
-    maxWidth: isMobile ? '100%' : '1440px',
+    maxWidth: isMobile ? '100%' : '1250px',
     margin: '0 auto',
     backgroundColor: '#F7F5FF',
     borderRadius: '20px'

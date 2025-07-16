@@ -3,17 +3,19 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, RichText, MediaUpload, InspectorControls } from '@wordpress/block-editor';
 import { Button, PanelBody, RangeControl } from '@wordpress/components';
 import { Fragment } from '@wordpress/element';
+import Section from '../../../components/Section';
 
 const blockStyle = `
     .wp-block-bevision-why-bivision {
         display: block;
-        margin-top: 60px;
+        padding-top: 100px;
+
     }
 
     .why-bivision {
         display: flex;
         flex-direction: column;
-        padding: 4rem 0;
+        padding: clamp(30px, 4vw, 40px) 0 clamp(30px, 5vw, 50px) 0;
         background-color: #22194b;
         color: #fff;
         position: relative;
@@ -25,7 +27,7 @@ const blockStyle = `
         top: 0;
         left: 0;
         width: var(--background-size, 10%);
-        height: var(--background-size, 10%);
+        height: var(--background-height, 100%);
         opacity: 0.2;
         pointer-events: none;
     }
@@ -47,26 +49,34 @@ const blockStyle = `
     }
 
     .why-bivision .container {
-        max-width: 1440px;
-        margin: 0 auto;
-        padding: 0;
         width: 100%;
         display: flex;
-        gap: 2rem;
+        gap: clamp(15px, 2vw, 25px);
         position: relative;
         z-index: 1;
+        align-items: stretch;
+        height: auto;
     }
-
+    
     .why-bivision__media-column {
         flex: 1;
+        display: flex;
+        width: 50%;
+        position: relative;
+        min-height: 100%;
     }
 
+    /* Responsive media column styles */
     .why-bivision__media-column img {
         width: 100%;
-        height: auto;
-        max-height: 440px; /* Reduced height of the photo */
+        height: 100%;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 12px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
     }
 
     .why-bivision__media-column .image-button {
@@ -85,52 +95,50 @@ const blockStyle = `
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 40px;
+        gap: 25px;
         justify-content: space-between;
+        width: 50%;
     }
 
     .why-bivision__text-content {
         background: #6653C6;
-        border-radius: 20px;
+        border-radius: 12px;
         padding: 40px;
     }
 
-    .why-bivision__text-content h2 {
-        color: var(--White, #FFF);
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: normal;
-        margin: 0 0 1.5rem;
+    .why-bivision__text-content {
+        background: #6653C6;
+        border-radius: 12px;
+        padding: clamp(12px, 2vw, 40px);
     }
 
     .why-bivision__about p {
-        font-size: 1rem;
+        font-size: 16px;
         line-height: 1.6;
         margin-bottom: 0;
         color: #fff;
         opacity: 0.9;
+        margin: 0px;
     }
 
     .why-bivision__stats {
         display: flex;
         flex-direction: row;
-        gap: 1rem;
-        justify-content: space-between;
+        gap: 25px;
         flex-wrap: nowrap;
         width: 100%;
     }
 
     .why-bivision__stats .stat-item {
-        background: #2a215f;
-        padding: 16px;
+        background-color: #2a215f !important;
+        padding: clamp(12px, 2vw, 20px);
         border-radius: 12px;
         text-align: left;
         position: relative;
         display: flex;
         flex-direction: column;
         justify-content: end;
-        gap: 8px;
+        gap: clamp(4px, 0.5vw, 6px);
         flex: 1;
         width: calc(33.333% - 0.667rem);
     }
@@ -143,7 +151,7 @@ const blockStyle = `
         height: 24px;
         padding: 8px;
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        border-radius: 12px;
         object-fit: contain;
     }
 
@@ -156,7 +164,7 @@ const blockStyle = `
         width: 40px;
         height: 40px;
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -173,7 +181,7 @@ const blockStyle = `
 
     .why-bivision__stats .stat-item h3 {
         color: var(--White, #FFF);
-        font-size: 50px;
+        font-size: clamp(28px, 3vw, 40px);
         font-style: normal;
         font-weight: 750;
         line-height: normal;
@@ -181,9 +189,9 @@ const blockStyle = `
     }
 
     .why-bivision__stats .stat-item p {
-        color: var(--Violet, #6653C6);
+        color: var(--White, #FFF);
         font-family: "Helvetica Neue LT GEO";
-        font-size: 16px;
+        font-size: clamp(14px, 1.5vw, 18px);
         font-style: normal;
         font-weight: 400;
         line-height: normal;
@@ -192,61 +200,91 @@ const blockStyle = `
 
     .why-bivision__titles {
         text-align: center;
-        margin-bottom: 70px;
-    }
-
-    .why-bivision__subtitle {
-        color: var(--Violet, #6653C6);
-        text-align: center;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 750;
-        line-height: normal;
-        margin-bottom: 5px;
+        margin-bottom: 25px;
     }
 
     .why-bivision__main-title {
         color: var(--White, #FFF);
         text-align: center;
         font-family: "Helvetica Neue LT GEO";
-        font-size: 30px;
+        font-size: clamp(20px, 2.5vw, 24px);
         font-style: normal;
-        font-weight: 700;
+        font-weight: 600;
         line-height: normal;
         margin: 0;
     }
+    
+    /* Tablet styles */
+    @media (max-width: 992px) {
+        .why-bivision__stats .stat-item h3 {
+            font-size: clamp(24px, 4vw, 36px);
+        }
+        
+        .why-bivision__stats {
+            gap: clamp(15px, 2vw, 25px);
+        }
+    }
 
+    /* Mobile styles */
     @media (max-width: 768px) {
+            .wp-block-bevision-why-bivision {
+ 
+        padding-top: 0;
+
+    }
+
+
         .why-bivision {
-            padding: 2rem 0;
+            padding: 30px 15px 30px 15px;
             overflow: hidden;
             width: 100%;
             box-sizing: border-box;
+            margin-top: 0px !important;
         }
         
         .why-bivision .container {
             flex-direction: column;
-            gap: 1.5rem;
-            padding: 0 1rem;
+            gap: 20px;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
         }
         
         .why-bivision__titles {
-            margin-bottom: 40px;
+            margin-bottom: 18px;
         }
         
+        .why-bivision__main-title {
+            font-size: clamp(22px, 6vw, 28px) !important;
+        }
+
+
+
+        .why-bivision__media-column {
+            display: flex;
+            position: relative;
+            min-height: 350px;
+            width: 100%;
+        }
+
         .why-bivision__media-column img {
-            max-height: 300px;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            object-fit: cover;
         }
         
         .why-bivision__text-content {
-            padding: 30px;
+            padding: 12px;
         }
         
         .why-bivision__content {
             width: 100%;
+            gap: 20px;
             box-sizing: border-box;
         }
         
@@ -257,7 +295,7 @@ const blockStyle = `
         
         .why-bivision__stats {
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 20px;
             flex-direction: column;
             width: 100%;
             box-sizing: border-box;
@@ -272,11 +310,11 @@ const blockStyle = `
         }
         
         .why-bivision__stats .stat-item h3 {
-            font-size: 36px;
+            font-size: clamp(24px, 8vw, 36px);
         }
         
         .why-bivision__stats .stat-item p {
-            font-size: 14px;
+            font-size: clamp(12px, 4vw, 14px);
         }
     }
 `;
@@ -398,6 +436,9 @@ registerBlockType('bevision/why-bivision', {
         }
     },
     edit: ({ attributes, setAttributes }) => {
+        // Custom styles for mobile detection
+        const isMobile = window.innerWidth <= 768;
+        
         const blockProps = useBlockProps({
             style: {
                 '--background-size': `${attributes.backgroundSize}%`,
@@ -560,21 +601,15 @@ registerBlockType('bevision/why-bivision', {
                         )}
                         <div className="why-bivision__titles">
                             <RichText
-                                tagName="div"
-                                className="why-bivision__subtitle"
-                                value={attributes.subtitle}
-                                onChange={(subtitle) => setAttributes({ subtitle })}
-                                placeholder={__('Enter subtitle...', 'bevision')}
-                            />
-                            <RichText
                                 tagName="h2"
                                 className="why-bivision__main-title"
                                 value={attributes.mainTitle}
                                 onChange={(mainTitle) => setAttributes({ mainTitle })}
                                 placeholder={__('Enter main title...', 'bevision')}
+                                style={isMobile ? { fontSize: '40px', color: 'green', border: '5px solid green' } : {}}
                             />
                         </div>
-                        <div className="container">
+                        <Section className="container">
                             <div className="why-bivision__media-column">
                                 <MediaUpload
                                     onSelect={onSelectImage}
@@ -594,12 +629,7 @@ registerBlockType('bevision/why-bivision', {
                             </div>
                             <div className="why-bivision__content">
                                 <div className="why-bivision__text-content">
-                                    <RichText
-                                        tagName="h2"
-                                        value={attributes.title}
-                                        onChange={(title) => setAttributes({ title })}
-                                        placeholder={__('Why BIVISION?', 'bevision')}
-                                    />
+
                                     <div className="why-bivision__about">
                                         <RichText
                                             tagName="p"
@@ -708,63 +738,62 @@ registerBlockType('bevision/why-bivision', {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Section>
                     </div>
                 </div>
             </Fragment>
         );
     },
     save: ({ attributes }) => {
+        // Add responsive styling variables
+        
         const blockProps = useBlockProps.save({
             style: {
                 '--background-size': `${attributes.backgroundSize}%`,
                 '--background-size2': `${attributes.backgroundSize2}%`,
-                '--background-opacity2': attributes.backgroundOpacity2 / 100
+                '--background-opacity2': attributes.backgroundOpacity2 / 100,
+                '--text-base-size': 'clamp(14px, 1vw, 16px)',
+                '--heading-base-size': 'clamp(24px, 3vw, 40px)'
             }
         });
         
         return (
             <Fragment>
                 <style>{blockStyle}</style>
-                <div {...blockProps}>
-                    <div className="why-bivision">
-                        {attributes.backgroundMediaUrl && (
-                            <div className="why-bivision__background">
-                                <img src={attributes.backgroundMediaUrl} alt={__('Background Image', 'bevision')} />
-                            </div>
-                        )}
-                        {attributes.backgroundMediaUrl2 && (
-                            <div className="why-bivision__background2">
-                                <img src={attributes.backgroundMediaUrl2} alt={__('Bottom Right Background', 'bevision')} />
-                            </div>
-                        )}
-                        <div className="why-bivision__titles">
-                            <div className="why-bivision__subtitle">
-                                <RichText.Content value={attributes.subtitle} />
-                            </div>
-                            <h2 className="why-bivision__main-title">
-                                <RichText.Content value={attributes.mainTitle} />
-                            </h2>
-                        </div>
-                        <div className="container">
-                            <div className="why-bivision__media-column">
-                                {attributes.mediaUrl && (
-                                    <img src={attributes.mediaUrl} alt={__('Team Image', 'bevision')} />
-                                )}
-                            </div>
-                            <div className="why-bivision__content">
-                                <div className="why-bivision__text-content">
-                                    <RichText.Content
-                                        tagName="h2"
-                                        value={attributes.title}
-                                    />
-                                    <div className="why-bivision__about">
-                                        <RichText.Content
-                                            tagName="p"
-                                            value={attributes.aboutContent}
-                                        />
-                                    </div>
+                <div >
+                    <div {...blockProps}>
+                        <div className="why-bivision">
+                            {attributes.backgroundMediaUrl && (
+                                <div className="why-bivision__background">
+                                    <img src={attributes.backgroundMediaUrl} alt={__('Background Image', 'bevision')} />
                                 </div>
+                            )}
+                            {attributes.backgroundMediaUrl2 && (
+                                <div className="why-bivision__background2">
+                                    <img src={attributes.backgroundMediaUrl2} alt={__('Bottom Right Background', 'bevision')} />
+                                </div>
+                            )}
+                            <div className="why-bivision__titles">
+                                <h2 className="why-bivision__main-title">
+                                    <RichText.Content value={attributes.mainTitle} />
+                                </h2>
+                            </div>
+                            <Section className="container">
+                                <div className="why-bivision__media-column" id="about-us">
+                                    {attributes.mediaUrl && (
+                                        <img src={attributes.mediaUrl} alt={__('Team Image', 'bevision')} />
+                                    )}
+                                </div>
+                                <div className="why-bivision__content" >
+                                    <div className="why-bivision__text-content">
+
+                                        <div className="why-bivision__about">
+                                            <RichText.Content
+                                                tagName="p"
+                                                value={attributes.aboutContent}
+                                            />
+                                        </div>
+                                    </div>
                                 <div className="why-bivision__stats-container">
                                     <div className="why-bivision__stats">
                                         <div className="stat-item">
@@ -809,7 +838,8 @@ registerBlockType('bevision/why-bivision', {
 
                                     </div>
                                 </div>
-                            </div>
+                                </div>
+                            </Section>
                         </div>
                     </div>
                 </div>

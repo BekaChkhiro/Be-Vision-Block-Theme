@@ -37,12 +37,16 @@ const RightSection = ({
                 style={{
                     backgroundColor: buttonColor,
                     color: buttonTextColor,
-                    padding: `${buttonPaddingV}px ${buttonPaddingH}px`,
-                    borderRadius: `${buttonBorderRadius}px`,
+                    display: 'flex',
+                    height: '40px',
+                    padding: '10px 20px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '10px',
                     textDecoration: 'none',
                     fontWeight: buttonFontWeight,
                     fontSize: `${buttonFontSize}px`,
-                    display: 'inline-block',
                     transition: 'all 0.3s ease'
                 }}
             />

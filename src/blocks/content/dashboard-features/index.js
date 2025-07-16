@@ -1,82 +1,10 @@
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
+import { useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText, InspectorControls } from '@wordpress/block-editor';
+import { Button, PanelBody, PanelRow, TextControl, TextareaControl } from '@wordpress/components';
+import './frontend.css';
 
-const blockStyle = `
-    .dashboard-features {
-        padding: 5rem 0;
-    }
-
-    .dashboard-features .container {
-        max-width: 1440px;
-        margin: 0 auto;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 4rem;
-    }
-
-    .dashboard-features__content {
-        flex: 0 0 50%;
-    }
-    
-    .dashboard-features__icon {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    
-    .dashboard-features__icon img {
-        height: 40px;
-        width: auto;
-        margin-right: 15px;
-    }
-
-    .dashboard-features__title {
-        color: var(--Dark-Blue, #221A4C);
-        font-size: 42px;
-        font-weight: 700;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-    }
-
-    .dashboard-features__description {
-        color: var(--Grey, #8399AF);
-        font-size: 18px;
-        font-weight: 400;
-        line-height: 1.5;
-        margin-bottom: 2rem;
-    }
-
-    .dashboard-features__list {
-        list-style-type: disc;
-        padding-left: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .dashboard-features__list-item {
-        color: var(--Grey, #8399AF);
-        font-size: 18px;
-        font-weight: 400;
-        line-height: 1.8;
-    }
-
-    .dashboard-features__image {
-        flex: 0 0 45%;
-        min-height: 300px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .dashboard-features__image img {
-        max-width: 100%;
-        height: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
-
+// Editor-only styles
+const editorStyle = `
     .dashboard-features__image .components-button {
         height: 200px;
         width: 100%;
@@ -88,57 +16,57 @@ const blockStyle = `
         border-radius: 10px;
     }
     
-    @media (max-width: 768px) {
-        .dashboard-features {
-            padding: 3rem 0;
-        }
-        
-        .dashboard-features .container {
-            flex-direction: column;
-            gap: 2rem;
-        }
-        
-        .dashboard-features__content,
-        .dashboard-features__image {
-            width: 100%;
-            flex: none;
-        }
-        
-        .dashboard-features__icon {
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-        }
-        
-        .dashboard-features__icon img {
-            margin-bottom: 0.5rem;
-            margin-right: 0;
-        }
-        
-        .dashboard-features__title {
-            font-size: 28px;
-            margin-bottom: 1rem;
-        }
-        
-        .dashboard-features__description {
-            font-size: 16px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .dashboard-features__list-item {
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        
-        .dashboard-features__image {
-            min-height: auto;
-            margin-top: 1rem;
-        }
-        
-        .dashboard-features__image img {
-            width: 100%;
-            margin: 0 auto;
-        }
+    .dashboard-features__image-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .dashboard-features__image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    
+    .dashboard-features__image-container:hover .dashboard-features__image-overlay {
+        opacity: 1;
+    }
+    
+    .dashboard-features__icon-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .dashboard-features__icon-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    
+    .dashboard-features__icon-container:hover .dashboard-features__icon-overlay {
+        opacity: 1;
     }
 `;
 
@@ -163,19 +91,44 @@ registerBlockType('bevision/dashboard-features', {
         },
         title: {
             type: 'string',
-            default: 'Live Dashboard'
+            default: 'BiRetail: გაყიდვების მართვა და ანალიტიკა ციფრებით'
         },
         description: {
             type: 'string',
-            default: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+            default: 'მიიღე ყველა მნიშვნელოვანი ინფორმაცია ერთ პლატფორმაზე რეალურ დროში ავტომატურად განახლებული მონაცემებით, რაც დაგეხმარება უკეთესი გადაწყვეტილებების მიღებაში და გაყიდვების ოპტიმიზაციაში.'
+        },
+        showIcon: {
+            type: 'boolean',
+            default: true
+        },
+        showTitle: {
+            type: 'boolean',
+            default: true
+        },
+        showDescription: {
+            type: 'boolean',
+            default: true
         },
         listItems: {
             type: 'array',
             default: [
-                'Option 1',
-                'Option 2',
-                'Option 3'
+                {
+                    title: 'Option 1',
+                    description: 'Description for option 1'
+                },
+                {
+                    title: 'Option 2', 
+                    description: 'Description for option 2'
+                },
+                {
+                    title: 'Option 3',
+                    description: 'Description for option 3'
+                }
             ]
+        },
+        reverseLayout: {
+            type: 'boolean',
+            default: false
         }
     },
     edit: function Edit({ attributes, setAttributes }) {
@@ -197,14 +150,28 @@ registerBlockType('bevision/dashboard-features', {
             });
         };
 
-        const updateListItem = (text, index) => {
+        const removeImage = () => {
+            setAttributes({
+                imageUrl: '',
+                imageId: undefined
+            });
+        };
+
+        const removeIcon = () => {
+            setAttributes({
+                iconUrl: '',
+                iconId: undefined
+            });
+        };
+
+        const updateListItem = (value, index, field) => {
             const newItems = [...attributes.listItems];
-            newItems[index] = text;
+            newItems[index] = { ...newItems[index], [field]: value };
             setAttributes({ listItems: newItems });
         };
 
         const addListItem = () => {
-            const newItems = [...attributes.listItems, 'New option'];
+            const newItems = [...attributes.listItems, { title: 'New option', description: 'Description for new option' }];
             setAttributes({ listItems: newItems });
         };
 
@@ -216,67 +183,359 @@ registerBlockType('bevision/dashboard-features', {
 
         return (
             <>
-                <style>{blockStyle}</style>
-                <div {...blockProps}>
-                    <div className="container">
-                        <div className="dashboard-features__content">
-                            <div className="dashboard-features__icon">
+                <InspectorControls>
+                    <PanelBody title="Content Settings" initialOpen={true}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 'bold' }}>Visibility Settings:</h4>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                                <Button
+                                    variant={attributes.showTitle ? "primary" : "secondary"}
+                                    onClick={() => setAttributes({ showTitle: !attributes.showTitle })}
+                                    style={{ flex: 1 }}
+                                >
+                                    {attributes.showTitle ? 'Hide Title' : 'Show Title'}
+                                </Button>
+                                <Button
+                                    variant={attributes.showDescription ? "primary" : "secondary"}
+                                    onClick={() => setAttributes({ showDescription: !attributes.showDescription })}
+                                    style={{ flex: 1 }}
+                                >
+                                    {attributes.showDescription ? 'Hide Description' : 'Show Description'}
+                                </Button>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                                <Button
+                                    variant={attributes.showIcon ? "primary" : "secondary"}
+                                    onClick={() => setAttributes({ showIcon: !attributes.showIcon })}
+                                    style={{ width: '100%' }}
+                                >
+                                    {attributes.showIcon ? 'Hide Icon' : 'Show Icon'}
+                                </Button>
+                            </div>
+                        </div>
+                        {attributes.showTitle && (
+                            <TextControl
+                                label="Title"
+                                value={attributes.title}
+                                onChange={(title) => setAttributes({ title })}
+                                placeholder="Enter title..."
+                                help="The main title displayed in the dashboard features section"
+                            />
+                        )}
+                        {attributes.showDescription && (
+                            <TextareaControl
+                                label="Description"
+                                value={attributes.description}
+                                onChange={(description) => setAttributes({ description })}
+                                placeholder="Enter description..."
+                                rows={4}
+                                help="The description text that appears below the title"
+                            />
+                        )}
+                    </PanelBody>
+                    <PanelBody title="Image Settings" initialOpen={false}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 'bold' }}>Main Dashboard Image:</h4>
+                            {attributes.imageUrl ? (
+                                <div>
+                                    <img 
+                                        src={attributes.imageUrl} 
+                                        alt="Preview" 
+                                        style={{ width: '100%', height: 'auto', marginBottom: '8px' }}
+                                    />
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <MediaUploadCheck>
+                                            <MediaUpload
+                                                onSelect={onSelectImage}
+                                                allowedTypes={['image']}
+                                                value={attributes.imageId}
+                                                render={({ open }) => (
+                                                    <Button 
+                                                        onClick={open}
+                                                        variant="secondary"
+                                                        style={{ flex: 1 }}
+                                                    >
+                                                        Replace Image
+                                                    </Button>
+                                                )}
+                                            />
+                                        </MediaUploadCheck>
+                                        <Button 
+                                            onClick={removeImage}
+                                            variant="secondary" 
+                                            isDestructive
+                                            style={{ flex: 1 }}
+                                        >
+                                            Remove Image
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ 
+                                    border: '1px dashed #ccc', 
+                                    padding: '20px', 
+                                    textAlign: 'center',
+                                    marginBottom: '8px'
+                                }}>
+                                    <p style={{ margin: 0, color: '#666' }}>No image selected</p>
+                                </div>
+                            )}
+                            {!attributes.imageUrl && (
+                                <MediaUploadCheck>
+                                    <MediaUpload
+                                        onSelect={onSelectImage}
+                                        allowedTypes={['image']}
+                                        value={attributes.imageId}
+                                        render={({ open }) => (
+                                            <Button 
+                                                onClick={open}
+                                                variant="primary"
+                                                style={{ width: '100%' }}
+                                            >
+                                                Upload Dashboard Image
+                                            </Button>
+                                        )}
+                                    />
+                                </MediaUploadCheck>
+                            )}
+                        </div>
+                        
+                        <div style={{ marginBottom: '16px' }}>
+                            <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 'bold' }}>Icon:</h4>
+                            {attributes.iconUrl ? (
+                                <div>
+                                    <div style={{ 
+                                        border: '1px solid #ddd', 
+                                        borderRadius: '4px', 
+                                        padding: '12px', 
+                                        textAlign: 'center',
+                                        marginBottom: '8px'
+                                    }}>
+                                        <img 
+                                            src={attributes.iconUrl} 
+                                            alt="Icon preview" 
+                                            style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <MediaUploadCheck>
+                                            <MediaUpload
+                                                onSelect={onSelectIcon}
+                                                allowedTypes={['image']}
+                                                value={attributes.iconId}
+                                                render={({ open }) => (
+                                                    <Button 
+                                                        onClick={open}
+                                                        variant="secondary"
+                                                        style={{ flex: 1 }}
+                                                    >
+                                                        Replace Icon
+                                                    </Button>
+                                                )}
+                                            />
+                                        </MediaUploadCheck>
+                                        <Button 
+                                            onClick={removeIcon}
+                                            variant="secondary" 
+                                            isDestructive
+                                            style={{ flex: 1 }}
+                                        >
+                                            Remove Icon
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ 
+                                    border: '1px dashed #ccc', 
+                                    padding: '20px', 
+                                    textAlign: 'center',
+                                    marginBottom: '8px'
+                                }}>
+                                    <p style={{ margin: 0, color: '#666' }}>No icon selected</p>
+                                </div>
+                            )}
+                            {!attributes.iconUrl && (
                                 <MediaUploadCheck>
                                     <MediaUpload
                                         onSelect={onSelectIcon}
                                         allowedTypes={['image']}
                                         value={attributes.iconId}
                                         render={({ open }) => (
-                                            attributes.iconUrl ? (
-                                                <img
-                                                    src={attributes.iconUrl}
-                                                    onClick={open}
-                                                    style={{ cursor: 'pointer' }}
-                                                    alt="Icon"
-                                                />
-                                            ) : (
-                                                <Button
-                                                    onClick={open}
-                                                    variant="secondary"
-                                                    style={{ marginRight: '15px' }}
-                                                >
-                                                    Upload Icon
-                                                </Button>
-                                            )
+                                            <Button 
+                                                onClick={open}
+                                                variant="primary"
+                                                style={{ width: '100%' }}
+                                            >
+                                                Upload Icon
+                                            </Button>
                                         )}
                                     />
                                 </MediaUploadCheck>
-                                <RichText
-                                    tagName="h2"
-                                    className="dashboard-features__title"
-                                    value={attributes.title}
-                                    onChange={(title) => setAttributes({ title })}
-                                    placeholder="Enter title"
-                                />
+                            )}
+                        </div>
+                    </PanelBody>
+                    <PanelBody
+                        title="Layout Settings"
+                        initialOpen={false}
+                    >
+                        <PanelRow>
+                            <div style={{ width: '100%' }}>
+                                <Button
+                                    onClick={() => setAttributes({ reverseLayout: !attributes.reverseLayout })}
+                                    variant={attributes.reverseLayout ? "primary" : "secondary"}
+                                    style={{ width: '100%' }}
+                                >
+                                    {attributes.reverseLayout ? 'Image First, Content Second' : 'Content First, Image Second'}
+                                </Button>
+                                <p style={{ fontSize: '12px', color: '#666', marginTop: '8px', marginBottom: '0' }}>
+                                    Click to swap the positions of content and image sections
+                                </p>
                             </div>
-                            <RichText
-                                tagName="div"
-                                className="dashboard-features__description"
-                                value={attributes.description}
-                                onChange={(description) => setAttributes({ description })}
-                                placeholder="Enter description"
-                            />
+                        </PanelRow>
+                    </PanelBody>
+                    <PanelBody
+                        title="Feature List Items"
+                        initialOpen={false}
+                    >
+                        {attributes.listItems.map((item, index) => (
+                            <PanelRow key={index}>
+                                <div style={{ width: '100%', marginBottom: '20px', padding: '15px', border: '1px solid #ddd', borderRadius: '4px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                        <strong>Feature Item {index + 1}</strong>
+                                        <Button
+                                            onClick={() => removeListItem(index)}
+                                            variant="link"
+                                            isDestructive
+                                            isSmall
+                                        >
+                                            Remove
+                                        </Button>
+                                    </div>
+                                    <TextControl
+                                        label="Title"
+                                        value={item.title}
+                                        onChange={(value) => updateListItem(value, index, 'title')}
+                                        style={{ marginBottom: '10px' }}
+                                    />
+                                    <TextareaControl
+                                        label="Description"
+                                        value={item.description}
+                                        onChange={(value) => updateListItem(value, index, 'description')}
+                                        rows={3}
+                                    />
+                                </div>
+                            </PanelRow>
+                        ))}
+                        <PanelRow>
+                            <Button
+                                onClick={addListItem}
+                                variant="secondary"
+                                icon="plus"
+                                style={{ width: '100%' }}
+                            >
+                                Add Feature Item
+                            </Button>
+                        </PanelRow>
+                    </PanelBody>
+                </InspectorControls>
+                <style>{editorStyle}</style>
+                <div {...blockProps}>
+                    <div className="container" style={{ flexDirection: attributes.reverseLayout ? 'row-reverse' : 'row' }}>
+                        <div className="dashboard-features__content">
+                            <div className="dashboard-features__icon">
+                                {attributes.showIcon && (
+                                    <MediaUploadCheck>
+                                        <MediaUpload
+                                            onSelect={onSelectIcon}
+                                            allowedTypes={['image']}
+                                            value={attributes.iconId}
+                                            render={({ open }) => (
+                                                attributes.iconUrl ? (
+                                                    <div className="dashboard-features__icon-container">
+                                                        <img
+                                                            src={attributes.iconUrl}
+                                                            alt="Icon"
+                                                            style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
+                                                        />
+                                                        <div className="dashboard-features__icon-overlay">
+                                                            <Button
+                                                                onClick={open}
+                                                                variant="primary"
+                                                                size="small"
+                                                                style={{ backgroundColor: '#6C5CE7' }}
+                                                            >
+                                                                Replace
+                                                            </Button>
+                                                            <Button
+                                                                onClick={removeIcon}
+                                                                variant="secondary"
+                                                                size="small"
+                                                                isDestructive
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <Button
+                                                        onClick={open}
+                                                        variant="secondary"
+                                                    >
+                                                        Upload Icon
+                                                    </Button>
+                                                )
+                                            )}
+                                        />
+                                    </MediaUploadCheck>
+                                )}
+                                {attributes.showTitle && (
+                                    <RichText
+                                        tagName="h2"
+                                        className="dashboard-features__title"
+                                        value={attributes.title}
+                                        onChange={(title) => setAttributes({ title })}
+                                        placeholder="Enter title..."
+                                    />
+                                )}
+                            </div>
+                            {attributes.showDescription && (
+                                <RichText
+                                    tagName="div"
+                                    className="dashboard-features__description"
+                                    value={attributes.description}
+                                    onChange={(description) => setAttributes({ description })}
+                                    placeholder="Enter description..."
+                                />
+                            )}
                             <ul className="dashboard-features__list">
                                 {attributes.listItems.map((item, index) => (
                                     <li key={index} className="dashboard-features__list-item">
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <div style={{ marginBottom: '10px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                                                <RichText
+                                                    tagName="div"
+                                                    className="list-item-title"
+                                                    value={item.title}
+                                                    onChange={(text) => updateListItem(text, index, 'title')}
+                                                    placeholder="Enter list item title..."
+                                                    style={{ fontWeight: '600', flex: 1 }}
+                                                />
+                                                <Button
+                                                    isDestructive
+                                                    onClick={() => removeListItem(index)}
+                                                    style={{ marginLeft: '10px' }}
+                                                >
+                                                    ✕
+                                                </Button>
+                                            </div>
                                             <RichText
-                                                value={item}
-                                                onChange={(text) => updateListItem(text, index)}
-                                                placeholder="List item"
+                                                tagName="div"
+                                                className="list-item-description"
+                                                value={item.description}
+                                                onChange={(text) => updateListItem(text, index, 'description')}
+                                                placeholder="Enter description..."
+                                                style={{ fontSize: '14px', color: '#666', marginLeft: '0' }}
                                             />
-                                            <Button
-                                                isDestructive
-                                                onClick={() => removeListItem(index)}
-                                                style={{ marginLeft: '10px' }}
-                                            >
-                                                ✕
-                                            </Button>
                                         </div>
                                     </li>
                                 ))}
@@ -297,12 +556,31 @@ registerBlockType('bevision/dashboard-features', {
                                     value={attributes.imageId}
                                     render={({ open }) => (
                                         attributes.imageUrl ? (
-                                            <img
-                                                src={attributes.imageUrl}
-                                                onClick={open}
-                                                style={{ cursor: 'pointer' }}
-                                                alt="Dashboard preview"
-                                            />
+                                            <div className="dashboard-features__image-container">
+                                                <img
+                                                    src={attributes.imageUrl}
+                                                    alt="Dashboard preview"
+                                                    style={{ display: 'block', maxWidth: '100%', height: 'auto', borderRadius: '10px' }}
+                                                />
+                                                <div className="dashboard-features__image-overlay">
+                                                    <Button
+                                                        onClick={open}
+                                                        variant="primary"
+                                                        size="small"
+                                                        style={{ backgroundColor: '#6C5CE7' }}
+                                                    >
+                                                        Replace
+                                                    </Button>
+                                                    <Button
+                                                        onClick={removeImage}
+                                                        variant="secondary"
+                                                        size="small"
+                                                        isDestructive
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         ) : (
                                             <Button
                                                 onClick={open}
@@ -327,25 +605,41 @@ registerBlockType('bevision/dashboard-features', {
 
         return (
             <>
-                <style>{blockStyle}</style>
                 <div {...blockProps}>
-                    <div className="container">
+                    <div className="container" style={{ flexDirection: attributes.reverseLayout ? 'row-reverse' : 'row' }}>
                         <div className="dashboard-features__content">
                             <div className="dashboard-features__icon">
-                                {attributes.iconUrl && (
+                                {attributes.showIcon && attributes.iconUrl && (
                                     <img src={attributes.iconUrl} alt="" />
                                 )}
-                                <h2 className="dashboard-features__title">
-                                    {attributes.title}
-                                </h2>
+                                {attributes.showTitle && (
+                                    <RichText.Content
+                                        tagName="h2"
+                                        className="dashboard-features__title"
+                                        value={attributes.title}
+                                    />
+                                )}
                             </div>
-                            <div className="dashboard-features__description">
-                                {attributes.description}
-                            </div>
+                            {attributes.showDescription && (
+                                <RichText.Content
+                                    tagName="div"
+                                    className="dashboard-features__description"
+                                    value={attributes.description}
+                                />
+                            )}
                             <ul className="dashboard-features__list">
                                 {attributes.listItems.map((item, index) => (
                                     <li key={index} className="dashboard-features__list-item">
-                                        {item}
+                                        <RichText.Content
+                                            tagName="div"
+                                            className="list-item-title"
+                                            value={item.title}
+                                        />
+                                        <RichText.Content
+                                            tagName="div"
+                                            className="list-item-description"
+                                            value={item.description}
+                                        />
                                     </li>
                                 ))}
                             </ul>
